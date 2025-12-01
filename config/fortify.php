@@ -44,7 +44,7 @@ return [
     | another name for the field you may define it below as needed.
     |
     */
-
+    //Tipo de login
     'username' => 'email',
 
     'email' => 'email',
