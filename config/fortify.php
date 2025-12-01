@@ -45,7 +45,7 @@ return [
     |
     */
     //Tipo de login
-    'username' => 'email',
+    'username' => 'username',
 
     'email' => 'email',
 

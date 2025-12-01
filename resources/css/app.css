@@ -1,13 +1,11 @@
-/* @tailwind base; */
-@import url(normalize.css);
+/* resources/css/app.css */
+@import "tailwindcss";
+@import url("normalize.css");
 
-@tailwind components;
-@tailwind utilities;
 
 [x-cloak] {
     display: none;
 }
-
 
 .swal2-container.my-swal {
     z-index: 10000 !important;

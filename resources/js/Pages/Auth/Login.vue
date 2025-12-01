@@ -47,8 +47,6 @@ const submit = () => {
         </div>
 
         <form @submit.prevent="submit">
-
-            <!-- Campo dinámico: email o username -->
             <div>
                 <v-text-field
                     required
