@@ -129,6 +129,18 @@
                 :required="true"
             />
 
+            <MdRadioGroup
+                v-model="form.genero"
+                :ref="setFieldRef('genero')"
+                label="Genero"
+                :items="[
+                    { value: 'H', label: 'Hombre' },
+                    { value: 'M', label: 'Mujer' }
+                ]"
+                :required="true"
+                color="orange-darken-3"
+            />
+
             <MdTextarea
                 :ref="setFieldRef('comentarios')"
                 v-model="form.comentarios"
@@ -164,6 +176,7 @@ import MdSelect from '@/Components/MaterialDesign/MdSelect.vue';
 import MdSelectSearch from '@/Components/MaterialDesign/MdSelectSearch.vue';
 import MdSwitch from '@/Components/MaterialDesign/MdSwitch.vue';
 import MdCheckbox from '@/Components/MaterialDesign/MdCheckbox.vue';
+import MdRadioGroup from '@/Components/MaterialDesign/MdRadioGroup.vue';
 
 
 import { useMdFormValidation } from '@/utils/FormValidation';
@@ -184,6 +197,7 @@ const form = reactive({
     frutas_id: null,
     activo: false,
     acepta_terminos: false,
+    genero: '',
 });
 
 const Frutas = ref([
