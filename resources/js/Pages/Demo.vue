@@ -65,7 +65,7 @@
                 label="Fecha de nacimiento"
                 :required="true"
             />
-                {{ form.fecha_nacimiento }}
+
             <MdDateInput
                 :ref="setFieldRef('fecha_cita')"
                 v-model="form.fecha_cita"
@@ -81,11 +81,21 @@
                 :range="true"
                 :required="true"
             />
-                {{ form.fecha_rango }}
+
             <MdDatePicker
                 :ref="setFieldRef('fecha_simple')"
                 v-model="form.fecha_simple"
                 label="Fecha simple"
+                :required="true"
+            />
+
+            <MdSelect
+                :ref="setFieldRef('frutas_id')"
+                v-model="form.frutas_id"
+                label="Departamento"
+                :items="Frutas"
+                item-title="nombre"
+                item-value="id"
                 :required="true"
             />
 
@@ -120,6 +130,7 @@ import MdNumberInput from '@/Components/MaterialDesign/MdNumberInput.vue';
 import MdTextarea from '@/Components/MaterialDesign/MdTextareaInput.vue';
 import MdDateInput from '@/Components/MaterialDesign/MdDateInput.vue';
 import MdDatePicker from '@/Components/MaterialDesign/MdDatePicker.vue';
+import MdSelect from '@/Components/MaterialDesign/MdSelect.vue';
 
 import { useMdFormValidation } from '@/utils/FormValidation';
 import { reactive, ref, onMounted } from 'vue';
@@ -136,7 +147,18 @@ const form = reactive({
     fecha_cita: [],
     fecha_rango: [],
     fecha_simple: '',
+    frutas_id: null
 });
+
+const Frutas = ref([
+    { id: 1, nombre: 'Manzana' },
+    { id: 2, nombre: 'Plátano' },
+    { id: 3, nombre: 'Naranja' },
+    { id: 4, nombre: 'Mango' },
+    { id: 5, nombre: 'Fresa' },
+    { id: 6, nombre: 'Uva' },
+    { id: 7, nombre: 'Sandía' }
+]);
 
 const data = ref({});
 const { setFieldRef, validateAll } = useMdFormValidation();
