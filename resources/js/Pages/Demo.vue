@@ -65,7 +65,7 @@
                 label="Fecha de nacimiento"
                 :required="true"
             />
-
+                {{ form.fecha_nacimiento }}
             <MdDateInput
                 :ref="setFieldRef('fecha_cita')"
                 v-model="form.fecha_cita"
