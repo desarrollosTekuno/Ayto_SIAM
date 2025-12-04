@@ -207,6 +207,15 @@
                 :use-seconds="true"
             />
 
+                    <MdToggle
+            v-model="form.activo"
+            label="Activo?"
+            left-label="No"
+            right-label="Sí"
+            :left-value="false"
+            :right-value="true"
+        />
+
                 <v-btn type="submit" color="primary" block>
                     Probar validaciones
                 </v-btn>
@@ -236,6 +245,7 @@ import MdRadioGroup from '@/Components/MaterialDesign/MdRadioGroup.vue';
 import MdFileInput from '@/Components/MaterialDesign/MdFileInput.vue';
 import MdPasswordInput from '@/Components/MaterialDesign/MdPasswordInput.vue';
 import MdTimeInput from '@/Components/MaterialDesign/MdTimeInput.vue';
+import MdToggle from '@/Components/MaterialDesign/MdToggle.vue';
 
 import MdRichText from '@/Components/MaterialDesign/MdRichTextArea.vue';
 
@@ -263,6 +273,7 @@ const form = reactive({
     hora_simple: '',
     hora_requerida: '',
     hora_con_segundos: '',
+    activo: true,
 });
 
 const Frutas = ref([
