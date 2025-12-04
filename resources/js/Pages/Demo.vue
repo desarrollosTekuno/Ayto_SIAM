@@ -113,6 +113,14 @@
                 :required="true"
             />
 
+            <MdSwitch
+                :ref="setFieldRef('activo')"
+                v-model="form.activo"
+                label="Activo"
+                color="indigo-darken-3"
+                :required="true"
+            />
+
             <MdTextarea
                 :ref="setFieldRef('comentarios')"
                 v-model="form.comentarios"
@@ -146,6 +154,7 @@ import MdDateInput from '@/Components/MaterialDesign/MdDateInput.vue';
 import MdDatePicker from '@/Components/MaterialDesign/MdDatePicker.vue';
 import MdSelect from '@/Components/MaterialDesign/MdSelect.vue';
 import MdSelectSearch from '@/Components/MaterialDesign/MdSelectSearch.vue';
+import MdSwitch from '@/Components/MaterialDesign/MdSwitch.vue';
 
 import { useMdFormValidation } from '@/utils/FormValidation';
 import { reactive, ref, onMounted } from 'vue';
@@ -162,7 +171,8 @@ const form = reactive({
     fecha_cita: [],
     fecha_rango: [],
     fecha_simple: '',
-    frutas_id: null
+    frutas_id: null,
+    activo: false,
 });
 
 const Frutas = ref([
