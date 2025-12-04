@@ -187,6 +187,26 @@
                 security="strong"
             />
 
+            <MdTimeInput
+                :ref="setFieldRef('password')"
+                v-model="form.hora_simple"
+                label="Hora simple"
+            />
+
+            <MdTimeInput
+                :ref="setFieldRef('password')"
+                v-model="form.hora_requerida"
+                label="Hora requerida"
+                :required="true"
+            />
+
+            <MdTimeInput
+                :ref="setFieldRef('password')"
+                v-model="form.hora_con_segundos"
+                label="Con segundos"
+                :use-seconds="true"
+            />
+
                 <v-btn type="submit" color="primary" block>
                     Probar validaciones
                 </v-btn>
@@ -215,6 +235,7 @@ import MdCheckbox from '@/Components/MaterialDesign/MdCheckbox.vue';
 import MdRadioGroup from '@/Components/MaterialDesign/MdRadioGroup.vue';
 import MdFileInput from '@/Components/MaterialDesign/MdFileInput.vue';
 import MdPasswordInput from '@/Components/MaterialDesign/MdPasswordInput.vue';
+import MdTimeInput from '@/Components/MaterialDesign/MdTimeInput.vue';
 
 import MdRichText from '@/Components/MaterialDesign/MdRichTextArea.vue';
 
@@ -239,6 +260,9 @@ const form = reactive({
     genero: '',
     documentos: [],
     contenido_texto: '',
+    hora_simple: '',
+    hora_requerida: '',
+    hora_con_segundos: '',
 });
 
 const Frutas = ref([
