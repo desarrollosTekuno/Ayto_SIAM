@@ -99,6 +99,20 @@
                 :required="true"
             />
 
+            <MdSelectSearch
+                :ref="setFieldRef('colores_id')"
+                v-model="form.colores_id"
+                :items="Colores"
+                label="colores"
+                multiple
+                chips
+                item-title="nombre"
+                item-value="id"
+                :minSelected="2"
+                :maxSelected="3"
+                :required="true"
+            />
+
             <MdTextarea
                 :ref="setFieldRef('comentarios')"
                 v-model="form.comentarios"
@@ -131,6 +145,7 @@ import MdTextarea from '@/Components/MaterialDesign/MdTextareaInput.vue';
 import MdDateInput from '@/Components/MaterialDesign/MdDateInput.vue';
 import MdDatePicker from '@/Components/MaterialDesign/MdDatePicker.vue';
 import MdSelect from '@/Components/MaterialDesign/MdSelect.vue';
+import MdSelectSearch from '@/Components/MaterialDesign/MdSelectSearch.vue';
 
 import { useMdFormValidation } from '@/utils/FormValidation';
 import { reactive, ref, onMounted } from 'vue';
@@ -159,6 +174,16 @@ const Frutas = ref([
     { id: 6, nombre: 'Uva' },
     { id: 7, nombre: 'Sandía' }
 ]);
+
+const Colores = ref([
+    { id: 1, nombre: 'Rojo' },
+    { id: 2, nombre: 'Azul' },
+    { id: 3, nombre: 'Verde' },
+    { id: 4, nombre: 'Amarillo' },
+    { id: 5, nombre: 'Negro' },
+    { id: 6, nombre: 'Blanco' },
+    { id: 7, nombre: 'Gris' },
+])
 
 const data = ref({});
 const { setFieldRef, validateAll } = useMdFormValidation();
