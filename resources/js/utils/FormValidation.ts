@@ -10,11 +10,10 @@ export interface FieldRefs {
 }
 
 export function useMdFormValidation() {
-    // Diccionario reactivo de refs
     const fieldRefs = reactive<FieldRefs>({});
+    let autoId = 0;
 
-    // Registrar ref
-    const setFieldRef = (name: string) => (el: any) => {
+    const register = (name: string, el: any) => {
         if (el && typeof el.validate === 'function') {
             fieldRefs[name] = el as ValidatableField;
         } else {
@@ -22,7 +21,22 @@ export function useMdFormValidation() {
         }
     };
 
-    // Validación global con logs
+    /**
+     * Uso 1: :ref="FieldRef('nombre')"
+     * Uso 2: :ref="FieldRef"   (se autogenera nombre)
+     */
+    const FieldRef = (nameOrEl: string | any) => {
+        if (typeof nameOrEl === 'string') {
+            const name = nameOrEl;
+            return (el: any) => register(name, el);
+        }
+
+        const el = nameOrEl;
+        autoId++;
+        const name = `_auto_${autoId}`;
+        register(name, el);
+    };
+
     const validateAll = (): boolean => {
         let allValid = true;
 
@@ -32,17 +46,20 @@ export function useMdFormValidation() {
                 console.log(`Validando "${name}" →`, ok ? 'OK' : 'ERROR');
                 if (!ok) allValid = false;
             } else {
-                console.log(`"${name}" no tiene método validate()`);
+                console.log(`"${name}" no tiene metodo validate()`);
             }
         });
 
-        console.log('Resultado final del formulario →', allValid ? 'VÁLIDO' : 'INVÁLIDO');
+        console.log(
+            'Resultado final del formulario →',
+            allValid ? 'VALIDO' : 'INVALIDO'
+        );
         return allValid;
     };
 
     return {
         fieldRefs,
-        setFieldRef,
+        FieldRef,
         validateAll,
     };
 }

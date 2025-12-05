@@ -6,7 +6,7 @@
             <form @submit.prevent="handleSubmit" class="flex flex-row flex-wrap w-full gap-4">
 
                 <MdTextInput
-                    :ref="setFieldRef('nombre')"
+                    :ref="FieldRef"
                     v-model="form.nombre"
                     label="Nombre"
                     icon="mdi-account"
@@ -15,7 +15,7 @@
                 />
 
                 <MdTextInput
-                    :ref="setFieldRef('curp')"
+                    :ref="FieldRef"
                     v-model="form.curp"
                     label="CURP"
                     icon="mdi-card-account-details"
@@ -28,7 +28,7 @@
                 />
 
                 <MdEmailInput
-                    :ref="setFieldRef('correo')"
+                    :ref="FieldRef"
                     v-model="form.correo"
                     label="Correo electronico"
                     :required="true"
@@ -36,7 +36,7 @@
                 />
 
                 <MdPhoneInput
-                    :ref="setFieldRef('telefono')"
+                    :ref="FieldRef"
                     v-model="form.telefono"
                     label="Telefono"
                     :required="true"
@@ -45,7 +45,7 @@
 
 
                 <MdNumberInput
-                    :ref="setFieldRef('edad')"
+                    :ref="FieldRef"
                     v-model="form.edad"
                     label="Edad"
                     :allowed="'number'"
@@ -57,7 +57,7 @@
 
                 <!-- Decimal / dinero -->
                 <MdNumberInput
-                    :ref="setFieldRef('monto')"
+                    :ref="FieldRef"
                     v-model="form.monto"
                     label="Monto"
                     icon="mdi-currency-usd"
@@ -69,7 +69,7 @@
                 <!-- Negativo permitido -->
 
                 <MdNumberInput
-                    :ref="setFieldRef('saldo')"
+                    :ref="FieldRef"
                     v-model="form.saldo"
                     label="Saldo"
                     :allowNegative="true"
@@ -77,14 +77,14 @@
                 />
 
             <MdDateInput
-                :ref="setFieldRef('fecha_nacimiento')"
+                :ref="FieldRef"
                 v-model="form.fecha_nacimiento"
                 label="Fecha de nacimiento"
                 :required="true"
             />
 
             <MdDateInput
-                :ref="setFieldRef('fecha_cita')"
+                :ref="FieldRef"
                 v-model="form.fecha_cita"
                 label="Fecha de cita"
                 :range="true"
@@ -92,7 +92,7 @@
             />
 
             <MdDatePicker
-                :ref="setFieldRef('fecha_rango')"
+                :ref="FieldRef"
                 v-model="form.fecha_rango"
                 label="Fecha de cita (rango)"
                 :range="true"
@@ -100,14 +100,14 @@
             />
 
             <MdDatePicker
-                :ref="setFieldRef('fecha_simple')"
+                :ref="FieldRef"
                 v-model="form.fecha_simple"
                 label="Fecha simple"
                 :required="true"
             />
 
             <MdSelect
-                :ref="setFieldRef('frutas_id')"
+                :ref="FieldRef"
                 v-model="form.frutas_id"
                 label="Departamento"
                 :items="Frutas"
@@ -117,7 +117,7 @@
             />
 
             <MdSelectSearch
-                :ref="setFieldRef('colores_id')"
+                :ref="FieldRef"
                 v-model="form.colores_id"
                 :items="Colores"
                 label="colores"
@@ -131,7 +131,7 @@
             />
 
             <MdCheckbox
-                :ref="setFieldRef('acepta_terminos')"
+                :ref="FieldRef"
                 v-model="form.acepta_terminos"
                 label="Acepto términos y condiciones"
                 color="orange-darken-3"
@@ -139,7 +139,7 @@
             />
 
             <MdSwitch
-                :ref="setFieldRef('activo')"
+                :ref="FieldRef"
                 v-model="form.activo"
                 label="Activo"
                 color="indigo-darken-3"
@@ -148,7 +148,7 @@
 
             <MdRadioGroup
                 v-model="form.genero"
-                :ref="setFieldRef('genero')"
+                :ref="FieldRef"
                 label="Genero"
                 :items="[
                     { value: 'H', label: 'Hombre' },
@@ -160,7 +160,7 @@
             />
 
             <MdTextarea
-                :ref="setFieldRef('texto')"
+                :ref="FieldRef"
                 v-model="form.texto"
                 label="Descripcion"
                 :required="true"
@@ -171,7 +171,7 @@
             />
 
             <MdFileInput
-                :ref="setFieldRef('documentos')"
+                :ref="FieldRef"
                 v-model="form.documentos"
                 label="Documentos"
                 multiple
@@ -184,7 +184,7 @@
             />
 
             <MdRichText
-                :ref="setFieldRef('comentarios')"
+                :ref="FieldRef"
                 v-model="form.comentarios"
                 label="Comentarios"
                 :required="true"
@@ -196,7 +196,7 @@
             />
 
             <MdPasswordInput
-                :ref="setFieldRef('password')"
+                :ref="FieldRef"
                 v-model="form.password"
                 label="Contraseña"
                 :required="true"
@@ -205,21 +205,21 @@
             />
 
             <MdTimeInput
-                :ref="setFieldRef('hora_simple')"
+                :ref="FieldRef"
                 v-model="form.hora_simple"
                 label="Hora simple"
                 :required="true"
             />
 
             <MdTimeInput
-                :ref="setFieldRef('hora_requerida')"
+                :ref="FieldRef"
                 v-model="form.hora_requerida"
                 label="Hora requerida"
                 :required="true"
             />
 
             <MdTimeInput
-                :ref="setFieldRef('hora_con_segundos')"
+                :ref="FieldRef"
                 v-model="form.hora_con_segundos"
                 label="Con segundos"
                 :required="true"
@@ -227,7 +227,7 @@
             />
 
             <MdToggle
-                :ref="setFieldRef('activo')"
+                :ref="FieldRef"
                 v-model="form.activo"
                 label="Activo?"
                 left-label="No"
@@ -250,7 +250,7 @@
             />
 
             <MdUploadArea
-                :ref="setFieldRef('archivos')"
+                :ref="FieldRef"
                 v-model="form.archivos"
                 label="Documentos"
                 description="Sube contratos, identificaciones o comprobantes."
@@ -350,7 +350,7 @@ const Colores = ref([
 ])
 
 const data = ref({});
-const { setFieldRef, validateAll } = useMdFormValidation();
+const { FieldRef, validateAll } = useMdFormValidation();
 
 const handleSubmit = () => {
     const allValid = validateAll();

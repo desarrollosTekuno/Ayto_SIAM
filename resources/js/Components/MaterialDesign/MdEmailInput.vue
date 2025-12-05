@@ -26,6 +26,7 @@
 </template>
 
 <script setup lang="ts">
+// @ts-nocheck
 import { ref } from 'vue';
 import MdTextInput from '@/Components/MaterialDesign/MdTextInput.vue';
 

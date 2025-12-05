@@ -23,6 +23,9 @@
             :error-messages="displayedError"
             :class="successClass"
 
+            :prepend-inner-icon="icon"
+            prepend-icon=""
+
             @blur="handleBlur"
         />
     </div>
