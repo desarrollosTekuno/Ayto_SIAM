@@ -143,9 +143,9 @@
             />
 
             <MdTextarea
-                :ref="setFieldRef('comentarios')"
-                v-model="form.comentarios"
-                label="Comentarios"
+                :ref="setFieldRef('texto')"
+                v-model="form.texto"
+                label="Descripcion"
                 :required="true"
                 :minLength="10"
                 :maxLength="30"
@@ -188,33 +188,61 @@
             />
 
             <MdTimeInput
-                :ref="setFieldRef('password')"
+                :ref="setFieldRef('hora_simple')"
                 v-model="form.hora_simple"
                 label="Hora simple"
+                :required="true"
             />
 
             <MdTimeInput
-                :ref="setFieldRef('password')"
+                :ref="setFieldRef('hora_requerida')"
                 v-model="form.hora_requerida"
                 label="Hora requerida"
                 :required="true"
             />
 
             <MdTimeInput
-                :ref="setFieldRef('password')"
+                :ref="setFieldRef('hora_con_segundos')"
                 v-model="form.hora_con_segundos"
                 label="Con segundos"
+                :required="true"
                 :use-seconds="true"
             />
 
-                    <MdToggle
-            v-model="form.activo"
-            label="Activo?"
-            left-label="No"
-            right-label="Sí"
-            :left-value="false"
-            :right-value="true"
-        />
+            <MdToggle
+                :ref="setFieldRef('activo')"
+                v-model="form.activo"
+                label="Activo?"
+                left-label="No"
+                right-label="Sí"
+                :left-value="false"
+                :right-value="true"
+                :required="true"
+            />
+
+            <MdSlider
+                v-model="form.volumen"
+                label="Volumen"
+                :min="0"
+                :max="100"
+                :step="1"
+                color="secondary"
+                :required="true"
+                :show-ticks="true"
+                thumb-label="always"
+            />
+
+            <MdUploadArea
+                :ref="setFieldRef('archivos')"
+                v-model="form.archivos"
+                label="Documentos"
+                description="Sube contratos, identificaciones o comprobantes."
+                :required="true"
+                multiple
+                accept=".pdf,image/*"
+                :max-size-m-b="5"
+                :max-files="5"
+            />
 
                 <v-btn type="submit" color="primary" block>
                     Probar validaciones
@@ -246,6 +274,8 @@ import MdFileInput from '@/Components/MaterialDesign/MdFileInput.vue';
 import MdPasswordInput from '@/Components/MaterialDesign/MdPasswordInput.vue';
 import MdTimeInput from '@/Components/MaterialDesign/MdTimeInput.vue';
 import MdToggle from '@/Components/MaterialDesign/MdToggle.vue';
+import MdSlider from '@/Components/MaterialDesign/MdSlider.vue';
+import MdUploadArea from '@/Components/MaterialDesign/MdUploadArea.vue';
 
 import MdRichText from '@/Components/MaterialDesign/MdRichTextArea.vue';
 
@@ -259,6 +289,7 @@ const form = reactive({
     edad: null,
     monto: null,
     saldo: null,
+    texto: '',
     comentarios: '',
     fecha_nacimiento: '',
     fecha_cita: [],
@@ -274,6 +305,8 @@ const form = reactive({
     hora_requerida: '',
     hora_con_segundos: '',
     activo: true,
+    volumen: 0,
+    archivos: [],
 });
 
 const Frutas = ref([
