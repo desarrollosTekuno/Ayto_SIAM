@@ -24,6 +24,8 @@ import sweetalertOptions from "./plugins/sweetalert";
 //Roles y permisos
 import AuthGlobals from "./plugins/auth-globals";
 
+import FormValidate from '@/Components/FormValidate.vue';
+
 import { isLoading } from "./loading";
 
 createInertiaApp({
@@ -40,6 +42,7 @@ createInertiaApp({
             .use(vuetify)
             .use(vue3Spinner)
             .use(VueSweetalert2, sweetalertOptions)
+            .component('FormValidate', FormValidate)
             .use(AuthGlobals);
 
         Inertia.on("start", () => (isLoading.value = true));

@@ -653,26 +653,28 @@
 import { reactive, ref } from 'vue';
 import AppLayout from '@/Layouts/AppLayout.vue';
 
-import FormValidate from '@/Components/FormValidate.vue';
-import MdTextInput from '@/Components/MaterialDesign/MdTextInput.vue';
-import MdNumberInput from '@/Components/MaterialDesign/MdNumberInput.vue';
-import MdTextarea from '@/Components/MaterialDesign/MdTextareaInput.vue';
-import MdDateInput from '@/Components/MaterialDesign/MdDateInput.vue';
-import MdDatePicker from '@/Components/MaterialDesign/MdDatePicker.vue';
-import MdSelect from '@/Components/MaterialDesign/MdSelect.vue';
-import MdSelectSearch from '@/Components/MaterialDesign/MdSelectSearch.vue';
-import MdSwitch from '@/Components/MaterialDesign/MdSwitch.vue';
-import MdCheckbox from '@/Components/MaterialDesign/MdCheckbox.vue';
-import MdRadioGroup from '@/Components/MaterialDesign/MdRadioGroup.vue';
-import MdFileInput from '@/Components/MaterialDesign/MdFileInput.vue';
-import MdPasswordInput from '@/Components/MaterialDesign/MdPasswordInput.vue';
-import MdTimeInput from '@/Components/MaterialDesign/MdTimeInput.vue';
-import MdToggle from '@/Components/MaterialDesign/MdToggle.vue';
-import MdSlider from '@/Components/MaterialDesign/MdSlider.vue';
-import MdUploadArea from '@/Components/MaterialDesign/MdUploadArea.vue';
-import MdEmailInput from '@/Components/MaterialDesign/MdEmailInput.vue';
-import MdPhoneInput from '@/Components/MaterialDesign/MdPhoneInput.vue';
-import MdRichText from '@/Components/MaterialDesign/MdRichTextArea.vue';
+import {
+    MdTextInput,
+    MdNumberInput,
+    MdTextarea,
+    MdDateInput,
+    MdDatePicker,
+    MdSelect,
+    MdSelectSearch,
+    MdSwitch,
+    MdCheckbox,
+    MdRadioGroup,
+    MdFileInput,
+    MdPasswordInput,
+    MdTimeInput,
+    MdToggle,
+    MdSlider,
+    MdUploadArea,
+    MdEmailInput,
+    MdPhoneInput,
+    MdRichText,
+} from '@/Components/MaterialDesign';
+
 
 const activeTab = ref('text');
 
