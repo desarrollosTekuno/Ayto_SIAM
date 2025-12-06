@@ -9,48 +9,52 @@ use Illuminate\Support\Facades\Schema;
 trait HasDataTable
 {
     /**
-     * Aplica sort + per_page automáticamente para DataTableServer.
-     * Detecta columnas ordenables automáticamente desde la BD.
+     * Aplica búsqueda, sort y per_page para DataTableServer.
+     *
+     * Prioridades:
+     *  - allowedSorts:
+     *      a) parámetro $allowedSorts
+     *      b) const DATATABLE_SORTABLE
+     *      c) propiedad $datatableSortable
+     *      d) TODAS las columnas de la tabla (menos algunas ignoradas)
+     *
+     *  - searchableColumns:
+     *      a) parámetro $searchableColumns
+     *      b) const DATATABLE_SEARCHABLE
+     *      c) propiedad $datatableSearchable
+     *      d) mismas columnas que allowedSorts
      */
     public function scopeForDataTable(
         Builder $query,
         Request $request,
-        ?array $allowedSorts = null,
-        ?string $defaultSort = null,
-        string $defaultDir = 'asc',
-        int $defaultPerPage = 15
+        ?array $allowedSorts      = null,
+        ?string $defaultSort      = null,
+        string $defaultDir        = 'asc',
+        int $defaultPerPage       = 15,
+        ?array $searchableColumns = null
     ) {
         $model = $query->getModel();
         $table = $model->getTable();
 
         /*
         |--------------------------------------------------------------------------
-        | 1. Determinar columnas ordenables
+        | 1. Determinar columnas ordenables (allowedSorts)
         |--------------------------------------------------------------------------
-        |  Orden de prioridad:
-        |   a) Parámetro $allowedSorts pasado al scope
-        |   b) Constante DATATABLE_SORTABLE del modelo
-        |   c) Propiedad datatableSortable
-        |   d) (por defecto) TODAS las columnas del modelo
         */
         if ($allowedSorts === null) {
-
             $class = get_class($model);
             $const = $class . '::DATATABLE_SORTABLE';
 
             if (defined($const)) {
-                // a) Modelo define constante
-                $allowedSorts = constant($const);
+                $allowedSorts = (array) constant($const);
 
             } elseif (property_exists($model, 'datatableSortable')) {
-                // b) Modelo define propiedad
-                $allowedSorts = $model->datatableSortable;
+                $allowedSorts = (array) $model->datatableSortable;
 
             } else {
-                // c) Auto-detectar todas las columnas del modelo
+                // Auto: todas las columnas de la tabla, excepto algunas sensibles
                 $columns = Schema::getColumnListing($table);
 
-                // Siempre ignoramos columnas problemáticas
                 $ignored = [
                     'password',
                     'remember_token',
@@ -63,37 +67,66 @@ trait HasDataTable
 
         /*
         |--------------------------------------------------------------------------
-        | 2. Determinar sort por defecto
+        | 2. Determinar columnas buscables (searchableColumns)
+        |--------------------------------------------------------------------------
+        */
+        if ($searchableColumns === null) {
+            $classS = get_class($model);
+            $constS = $classS . '::DATATABLE_SEARCHABLE';
+
+            if (defined($constS)) {
+                $searchableColumns = (array) constant($constS);
+
+            } elseif (property_exists($model, 'datatableSearchable')) {
+                $searchableColumns = (array) $model->datatableSearchable;
+
+            } else {
+                // Por defecto: mismas columnas que se pueden ordenar
+                $searchableColumns = $allowedSorts;
+            }
+        }
+
+        /*
+        |--------------------------------------------------------------------------
+        | 3. Búsqueda global (search)
+        |--------------------------------------------------------------------------
+        */
+        $search = trim((string) $request->get('search', ''));
+
+        if ($search !== '' && !empty($searchableColumns)) {
+            $query->where(function (Builder $q) use ($search, $searchableColumns) {
+                foreach ($searchableColumns as $column) {
+                    $q->orWhere($column, 'like', '%' . $search . '%');
+                }
+            });
+        }
+
+        /*
+        |--------------------------------------------------------------------------
+        | 4. Sort por defecto / desde la tabla
         |--------------------------------------------------------------------------
         */
         if ($defaultSort === null) {
             $defaultSort = $allowedSorts[0] ?? $model->getKeyName();
         }
 
-        /*
-        |--------------------------------------------------------------------------
-        | 3. Paginación
-        |--------------------------------------------------------------------------
-        */
         $perPage = $request->integer('per_page', $defaultPerPage);
 
-        /*
-        |--------------------------------------------------------------------------
-        | 4. Ordenamiento (sort_by / sort_dir)
-        |--------------------------------------------------------------------------
-        */
         $sortBy  = $request->get('sort_by');
-        $sortDir = $request->get('sort_dir', $defaultDir);
+        $sortDir = strtolower($request->get('sort_dir', $defaultDir));
+        if (! in_array($sortDir, ['asc', 'desc'], true)) {
+            $sortDir = $defaultDir;
+        }
 
         if ($sortBy && in_array($sortBy, $allowedSorts, true)) {
             $query->orderBy($sortBy, $sortDir);
         } else {
-            $query->orderBy($defaultSort, $defaultDir);
+            $query->orderBy($defaultSort, $sortDir);
         }
 
         /*
         |--------------------------------------------------------------------------
-        | 5. Paginator final compatible con Inertia
+        | 5. Paginator final
         |--------------------------------------------------------------------------
         */
         return $query->paginate($perPage)->withQueryString();

@@ -34,23 +34,29 @@ const headers = [
 
         <section class="p-4">
             <DataTableServer
+                title="Ejemplos de Hechizos"
+                searchable
+                search-label="Buscar hechizo"
+                search-placeholder="Escribe nombre, ingrediente, etc..."
                 server-route="Example.index"
                 server-prop="items"
                 :headers="headers"
                 density="compact"
                 item-value="id"
-                :items-per-page="5"
-                :items-per-page-options="[5, 15, 20, 25]"
+                fixed-header
+                fixed-footer
+                height="70vh"
             >
-            <template v-slot:[`item.actions`]="{ item }">
-                <v-btn
-                    size="x-small"
-                    variant="text"
-                    icon="mdi-eye"
-                    @click="console.log('Ver hechizo', item.id)"
-                />
-            </template>
+                <template v-slot:[`item.actions`]="{ item }">
+                    <v-btn
+                        size="x-small"
+                        variant="text"
+                        icon="mdi-eye"
+                        @click="console.log('Ver hechizo', item?.raw?.id)"
+                    />
+                </template>
             </DataTableServer>
+
         </section>
     </AppLayout>
 </template>
