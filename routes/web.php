@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\DemoController;
 use App\Http\Controllers\Web\DashboardController;
+use App\Http\Controllers\Web\ExampleController;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
 
@@ -19,4 +20,4 @@ Route::middleware([
 
 
 Route::resource('/Demo', DemoController::class)->names('Demo');
-Route::resource('/Example', DemoController::class)->names('Example');
+Route::resource('/Example', ExampleController::class)->names('Example');

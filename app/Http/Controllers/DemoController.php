@@ -10,7 +10,7 @@ use Inertia\Inertia;
 class DemoController extends Controller {
 
     public function index() {
-        return Inertia::render('Example');
+        return Inertia::render('Demo');
     }
 
     public function MyFunction(Request $request) {
