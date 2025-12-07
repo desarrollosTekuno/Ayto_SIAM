@@ -111,21 +111,20 @@ const emit = defineEmits<{
     (e: 'update:modelValue', value: ModelValue): void;
 }>();
 
-const rawValue = ref<string>(''); // texto que ve el usuario
+const rawValue = ref<string>('');
 const errorMessage = ref<string>('');
 const touched = ref(false);
 
-// ref al v-text-field para poder hacer focus()
 const inputRef = ref<any | null>(null);
 
-// MdFormContext
+
 const mdForm = useMdForm();
 const instance = getCurrentInstance();
 const fieldKey =
     props.name ||
     `MdNumberInput_${props.id || instance?.uid || Math.random().toString(36)}`;
 
-// Tipo efectivo que usaremos para teclas y sanitizado
+
 const numericType = computed<AllowedType>(() => {
     const base = props.allowed ?? 'decimal';
 
