@@ -12,7 +12,6 @@ use Inertia\Inertia;
 class ExampleController extends Controller {
 
     public function index(Request $request) {
-
         $items = Examples::forDataTable($request, defaultPerPage: 5);
         return Inertia::render('Examples/Index', compact('items'));
     }

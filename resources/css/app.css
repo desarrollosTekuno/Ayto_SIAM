@@ -102,7 +102,7 @@
 /* Select compacto pero SIN romper el campo */
 .siam-data-table .v-data-table-footer .v-select {
   max-width: 70px !important;
-  height: 30px !important;       /* altura correcta para Vuetify */
+  height: 30px !important;
 }
 
 .siam-data-table .v-data-table-footer .v-select .v-field {

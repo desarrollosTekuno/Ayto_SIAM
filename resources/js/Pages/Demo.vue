@@ -6,6 +6,39 @@
             </div>
         </template>
 
+          <Stepper
+    v-model="step"
+    :items="steps"
+    mobile
+    @finish="onFinish"
+  >
+    <template #item="{ step }">
+      <div class="pa-4">
+        <h3 class="mb-2 text-h6">{{ step.title }}</h3>
+
+        <div v-if="step.value === 1">
+          Contenido del paso 1
+        </div>
+        <div v-else-if="step.value === 2">
+          Contenido del paso 2
+        </div>
+        <div v-else-if="step.value === 3">
+          Resumen / Confirmación
+        </div>
+      </div>
+    </template>
+
+    <template #actions="{ prev, next, isLast }">
+      <v-spacer />
+      <v-btn variant="text" @click="prev">
+        Atrás
+      </v-btn>
+      <v-btn color="primary" @click="next">
+        {{ isLast ? 'Guardar' : 'Siguiente' }}
+      </v-btn>
+    </template>
+  </Stepper>
+
         <div class="mx-2">
             <!-- Tabs con scroll -->
             <div class="overflow-x-auto">
@@ -652,7 +685,7 @@
 <script setup>
 import { reactive, ref } from 'vue';
 import AppLayout from '@/Layouts/AppLayout.vue';
-
+import Stepper from '@/Components/Stepper.vue'
 import {
     MdTextInput,
     MdNumberInput,
@@ -675,6 +708,14 @@ import {
     MdRichText,
 } from '@/Components/MaterialDesign';
 
+
+const step = ref(1)
+
+const steps = [
+    { value: 1, title: 'Datos personales', subtitle: 'Nombre, correo…' },
+    { value: 2, title: 'Datos laborales', subtitle: 'Puesto, depto…' },
+    { value: 3, title: 'Confirmación' },
+]
 
 const activeTab = ref('text');
 
@@ -734,7 +775,9 @@ const toggleForm = reactive({ luz: null, canal: null });
 const sliderForm = reactive({ volumen: null });
 const uploadForm = reactive({ archivos: null });
 
-
+const onFinish = () => {
+    console.log('Finalizó el stepper')
+}
 
 const handleTextSubmit = async () => {
     if (!textFormRef.value.validateAll())
