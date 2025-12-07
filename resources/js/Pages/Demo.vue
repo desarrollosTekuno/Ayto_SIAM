@@ -6,38 +6,33 @@
             </div>
         </template>
 
-          <Stepper
-    v-model="step"
-    :items="steps"
-    mobile
-    @finish="onFinish"
-  >
-    <template #item="{ step }">
-      <div class="pa-4">
-        <h3 class="mb-2 text-h6">{{ step.title }}</h3>
+        <Stepper v-model="step" :items="steps" mobile @finish="onFinish">
+            <template #item="{ step }">
+                <div class="pa-4">
+                    <h3 class="mb-2 text-h6">{{ step.title }}</h3>
 
-        <div v-if="step.value === 1">
-          Contenido del paso 1
-        </div>
-        <div v-else-if="step.value === 2">
-          Contenido del paso 2
-        </div>
-        <div v-else-if="step.value === 3">
-          Resumen / Confirmación
-        </div>
-      </div>
-    </template>
+                    <div v-if="step.value === 1">
+                    Contenido del paso 1
+                    </div>
+                    <div v-else-if="step.value === 2">
+                    Contenido del paso 2
+                    </div>
+                    <div v-else-if="step.value === 3">
+                    Resumen / Confirmación
+                    </div>
+                </div>
+            </template>
 
-    <template #actions="{ prev, next, isLast }">
-      <v-spacer />
-      <v-btn variant="text" @click="prev">
-        Atrás
-      </v-btn>
-      <v-btn color="primary" @click="next">
-        {{ isLast ? 'Guardar' : 'Siguiente' }}
-      </v-btn>
-    </template>
-  </Stepper>
+            <template #actions="{ prev, next, isLast }">
+                <v-spacer />
+                <v-btn variant="text" @click="prev">
+                    Atrás
+                </v-btn>
+                <v-btn color="primary" @click="next">
+                    {{ isLast ? 'Guardar' : 'Siguiente' }}
+                </v-btn>
+            </template>
+        </Stepper>
 
         <div class="mx-2">
             <!-- Tabs con scroll -->
@@ -679,6 +674,52 @@
                 </v-window-item>
             </v-window>
         </div>
+
+        <VButton prepend-icon="mdi-plus">Guardar</VButton>
+
+        <VBtnCancel prepend-icon="mdi-close">Cancel</VBtnCancel>
+
+        <VBtnSend prepend-icon="mdi-plus" >
+            Guardar
+        </VBtnSend>
+
+        <v-btn color="primary" @click="showModal = true">
+            Abrir modal
+        </v-btn>
+
+        <VDialog
+            v-model="showModal"
+            title="Título por defecto si no usas slot"
+            :max-width="700"
+            @confirm="guardar"
+        >
+            <!-- HEADER personalizado -->
+            <template #header="{ close }">
+            <v-toolbar color="primary" dark density="comfortable">
+                <v-toolbar-title>Editar empleado</v-toolbar-title>
+                <v-spacer />
+                <v-btn icon variant="text" @click="close">
+                <v-icon>mdi-close</v-icon>
+                </v-btn>
+            </v-toolbar>
+            </template>
+
+            <!-- CONTENT -->
+            <div class="py-4">
+            Aquí va tu formulario, stepper, etc.
+            </div>
+
+            <!-- FOOTER personalizado -->
+            <template #footer="{ cancel, confirm }">
+            <v-spacer />
+            <v-btn variant="text" @click="cancel">
+                Cancelar
+            </v-btn>
+            <v-btn color="primary" @click="confirm">
+                Guardar cambios
+            </v-btn>
+            </template>
+        </VDialog>
     </AppLayout>
 </template>
 
@@ -686,6 +727,10 @@
 import { reactive, ref } from 'vue';
 import AppLayout from '@/Layouts/AppLayout.vue';
 import Stepper from '@/Components/Stepper.vue'
+import VDialog from '@/Components/VDialog.vue';
+import VButton from '@/Components/VButton.vue';
+import VBtnCancel from '@/Components/VBtnCancel.vue';
+import VBtnSend from '@/Components/VBtnSend.vue';
 import {
     MdTextInput,
     MdNumberInput,
@@ -716,6 +761,12 @@ const steps = [
     { value: 2, title: 'Datos laborales', subtitle: 'Puesto, depto…' },
     { value: 3, title: 'Confirmación' },
 ]
+
+const showModal = ref(false)
+
+function guardar() {
+    console.log('guardado')
+}
 
 const activeTab = ref('text');
 
