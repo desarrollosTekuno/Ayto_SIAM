@@ -13,10 +13,8 @@ class ExampleController extends Controller {
 
     public function index(Request $request) {
         $items = Examples::forDataTable($request, defaultPerPage: 5);
-        return Inertia::render('Examples/Index', compact('items'));
+        return Inertia::render('Examples/Example', compact('items'));
     }
-
-
 
     public function create() {
         return Inertia::render('Examples/Create', [
@@ -42,7 +40,6 @@ class ExampleController extends Controller {
         ]);
     }
 
-
     public function update(Request $request, $id) {
         $data = $this->validateData($request);
 
@@ -52,7 +49,6 @@ class ExampleController extends Controller {
         return redirect()->route('examples.index')
             ->with('success', 'Hechizo actualizado.');
     }
-
 
     public function destroy($id) {
         $item = Examples::findOrFail($id);

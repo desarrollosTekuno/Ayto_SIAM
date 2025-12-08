@@ -10,77 +10,62 @@ return new class extends Migration {
         Schema::create('examples', function (Blueprint $table) {
             $table->id();
 
-            // TEXT INPUT
-            $table->string('hechizo', 80);                   // Nombre del hechizo
-            $table->string('ingrediente_principal', 100);    // Ingrediente clave del conjuro
-            $table->string('codigo_runico', 12)->unique();   // Código mágico: ABC123XYZ
+            $table->string('nombre_receta', 150);            // MdTextInput
+            $table->string('codigo_receta', 40)->unique();   // MdTextInput
+            $table->string('chef_autor', 120);               // MdTextInput
 
-            // EMAIL
-            $table->string('correo_mago', 150);              // Correo del mago responsable
+            $table->string('correo_contacto', 150)           // MdEmailInput
+                ->nullable();
+            $table->string('telefono_contacto', 25)          // MdPhoneInput
+                ->nullable();
 
-            // PHONE
-            $table->string('telefono_mago', 20)->nullable(); // Contacto por cristal-comunicador
+            $table->string('categoria', 50)                  // MdSelect (postre, sopas, carnes…)
+                ->nullable();
+            $table->unsignedBigInteger('cocina_id')          // MdSelectSearch (mexicana, italiana…)
+                ->nullable();
 
-            // NUMBER
-            $table->unsignedTinyInteger('nivel_hechizo')     // Complejidad del hechizo
-                ->default(1);                              // 1–9
-            $table->decimal('costo_mana', 8, 2)              // Energía requerida
+            $table->unsignedTinyInteger('porciones')         // MdNumberInput
+                ->default(1);
+            $table->unsignedTinyInteger('nivel_dificultad')  // MdNumberInput (1–5)
+                ->default(1);
+            $table->unsignedSmallInteger('tiempo_preparacion_min') // MdNumberInput
                 ->default(0);
 
-            // PASSWORD
-            $table->string('password_grimorio', 100)         // Llave del grimorio
+            $table->date('fecha_publicacion')                // MdDateInput
+                ->nullable();
+            $table->time('hora_sugerida_servicio')           // MdTimeInput (hora ideal para servir)
                 ->nullable();
 
-            // DATES
-            $table->date('fecha_ritual')->nullable();        // Día del ritual principal
+            $table->unsignedTinyInteger('nivel_picante')     // MdSlider 0–100
+                ->default(0);
 
-            // SELECTS
-            $table->unsignedBigInteger('bestia_favorita_id') // Bestia asociada al hechizo
-                ->nullable();
-            $table->string('rango_mago', 30)                 // Aprendiz / Hechicero / Archimago
-                ->nullable();
-
-            // BOOLEANOS & TOGGLES
-            $table->boolean('acepta_riesgos_magicos')        // Firma de riesgo
+            $table->boolean('es_vegetariana')                // MdCheckbox
                 ->default(false);
-            $table->boolean('modo_silencioso')               // Sin efectos sonoros molestos
+            $table->boolean('es_vegana')                     // MdCheckbox
                 ->default(false);
-            $table->boolean('turno_nocturno')                // Operación nocturna
+            $table->boolean('requiere_horno')                // MdSwitch
                 ->default(false);
-            $table->string('canal_hechizo', 20)              // etereo/fisico
-                ->default('etereo');
-            $table->string('modo_trabajo', 20)               // normal/estricto
-                ->default('normal');
 
-            // TEXTAREA
-            $table->text('diario_mago')->nullable();         // Notas del mago
-
-            // FILES
-            $table->string('pergaminos_path')->nullable();   // Un archivo principal
-            $table->text('documentos_arcanos_path')          // Texto simple con rutas separadas
+            $table->text('descripcion_breve')                // MdTextarea (intro corta)
+                ->nullable();
+            $table->longText('ingredientes_html')            // MdRichText (lista con estilos)
+                ->nullable();
+            $table->longText('preparacion_html')             // MdRichText (instrucciones paso a paso)
+                ->nullable();
+            $table->text('tips_extra')                       // MdTextarea
                 ->nullable();
 
-            // RICH TEXT
-            $table->longText('grimorio_html')->nullable();   // Entrada del grimorio con formato
-
-            // TIME INPUT
-            $table->time('hora_ritual')->nullable();         // Hora exacta del ritual
-
-            // SLIDER
-            $table->unsignedTinyInteger('poder_encantamiento') // Intensidad configurada
-                ->default(50);                               // 0–100
+            $table->string('foto_principal_path')            // MdFileInput
+                ->nullable();
+            $table->text('galeria_imagenes_path')            // MdUploadArea (galería de fotos)
+                ->nullable();
 
             $table->timestamps();
             $table->softDeletes();
         });
-
     }
 
-    /**
-     * Reverse the migrations.
-     */
-    public function down(): void
-    {
+    public function down(): void {
         Schema::dropIfExists('examples');
     }
 };

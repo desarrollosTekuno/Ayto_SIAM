@@ -9,6 +9,6 @@ use Illuminate\Database\Seeder;
 class ExamplesSeeder extends Seeder {
 
     public function run(): void {
-        Examples::factory(300)->create();
+        Examples::factory(100)->create();
     }
 }

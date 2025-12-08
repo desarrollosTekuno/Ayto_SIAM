@@ -11,52 +11,73 @@ class ExamplesFactory extends Factory {
 
     public function definition(): array {
         return [
-            'hechizo'   => $this->faker->randomElement([
-                'Bola de Fuego',
-                'Niebla Arcana',
-                'Rayo Crepuscular',
-                'Escudo Etéreo',
-                'Canto de Sombras'
+
+            // TEXT INPUTS
+            'nombre_receta'   => $this->faker->randomElement([
+                'Tacos al Pastor',
+                'Lasaña Clásica',
+                'Sopa de Tomate Cremosa',
+                'Pollo al Limón',
+                'Ensalada Mediterránea',
+                'Brownies de Chocolate',
             ]),
-            'ingrediente_principal' => $this->faker->randomElement([
-                'Lágrima de salamandra',
-                'Polvo de hada',
-                'Esencia de luna',
-                'Pluma de fénix',
-                'Raíz de mandrágora'
+
+            'codigo_receta'   => strtoupper($this->faker->bothify('REC-###??')),
+            'chef_autor'      => $this->faker->name(),
+
+            // EMAIL + PHONE
+            'correo_contacto'   => $this->faker->optional()->safeEmail(),
+            'telefono_contacto' => $this->faker->optional()->numerify('55########'),
+
+            // CATEGORÍAS
+            'categoria'      => $this->faker->randomElement([
+                'postre', 'sopa', 'carne', 'ensalada', 'pasta', 'mariscos'
             ]),
-            'codigo_runico'         => strtoupper($this->faker->bothify('???###')),
-            'correo_mago'           => $this->faker->safeEmail(),
-            'telefono_mago'         => $this->faker->numerify('22########'),
 
-            'nivel_hechizo'         => $this->faker->numberBetween(1, 9),
-            'costo_mana'            => $this->faker->randomFloat(2, 5, 500),
+            'cocina_id'      => $this->faker->optional()->numberBetween(1, 5), // depende de tu catálogo real
 
-            'password_grimorio'     => bcrypt('secreto'.$this->faker->numberBetween(1,9)),
+            // NUMBERS
+            'porciones'             => $this->faker->numberBetween(1, 10),
+            'nivel_dificultad'      => $this->faker->numberBetween(1, 5),
+            'tiempo_preparacion_min'=> $this->faker->numberBetween(5, 120),
 
-            'fecha_ritual'          => $this->faker->date(),
+            // DATES / TIMES
+            'fecha_publicacion'     => $this->faker->optional()->date(),
+            'hora_sugerida_servicio'=> $this->faker->optional()->time('H:i'),
 
-            'bestia_favorita_id'    => $this->faker->numberBetween(1, 5),
-            'rango_mago'            => $this->faker->randomElement([
-                                        'aprendiz', 'hechicero', 'archimago'
-                                    ]),
+            // SLIDER
+            'nivel_picante'         => $this->faker->numberBetween(0, 100),
 
-            'acepta_riesgos_magicos'=> $this->faker->boolean(),
-            'modo_silencioso'       => $this->faker->boolean(),
-            'turno_nocturno'        => $this->faker->boolean(),
-            'canal_hechizo'         => $this->faker->randomElement(['etereo', 'fisico']),
-            'modo_trabajo'          => $this->faker->randomElement(['normal', 'estricto']),
+            // BOOLEANOS
+            'es_vegetariana'        => $this->faker->boolean(),
+            'es_vegana'             => $this->faker->boolean(),
+            'requiere_horno'        => $this->faker->boolean(),
 
-            'diario_mago'           => $this->faker->sentence(8),
+            // TEXTAREA / RICH TEXT
+            'descripcion_breve'     => $this->faker->optional()->sentence(8),
 
-            'pergaminos_path'       => null,
-            'documentos_arcanos_path' => null,
+            'ingredientes_html'     => '<ul><li>' . implode('</li><li>', [
+                $this->faker->randomElement(['Tomate', 'Cebolla', 'Ajo', 'Pimienta', 'Mantequilla']),
+                $this->faker->randomElement(['Harina', 'Azúcar', 'Sal', 'Aceite de Oliva', 'Queso']),
+                $this->faker->randomElement(['Pollo', 'Carne Molida', 'Pasta', 'Leche', 'Chocolate']),
+            ]) . '</li></ul>',
 
-            'grimorio_html'         => '<p>'.$this->faker->sentence(12).'</p>',
+            'preparacion_html'      => '<ol><li>' . implode('</li><li>', [
+                'Preparar los ingredientes.',
+                'Calentar la sartén.',
+                'Mezclar y cocinar a fuego medio.',
+                'Servir caliente.',
+            ]) . '</li></ol>',
 
-            'hora_ritual'           => $this->faker->time('H:i'),
+            'tips_extra'            => $this->faker->optional()->sentence(10),
 
-            'poder_encantamiento'   => $this->faker->numberBetween(0, 100),
+            // FILES
+            'foto_principal_path'   => null,
+            'galeria_imagenes_path' => null,
+
+            'created_at'            => now(),
+            'updated_at'            => now(),
         ];
     }
+
 }
