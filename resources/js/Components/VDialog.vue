@@ -1,126 +1,111 @@
-<!-- MdModal.vue -->
+<!-- resources/js/Components/MaterialDesign/MdModal.vue -->
 <template>
-  <v-dialog
-    v-model="internalValue"
-    :max-width="maxWidth"
-    :persistent="persistent"
-    :scrollable="scrollable"
-    v-bind="$attrs"
-  >
-    <v-card :rounded="rounded">
-      <!-- HEADER -->
-      <header>
-        <slot
-          name="header"
-          :close="close"
-        >
-          <!-- Header por defecto -->
-          <v-toolbar
-            :color="headerColor"
-            :flat="!headerElevated"
-            density="comfortable"
-          >
-            <v-toolbar-title class="text-subtitle-1 font-weight-medium">
-              {{ title }}
-            </v-toolbar-title>
+    <v-dialog
+        v-model="internalValue"
+        :max-width="maxWidth"
+        :persistent="persistent"
+        :scrollable="false"
+        :position="position === 'top' ? 'top' : undefined"
+        v-bind="$attrs"
+    >
+        <!-- Card como columna y con altura máxima -->
+        <v-card :rounded="rounded" class="flex flex-col max-h-[80vh]">
+            <!-- HEADER -->
+            <header>
+                <slot name="header" :close="close">
+                    <v-toolbar
+                        :color="headerColor"
+                        :flat="!headerElevated"
+                        density="comfortable"
+                    >
+                        <v-toolbar-title class="text-subtitle-1 font-weight-medium">
+                            {{ title }}
+                        </v-toolbar-title>
 
-            <v-spacer />
+                        <v-spacer />
 
-            <v-btn
-              v-if="closable"
-              icon
-              variant="text"
-              @click="close"
-            >
-              <v-icon>mdi-close</v-icon>
-            </v-btn>
-          </v-toolbar>
-        </slot>
-      </header>
+                        <v-btn v-if="closable" icon variant="text" @click="close">
+                            <v-icon>mdi-close</v-icon>
+                        </v-btn>
+                    </v-toolbar>
+                </slot>
+            </header>
 
-      <!-- CONTENT -->
-      <section>
-        <v-card-text :class="bodyClass">
-          <slot />
-        </v-card-text>
-      </section>
+            <section class="flex-1 overflow-y-auto">
+                <v-card-text :class="[bodyClass]" style="padding: 0px;">
+                    <template v-if="props.loading">
+                        <v-skeleton-loader
+                            type="article, actions"
+                            class="p-4"
+                        />
+                    </template>
+                    <template v-else>
+                        <slot name="content"></slot>
+                    </template>
+                </v-card-text>
+            </section>
 
-      <!-- FOOTER -->
-      <footer v-if="showFooter">
-        <v-divider />
-        <v-card-actions class="px-4 py-3">
-          <slot
-            name="footer"
-            :cancel="onCancel"
-            :confirm="onConfirm"
-            :close="close"
-          >
-            <!-- Footer por defecto -->
-            <v-spacer />
-            <v-btn
-              v-if="showCancel"
-              variant="text"
-              @click="onCancel"
-            >
-              {{ cancelText }}
-            </v-btn>
-            <v-btn
-              v-if="showConfirm"
-              :color="confirmColor"
-              @click="onConfirm"
-            >
-              {{ confirmText }}
-            </v-btn>
-          </slot>
-        </v-card-actions>
-      </footer>
-    </v-card>
-  </v-dialog>
+            <!-- FOOTER: fijo al fondo del card -->
+            <footer v-if="showFooter" class="bg-white shrink-0 dark:bg-gray-900">
+                <v-divider />
+                <v-card-actions class="flex justify-end px-2">
+                    <slot name="footer" :cancel="onCancel" :confirm="onConfirm" :close="close" >
+                        <v-btn v-if="showCancel" variant="text" @click="onCancel">
+                            {{ cancelText }}
+                        </v-btn>
+                        <v-btn v-if="showConfirm" :color="confirmColor" @click="onConfirm">
+                            {{ confirmText }}
+                        </v-btn>
+                    </slot>
+                </v-card-actions>
+            </footer>
+        </v-card>
+    </v-dialog>
 </template>
 
 <script setup lang="ts">
 import { computed } from 'vue'
 
 const props = withDefaults(defineProps<{
-  modelValue: boolean
-  title?: string
-
-  maxWidth?: number | string
-  persistent?: boolean
-  scrollable?: boolean
-
-  headerColor?: string
-  headerElevated?: boolean
-
-  showFooter?: boolean
-  showCancel?: boolean
-  showConfirm?: boolean
-  cancelText?: string
-  confirmText?: string
-  confirmColor?: string
-
-  closable?: boolean
-  rounded?: string | number | boolean
-  bodyClass?: string
+    modelValue: boolean
+    title?: string
+    maxWidth?: number | string
+    persistent?: boolean
+    scrollable?: boolean
+    headerColor?: string
+    headerElevated?: boolean
+    showFooter?: boolean
+    showCancel?: boolean
+    showConfirm?: boolean
+    cancelText?: string
+    confirmText?: string
+    confirmColor?: string
+    closable?: boolean
+    rounded?: string | number | boolean
+    bodyClass?: string
+    position?: 'center' | 'top'
+    loading?: boolean
 }>(), {
-  title: '',
-  maxWidth: 600,
-  persistent: false,
-  scrollable: true,
+    title: '',
+    maxWidth: 600,
+    persistent: false,
+    scrollable: true,
 
-  headerColor: '',
-  headerElevated: false,
+    headerColor: '',
+    headerElevated: false,
 
-  showFooter: true,
-  showCancel: true,
-  showConfirm: true,
-  cancelText: 'Cancelar',
-  confirmText: 'Guardar',
-  confirmColor: 'primary',
+    showFooter: true,
+    showCancel: true,
+    showConfirm: true,
+    cancelText: 'Cancelar',
+    confirmText: 'Guardar',
+    confirmColor: 'primary',
 
-  closable: true,
-  rounded: 'lg',
-  bodyClass: '',
+    closable: true,
+    rounded: 'lg',
+    bodyClass: '',
+    position: 'center',
+    loading: false,
 })
 
 const emit = defineEmits<{

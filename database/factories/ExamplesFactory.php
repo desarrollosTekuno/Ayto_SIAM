@@ -11,9 +11,8 @@ class ExamplesFactory extends Factory {
 
     public function definition(): array {
         return [
-
             // TEXT INPUTS
-            'nombre_receta'   => $this->faker->randomElement([
+            'nombre_receta' => $this->faker->randomElement([
                 'Tacos al Pastor',
                 'Lasaña Clásica',
                 'Sopa de Tomate Cremosa',
@@ -22,61 +21,50 @@ class ExamplesFactory extends Factory {
                 'Brownies de Chocolate',
             ]),
 
-            'codigo_receta'   => strtoupper($this->faker->bothify('REC-###??')),
-            'chef_autor'      => $this->faker->name(),
+            'codigo_receta' => strtoupper($this->faker->bothify('##??##')),
+            'chef_autor' => $this->faker->name(),
 
-            // EMAIL + PHONE
             'correo_contacto'   => $this->faker->optional()->safeEmail(),
             'telefono_contacto' => $this->faker->optional()->numerify('55########'),
-
-            // CATEGORÍAS
-            'categoria'      => $this->faker->randomElement([
-                'postre', 'sopa', 'carne', 'ensalada', 'pasta', 'mariscos'
+            'categoria' => $this->faker->randomElement([
+                'postre', 'sopa', 'carne', 'ensalada', 'pasta', 'mariscos',
             ]),
 
-            'cocina_id'      => $this->faker->optional()->numberBetween(1, 5), // depende de tu catálogo real
 
-            // NUMBERS
-            'porciones'             => $this->faker->numberBetween(1, 10),
-            'nivel_dificultad'      => $this->faker->numberBetween(1, 5),
-            'tiempo_preparacion_min'=> $this->faker->numberBetween(5, 120),
+            'cocina_id' => $this->faker->optional()->numberBetween(1, 10),
+            'porciones' => $this->faker->numberBetween(1, 9),
+            'fecha_publicacion' => $this->faker->optional()->date(),
+            'nivel_picante' => $this->faker->numberBetween(0, 100),
+            'es_vegetariana'  => $this->faker->boolean(),
+            'requiere_horno'  => $this->faker->boolean(),
 
-            // DATES / TIMES
-            'fecha_publicacion'     => $this->faker->optional()->date(),
-            'hora_sugerida_servicio'=> $this->faker->optional()->time('H:i'),
+            'descripcion_breve' => $this->faker->optional()->sentence(12),
 
-            // SLIDER
-            'nivel_picante'         => $this->faker->numberBetween(0, 100),
-
-            // BOOLEANOS
-            'es_vegetariana'        => $this->faker->boolean(),
-            'es_vegana'             => $this->faker->boolean(),
-            'requiere_horno'        => $this->faker->boolean(),
-
-            // TEXTAREA / RICH TEXT
-            'descripcion_breve'     => $this->faker->optional()->sentence(8),
-
-            'ingredientes_html'     => '<ul><li>' . implode('</li><li>', [
-                $this->faker->randomElement(['Tomate', 'Cebolla', 'Ajo', 'Pimienta', 'Mantequilla']),
-                $this->faker->randomElement(['Harina', 'Azúcar', 'Sal', 'Aceite de Oliva', 'Queso']),
-                $this->faker->randomElement(['Pollo', 'Carne Molida', 'Pasta', 'Leche', 'Chocolate']),
-            ]) . '</li></ul>',
-
-            'preparacion_html'      => '<ol><li>' . implode('</li><li>', [
+            'preparacion_html' => '<ol><li>' . implode('</li><li>', [
                 'Preparar los ingredientes.',
-                'Calentar la sartén.',
+                'Calentar la sartén u horno según se requiera.',
                 'Mezclar y cocinar a fuego medio.',
-                'Servir caliente.',
+                'Servir caliente y disfrutar.',
             ]) . '</li></ol>',
 
-            'tips_extra'            => $this->faker->optional()->sentence(10),
+            'foto_principal_path' => $this->faker->optional()->randomElement([
+                'recetas/fotos/tacos-al-pastor.jpg',
+                'recetas/fotos/lasana-clasica.jpg',
+                'recetas/fotos/sopa-tomate.jpg',
+                null,
+            ]),
 
-            // FILES
-            'foto_principal_path'   => null,
-            'galeria_imagenes_path' => null,
+            // Guardamos como JSON en el text
+            'galeria_imagenes_path' => $this->faker->optional()->randomElement([
+                json_encode([
+                    'recetas/galeria/img1.jpg',
+                    'recetas/galeria/img2.jpg',
+                ]),
+                null,
+            ]),
 
-            'created_at'            => now(),
-            'updated_at'            => now(),
+            'created_at' => now(),
+            'updated_at' => now(),
         ];
     }
 

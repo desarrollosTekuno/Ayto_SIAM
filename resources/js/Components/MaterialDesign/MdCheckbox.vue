@@ -1,6 +1,6 @@
 <!-- resources/js/Components/MaterialDesign/MdCheckbox.vue -->
 <template>
-    <div class="w-full max-w-xs" :style="successColorVar">
+    <div class="w-full" :style="successColorVar">
         <v-checkbox
             v-model="innerValue"
             :id="id || name || undefined"

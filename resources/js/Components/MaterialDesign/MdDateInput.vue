@@ -1,6 +1,6 @@
 <!-- resources/js/Components/Inputs/MdDateInput.vue -->
 <template>
-    <div class="w-full max-w-xs">
+    <div class="w-full">
         <v-date-input
             ref="inputRef"
             v-model="innerValue"

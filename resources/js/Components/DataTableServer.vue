@@ -10,8 +10,14 @@
         :items-per-page="itemsPerPage"
         :items-per-page-options="itemsPerPageOptions"
         :items-per-page-text="'Paginación:'"
+        :density="density"
+        :item-value="itemValue"
+        :fixed-header="fixedHeader"
+        :fixed-footer="fixedFooter"
+        :height="height"
         @update:options="onUpdateOptions"
     >
+        <!-- HEADER -->
         <template #top="slotProps">
             <slot name="top" v-bind="slotProps">
                 <div v-if="showHeader" class="px-2 py-2 siam-dt-header">
@@ -23,33 +29,41 @@
                                 size="20"
                                 class="mr-2"
                             />
-                        <div class="uppercase text-h6 font-weight-bold">
-                            <slot name="title">
-                                {{ title }}
-                            </slot>
+                            <div class="uppercase text-h6 font-weight-bold">
+                                <slot name="title">
+                                    {{ title }}
+                                </slot>
+                            </div>
+                        </div>
+
+                        <!-- Buscador -->
+                        <div
+                            v-if="searchable"
+                            class="siam-dt-search-wrapper d-flex align-center"
+                        >
+                            <v-text-field
+                                v-model="localSearch"
+                                :label="searchLabel"
+                                :placeholder="searchPlaceholder"
+                                density="compact"
+                                variant="solo"
+                                prepend-inner-icon="mdi-magnify"
+                                hide-details
+                                clearable
+                                class="siam-dt-search ma-0 pa-0"
+                            />
                         </div>
                     </div>
-
-                    <!-- Buscador -->
-                    <div v-if="searchable" class="siam-dt-search-wrapper d-flex align-center">
-                        <v-text-field
-                            v-model="localSearch"
-                            :label="searchLabel"
-                            :placeholder="searchPlaceholder"
-                            density="compact"
-                            variant="solo"
-                            prepend-inner-icon="mdi-magnify"
-                            hide-details
-                            clearable
-                            class="siam-dt-search ma-0 pa-0"
-                        />
-                    </div>
-                </div>
                 </div>
             </slot>
         </template>
 
-        <template v-for="name in bodySlotNames" :key="name" #[name]="slotProps">
+        <!-- Slots reexpuestos (menos top) -->
+        <template
+            v-for="name in bodySlotNames"
+            :key="name"
+            #[name]="slotProps"
+        >
             <slot :name="name" v-bind="slotProps" />
         </template>
     </v-data-table-server>
@@ -77,27 +91,32 @@ const props = defineProps({
         type: Number,
         default: 0,
     },
+
+    // tamaño de página
     itemsPerPage: {
         type: Number,
         default: 10,
     },
     itemsPerPageOptions: {
         type: Array,
-        default: () => [25,50,75,100],
+        default: () => [25, 50, 75, 100],
     },
+
     loading: {
         type: Boolean,
         default: false,
     },
+
     options: {
         type: Object,
         default: () => ({
-        page: 1,
-        itemsPerPage: 10,
-        sortBy: [],
-        search: '',
+            page: 1,
+            itemsPerPage: 10,
+            sortBy: [],
+            search: '',
         }),
     },
+
     serverRoute: {
         type: String,
         default: null,
@@ -110,6 +129,8 @@ const props = defineProps({
         type: Object,
         default: () => ({}),
     },
+
+    // HEADER + BUSCADOR
     title: {
         type: String,
         default: '',
@@ -134,6 +155,28 @@ const props = defineProps({
         type: Number,
         default: 400,
     },
+
+    // ===== DEFAULTS de Vuetify que quieres =====
+    density: {
+        type: String,
+        default: 'compact',
+    },
+    itemValue: {
+        type: [String, Function],
+        default: 'id',
+    },
+    fixedHeader: {
+        type: Boolean,
+        default: true,
+    },
+    fixedFooter: {
+        type: Boolean,
+        default: true,
+    },
+    height: {
+        type: [String, Number],
+        default: '65vh',
+    },
 })
 
 const emit  = defineEmits(['update:options'])
@@ -146,40 +189,40 @@ const bodySlotNames = computed(() =>
 
 const internalOptions = ref({ ...props.options })
 
-// modo servidor
 const serverItems      = ref([])
 const serverItemsTotal = ref(0)
 const serverLoading    = ref(false)
 
-// search
 const localSearch = ref(internalOptions.value.search ?? '')
 
 let searchTimeout = null
 
-watch(() => props.options,
-    (val) => {internalOptions.value = { ...internalOptions.value, ...val }
-            if (val?.search !== undefined && val.search !== localSearch.value) {
-                localSearch.value = val.search
-            }
+watch(
+    () => props.options,
+    (val) => {
+        internalOptions.value = { ...internalOptions.value, ...val }
+        if (val?.search !== undefined && val.search !== localSearch.value) {
+            localSearch.value = val.search
+        }
     },
     { deep: true }
 )
 
-watch(() => internalOptions.value.search,
+watch(
+    () => internalOptions.value.search,
     (val) => {
         if (val !== localSearch.value) {
-        localSearch.value = val ?? ''
+            localSearch.value = val ?? ''
         }
     }
 )
 
-// Headers
 const vuetifyHeaders = computed(() => {
     if (props.columns.length) {
         return props.columns.map(col => ({
-        title: col.headerName ?? col.header ?? col.field,
-        key:   col.field ?? col.key,
-        sortable: col.sortable !== false,
+            title: col.headerName ?? col.header ?? col.field,
+            key:   col.field ?? col.key,
+            sortable: col.sortable !== false,
         }))
     }
     return props.headers
@@ -197,7 +240,6 @@ const loading = computed(() => {
     return props.serverRoute ? serverLoading.value : props.loading
 })
 
-// Carga servidor
 async function fetchFromServer(optionsToUse) {
     if (!props.serverRoute) return
 
@@ -214,56 +256,60 @@ async function fetchFromServer(optionsToUse) {
         ...props.extraParams,
     }
 
-    router.get(route(props.serverRoute), query,{
-        preserveState: true,
-        replace: true,
-        onSuccess: (page) => {
-            const paginator = page.props[props.serverProp]
+    router.get(
+        route(props.serverRoute),
+        query,
+        {
+            preserveState: true,
+            replace: true,
+            onSuccess: (page) => {
+                const paginator = page.props[props.serverProp]
 
-            if (!paginator) {
-                console.warn(`[DataTableServer] No se encontró props.${props.serverProp} en la respuesta`)
-                serverItems.value      = []
-                serverItemsTotal.value = 0
-                return
-            }
+                if (!paginator) {
+                    console.warn(
+                        `[DataTableServer] No se encontró props.${props.serverProp} en la respuesta`
+                    )
+                    serverItems.value      = []
+                    serverItemsTotal.value = 0
+                    return
+                }
 
-            serverItems.value      = paginator.data ?? []
-            serverItemsTotal.value = paginator.total ?? 0
+                serverItems.value      = paginator.data ?? []
+                serverItemsTotal.value = paginator.total ?? 0
 
-            internalOptions.value = {
-            ...internalOptions.value,
-            page:         paginator.current_page ?? internalOptions.value.page,
-            itemsPerPage: paginator.per_page ?? internalOptions.value.itemsPerPage,
-            }
-        },
-        onFinish: () => {
-            serverLoading.value = false
-        },
+                internalOptions.value = {
+                    ...internalOptions.value,
+                    page:         paginator.current_page ?? internalOptions.value.page,
+                    itemsPerPage: paginator.per_page ?? internalOptions.value.itemsPerPage,
+                }
+            },
+            onFinish: () => {
+                serverLoading.value = false
+            },
         }
     )
 }
 
-// Buscador con debounce
-watch(() => localSearch.value,
+watch(
+    () => localSearch.value,
     (val) => {
         internalOptions.value = {
-        ...internalOptions.value,
-        page: 1,
-        search: val ?? '',
+            ...internalOptions.value,
+            page: 1,
+            search: val ?? '',
         }
 
         emit('update:options', internalOptions.value)
 
         if (props.serverRoute) {
-        if (searchTimeout) clearTimeout(searchTimeout)
-        searchTimeout = setTimeout(() => {
-            fetchFromServer(internalOptions.value)
-        }, props.searchDebounce)
+            if (searchTimeout) clearTimeout(searchTimeout)
+            searchTimeout = setTimeout(() => {
+                fetchFromServer(internalOptions.value)
+            }, props.searchDebounce)
         }
     }
 )
 
-// Cambios de página / orden
 function onUpdateOptions(newOptions) {
     internalOptions.value = newOptions
     emit('update:options', newOptions)

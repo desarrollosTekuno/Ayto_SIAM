@@ -1,6 +1,6 @@
 <!-- resources/js/Components/MaterialDesign/MdRadioGroup.vue -->
 <template>
-    <div class="w-full max-w-xs" :style="successColorVar">
+    <div class="w-full" :style="successColorVar">
         <v-radio-group
             ref="groupRef"
             v-model="innerValue"

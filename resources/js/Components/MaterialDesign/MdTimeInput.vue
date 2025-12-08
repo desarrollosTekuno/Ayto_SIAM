@@ -1,6 +1,6 @@
 <!-- resources/js/Components/Inputs/MdTimeInput.vue -->
 <template>
-    <div class="w-full max-w-xs">
+    <div class="w-full">
         <v-menu
             v-model="menu"
             :close-on-content-click="false"

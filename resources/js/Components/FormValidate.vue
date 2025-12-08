@@ -1,3 +1,4 @@
+<!-- resources/js/Components/FormValidate.vue -->
 <template>
     <form @submit.prevent="onSubmit" class="contents">
         <slot
@@ -16,7 +17,6 @@ const emit = defineEmits<{
     (e: 'invalid'): void;
 }>();
 
-
 const { validateAll, getFields } = useProvideMdForm();
 const isSubmitting = ref(false);
 
@@ -30,7 +30,6 @@ const onSubmit = () => {
     if (!ok) {
         emit('invalid');
         focusFirstInvalid();
-
         isSubmitting.value = false;
         return;
     }
@@ -55,4 +54,11 @@ const focusFirstInvalid = () => {
         }
     }
 };
+
+
+defineExpose({
+    submit: onSubmit,
+    validateAll,
+    focusFirstInvalid,
+});
 </script>

@@ -1,17 +1,18 @@
 <template>
-  <VButton
-    v-bind="$attrs"
-    :color="color"
-    :variant="variant"
-    :rounded="rounded"
-    :type="type"
-    :loading="loading"
-    :disabled="disabled"
-    class="siam-btn-primary"
-    @click="emitClick"
-  >
-    <slot />
-  </VButton>
+    <VButton
+        v-bind="$attrs"
+        :color="color"
+        :variant="variant"
+        :rounded="rounded"
+        :type="type"
+        :loading="loading"
+        :disabled="disabled"
+        size="small"
+        class="siam-btn-primary"
+        @click="emitClick"
+    >
+        <slot />
+    </VButton>
 </template>
 
 <script setup lang="ts">
@@ -29,16 +30,16 @@ const props = withDefaults(defineProps<{
     loading?: boolean
     disabled?: boolean
     }>(), {
-    color: 'primary',
-    variant: 'flat',
-    rounded: 'lg',
+    color: '#0f766e',
+    variant: 'elevated',
+    rounded: 'button',
     type: 'submit',
     loading: false,
     disabled: false,
 })
 
 const emit = defineEmits<{
-  (e: 'click', ev: MouseEvent): void
+    (e: 'click', ev: MouseEvent): void
 }>()
 
 const emitClick = (ev: MouseEvent) => {

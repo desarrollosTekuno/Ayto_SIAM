@@ -1,17 +1,18 @@
 <template>
-  <VButton
-    v-bind="$attrs"
-    :color="color"
-    :variant="variant"
-    :rounded="rounded"
-    :type="type"
-    :loading="loading"
-    :disabled="disabled"
-    class="siam-btn-cancel"
-    @click="emitClick"
-  >
-    <slot />
-  </VButton>
+    <VButton
+        v-bind="$attrs"
+        :color="color"
+        :variant="variant"
+        :rounded="rounded"
+        :type="type"
+        :loading="loading"
+        :disabled="disabled"
+        size="small"
+        class="siam-btn-cancel"
+        @click="emitClick"
+    >
+        <slot />
+    </VButton>
 </template>
 
 <script setup lang="ts">
@@ -29,9 +30,9 @@ const props = withDefaults(defineProps<{
     loading?: boolean
     disabled?: boolean
     }>(), {
-    color: 'primary',
+    color: '#030712',
     variant: 'outlined',
-    rounded: 'lg',
+    rounded: 'button',
     type: 'submit',
     loading: false,
     disabled: false,

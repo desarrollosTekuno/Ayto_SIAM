@@ -12,8 +12,32 @@ use Inertia\Inertia;
 class ExampleController extends Controller {
 
     public function index(Request $request) {
-        $items = Examples::forDataTable($request, defaultPerPage: 5);
-        return Inertia::render('Examples/Example', compact('items'));
+        $Examples = Examples::forDataTable($request, defaultPerPage: 5);
+
+        $Categorias = [
+            [ 'id' => 1, 'nombre' => 'Repostería' ],
+            [ 'id' => 2, 'nombre' => 'Carnes' ],
+            [ 'id' => 3, 'nombre' => 'Sopas' ],
+            [ 'id' => 4, 'nombre' => 'Ensaladas' ],
+            [ 'id' => 5, 'nombre' => 'Pastas' ],
+            [ 'id' => 6, 'nombre' => 'Mariscos' ],
+            [ 'id' => 7, 'nombre' => 'Bebidas' ],
+        ];
+
+        $Cocinas = [
+            [ 'id' => 1, 'nombre' => 'Cocina Mexicana Tradicional' ],
+            [ 'id' => 2, 'nombre' => 'Cocina Italiana' ],
+            [ 'id' => 3, 'nombre' => 'Cocina Japonesa' ],
+            [ 'id' => 4, 'nombre' => 'Cocina Francesa' ],
+            [ 'id' => 5, 'nombre' => 'Cocina Española' ],
+            [ 'id' => 6, 'nombre' => 'Cocina China' ],
+            [ 'id' => 7, 'nombre' => 'Cocina Mediterránea' ],
+            [ 'id' => 8, 'nombre' => 'Cocina Árabe' ],
+            [ 'id' => 9, 'nombre' => 'Cocina Vegana' ],
+            [ 'id' => 10, 'nombre' => 'Cocina Fusión Moderna' ],
+        ];
+
+        return Inertia::render('Examples/Example', compact('Examples', 'Categorias', 'Cocinas'));
     }
 
     public function create() {

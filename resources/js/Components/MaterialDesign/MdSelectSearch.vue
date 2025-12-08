@@ -1,6 +1,6 @@
 <!-- resources/js/Components/MaterialDesign/MdSelectSearch.vue -->
 <template>
-    <div class="w-full max-w-xs">
+    <div class="w-full">
         <v-autocomplete
             ref="selectRef"
             v-model="innerValue"

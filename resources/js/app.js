@@ -9,10 +9,6 @@ import { ZiggyVue } from "../../vendor/tightenco/ziggy";
 
 const appName = import.meta.env.VITE_APP_NAME || "SIAM";
 
-// Iconos y estilos
-import "@mdi/font/css/materialdesignicons.css";
-import "sweetalert2/dist/sweetalert2.min.css";
-
 // Plugins externos
 import VueSweetalert2 from "vue-sweetalert2";
 import vue3Spinner from "vue3-spinner";
@@ -25,6 +21,11 @@ import sweetalertOptions from "./plugins/sweetalert";
 import AuthGlobals from "./plugins/auth-globals";
 
 import FormValidate from '@/Components/FormValidate.vue';
+
+// Iconos y estilos
+import "@mdi/font/css/materialdesignicons.css";
+import "sweetalert2/dist/sweetalert2.min.css";
+
 
 import { isLoading } from "./loading";
 

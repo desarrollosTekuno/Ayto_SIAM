@@ -46,12 +46,11 @@ const clicStop = (displayMobile: boolean) => {
             <Navigation :rail="rail" v-model:drawer="drawer" />
 
             <v-main>
-                <div class="p-6">
-                    <h3 class="mb-4 text-3xl font-medium text-gray-700 font-poppins">
-                        <slot name="header">
-                            {{ title }}
-                        </slot>
-                    </h3>
+                <div class="px-2">
+
+                    <div class="flex justify-end py-3">
+                        <slot name="actions"></slot>
+                    </div>
 
                     <slot />
                 </div>

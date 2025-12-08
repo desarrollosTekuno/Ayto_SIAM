@@ -1,6 +1,6 @@
 <!-- resources/js/Components/MaterialDesign/MdPasswordInput.vue -->
 <template>
-    <div class="w-full max-w-xs">
+    <div class="w-full">
         <v-text-field
             ref="inputRef"
             v-model="innerValue"

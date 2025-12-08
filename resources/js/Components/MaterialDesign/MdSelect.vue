@@ -1,6 +1,6 @@
 <!-- resources/js/Components/MaterialDesign/MdSelect.vue -->
 <template>
-    <div class="w-full max-w-xs">
+    <div class="w-full">
         <v-select
             ref="selectRef"
             v-model="innerValue"

@@ -1,6 +1,6 @@
 <!-- resources/js/Components/MaterialDesign/MdToggle.vue -->
 <template>
-    <div class="w-full max-w-xs">
+    <div class="w-full">
         <div class="flex flex-col gap-1" :class="successClass">
             <label v-if="label" class="text-sm text-gray-700">
                 {{ label }}

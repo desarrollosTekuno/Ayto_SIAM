@@ -1,6 +1,6 @@
 <!-- resources/js/Components/MaterialDesign/MdSwitch.vue -->
 <template>
-    <div class="w-full max-w-xs">
+    <div class="w-full">
         <v-switch
             ref="switchRef"
             v-model="innerValue"
