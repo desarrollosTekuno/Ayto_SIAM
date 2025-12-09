@@ -1,6 +1,6 @@
 <template>
     <v-data-table-server
-        class="siam-data-table"
+        class="vuetify-data-table"
         v-bind="attrs"
         v-model:options="internalOptions"
         :headers="vuetifyHeaders"
@@ -20,39 +20,20 @@
         <!-- HEADER -->
         <template #top="slotProps">
             <slot name="top" v-bind="slotProps">
-                <div v-if="showHeader" class="px-2 py-2 siam-dt-header">
-                    <div class="gap-3 d-flex flex-column flex-sm-row align-center justify-space-between">
-                        <div class="gap-2 d-flex align-center siam-dt-title">
-                            <v-icon
-                                v-if="title"
-                                icon="mdi-table-search"
-                                size="20"
-                                class="mr-2"
-                            />
-                            <div class="uppercase text-h6 font-weight-bold">
-                                <slot name="title">
-                                    {{ title }}
-                                </slot>
-                            </div>
-                        </div>
-
-                        <!-- Buscador -->
-                        <div
-                            v-if="searchable"
-                            class="siam-dt-search-wrapper d-flex align-center"
-                        >
-                            <v-text-field
-                                v-model="localSearch"
-                                :label="searchLabel"
-                                :placeholder="searchPlaceholder"
-                                density="compact"
-                                variant="solo"
-                                prepend-inner-icon="mdi-magnify"
-                                hide-details
-                                clearable
-                                class="siam-dt-search ma-0 pa-0"
-                            />
-                        </div>
+                <div v-if="showHeader" class="px-2 py-2 vuetify-dt-header">
+                    <!-- Buscador -->
+                    <div v-if="searchable" class="vuetify-dt-search-wrapper">
+                        <v-text-field
+                            v-model="localSearch"
+                            :label="searchLabel"
+                            :placeholder="searchPlaceholder"
+                            density="compact"
+                            variant="solo"
+                            prepend-inner-icon="mdi-magnify"
+                            hide-details
+                            clearable
+                            class="vuetify-dt-search ma-0 pa-0"
+                        />
                     </div>
                 </div>
             </slot>
@@ -91,8 +72,6 @@ const props = defineProps({
         type: Number,
         default: 0,
     },
-
-    // tamaño de página
     itemsPerPage: {
         type: Number,
         default: 10,
@@ -129,8 +108,6 @@ const props = defineProps({
         type: Object,
         default: () => ({}),
     },
-
-    // HEADER + BUSCADOR
     title: {
         type: String,
         default: '',
@@ -155,8 +132,6 @@ const props = defineProps({
         type: Number,
         default: 400,
     },
-
-    // ===== DEFAULTS de Vuetify que quieres =====
     density: {
         type: String,
         default: 'compact',

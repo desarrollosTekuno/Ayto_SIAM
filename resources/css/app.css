@@ -26,56 +26,60 @@
 }
 
 /* Contenedor completo de la tabla */
-.siam-data-table {
+.vuetify-data-table {
     border-radius: 4px;
     overflow: hidden;
     border: 1px solid #14532d;
 }
 
 /* Header de arriba (título + buscador) */
-.siam-dt-header {
+.vuetify-dt-header {
     background: #14532d;
     border-bottom: 1px solid #1f2937;
     color: #e5e7eb;
+    display: flex;
+    justify-content: center;
+    align-items: center;
 }
 
 /* Título */
-.siam-dt-title {
+.vuetify-dt-title {
     color: #f9fafb;
 }
 
 /* Wrapper para que el buscador sea largo pero no 100% */
-.siam-dt-search-wrapper {
-    width: 100%;
-    max-width: 700px;
+.vuetify-dt-search-wrapper {
+    width: 95%;
+    max-width: 100%;
+    margin: 0 auto;
 }
 
 /* El propio input de búsqueda */
-.siam-dt-search .v-field {
-    border-radius: 999px;
+.vuetify-dt-search .v-field {
+    border-radius: 5px;
 }
 
-/* Encabezados de columnas tipo ag-grid (verde) */
-.siam-data-table .v-data-table__thead th,
-.siam-data-table .v-table__wrapper thead th {
-    background-color: #14532d !important;  /* verde SIAM */
+/* Encabezados de columnas tipo ag-grid */
+.vuetify-data-table .v-data-table__thead th,
+.vuetify-data-table .v-table__wrapper thead th {
+    background-color: #14532d !important;
     color: #f9fafb !important;
     font-weight: 600 !important;
     border-bottom: 1px solid #064e3b !important;
 }
 
 /* Filas hover suaves */
-.siam-data-table .v-data-table__tbody tr:hover {
+.vuetify-data-table .v-data-table__tbody tr:hover {
     background-color: rgba(16, 185, 129, 0.06);
 }
 
 /* Footer */
-.siam-data-table .v-data-table-footer {
+.vuetify-data-table .v-data-table-footer {
     border-top: 1px solid #064e3b;
 }
 
 /* Footer SIAM compacto */
-.siam-data-table .v-data-table-footer {
+.vuetify-data-table .v-data-table-footer {
     padding-top: 2px !important;
     padding-bottom: 2px !important;
     height: 40px !important;
@@ -84,7 +88,7 @@
 }
 
 /* Wrapper interno ordenado */
-.siam-data-table .v-data-table-footer .v-data-table-footer__content {
+.vuetify-data-table .v-data-table-footer .v-data-table-footer__content {
   display: flex !important;
   justify-content: flex-start !important;
   align-items: center !important;
@@ -92,35 +96,35 @@
 }
 
 /* Etiqueta “Tamaño:” alineada */
-.siam-data-table .v-data-table-footer .v-data-table-footer__items-per-page {
+.vuetify-data-table .v-data-table-footer .v-data-table-footer__items-per-page {
   display: flex !important;
   align-items: center !important;
   gap: 6px !important;
   font-size: 0.85rem !important;
 }
 
-/* Select compacto pero SIN romper el campo */
-.siam-data-table .v-data-table-footer .v-select {
+
+.vuetify-data-table .v-data-table-footer .v-select {
   max-width: 70px !important;
   height: 30px !important;
 }
 
-.siam-data-table .v-data-table-footer .v-select .v-field {
+.vuetify-data-table .v-data-table-footer .v-select .v-field {
   height: 30px !important;
   min-height: 30px !important;
   padding: 0 4px !important;
 }
 
-/* Texto dentro del select */
-.siam-data-table .v-data-table-footer .v-select .v-field__input {
+
+.vuetify-data-table .v-data-table-footer .v-select .v-field__input {
     height: 30px !important;
     min-height: 30px !important;
     padding-top: 0 !important;
     padding-bottom: 0 !important;
 }
 
-/* Numero seleccionado */
-.siam-data-table .v-data-table-footer .v-select__selection-text {
+
+.vuetify-data-table .v-data-table-footer .v-select__selection-text {
     line-height: 30px !important;
     font-size: 0.85rem !important;
     font-weight: 400 !important;
@@ -128,8 +132,7 @@
     padding-right: 25px;
 }
 
-/* Navegación compacta */
-.siam-data-table .v-data-table-footer .v-btn {
+.vuetify-data-table .v-data-table-footer .v-btn {
     height: 26px !important;
     width: 26px !important;
     min-width: 26px !important;

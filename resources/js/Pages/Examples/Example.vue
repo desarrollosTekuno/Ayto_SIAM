@@ -23,6 +23,7 @@ import Stepper from '@/Components/Stepper.vue';
 import VBtnCancel from '@/Components/VBtnCancel.vue';
 import VBtnSend from '@/Components/VBtnSend.vue';
 import { customToastSwal, warningToast, errorToast } from "@/utils/swal";
+import { useForm } from "@inertiajs/vue3";
 
 // =============================== PROPS  ===============================
 const props = defineProps({
@@ -33,7 +34,7 @@ const props = defineProps({
 
 
 // =============================== VARIABLES  ===============================
-const showModal = ref(true);
+const showModal = ref(false);
 const editMode = ref(false);
 
 const step = ref(1);
@@ -44,24 +45,24 @@ const steps = [
 ];
 
 const formValidateRef = ref(null);
-const form = reactive({
+const form = useForm({
     id: null,
-    nombre_receta: null,
-    chef_autor: null,
-    codigo_receta: null,
-    correo_contacto: null,
-    telefono_contacto: null,
-    categoria: null,
-    cocina_id: null,
-    porciones: null,
-    fecha_publicacion: null,
-    nivel_picante: null,
-    es_vegetariana: null,
-    requiere_horno: null,
-    descripcion_breve: null,
-    preparacion_html: null,
+    nombre_receta: "Tacos de Dragón Supremo",
+    chef_autor: "Maestro Flamel",
+    codigo_receta: "12AB34",
+    correo_contacto: "dragonchef@cocina.com",
+    telefono_contacto: "2221234567",
+    categoria: "Carnes",
+    cocina_id: 1,
+    porciones: 4,
+    fecha_publicacion: "2025-02-01",
+    nivel_picante: 85,
+    es_vegetariana: false,
+    requiere_horno: true,
+    descripcion_breve: "Una receta ancestral de sabor intenso y fuego místico.",
+    preparacion_html: "<p>Dora la carne de dragón, agrega especias arcanas y sirve caliente.</p>",
     foto_principal_path: null,
-    galeria_imagenes_path: null,
+    galeria_imagenes_path: [],
 });
 
 const headers = [
@@ -100,10 +101,10 @@ const GuardarModificar = () => {
         },
     };
 
-    if (editMode.value) {
+    if (!!form.id) {
         form.put(route('Example.update', form.id), options);
     } else {
-        form.post(route('Empresas.store'), options);
+        form.post(route('Example.store'), options);
     }
 };
 
@@ -142,7 +143,7 @@ const onInvalidForm = () => {
         </section>
 
 
-        <VDialog v-model="showModal"  :loading="isLoading" :max-width="1200">
+        <VDialog v-model="showModal"  :max-width="1200">
                 <template #header="{ close }">
                     <v-toolbar color="#0f766e" dark density="comfortable">
                         <v-toolbar-title>Editar empleado</v-toolbar-title>
@@ -171,24 +172,26 @@ const onInvalidForm = () => {
                                                 v-model="form.nombre_receta"
                                                 label="Nombre de la receta"
                                                 icon="mdi-auto-fix"
-                                                helper=""
+                                                helper="Solo letras y espacios"
                                                 :minLength="3"
                                                 :maxLength="40"
                                                 :required="true"
                                                 :counter="true"
+                                                :external-error="form.errors.correo_contacto"
                                             />
 
                                             <MdTextInput
                                                 v-model="form.codigo_receta"
                                                 label="Código de la receta"
                                                 icon="mdi-code-braces"
+                                                pattern="^[0-9]{2}[A-Za-z]{2}[0-9]{2}$"
+                                                helper="Formato: 2 números, 2 letras, 2 números (Ej: 12AB34)"
                                                 :uppercase="true"
                                                 :minLength="6"
                                                 :maxLength="6"
                                                 :required="true"
                                                 :counter="true"
-                                                pattern="^[0-9]{2}[A-Za-z]{2}[0-9]{2}$"
-                                                helper="Formato: 2 números, 2 letras, 2 números (Ej: 12AB34)"
+
                                             />
 
                                             <MdTextInput
@@ -315,6 +318,7 @@ const onInvalidForm = () => {
                                         <!-- PASO 3: Contenido y archivos -->
                                         <div v-else-if="currentStep.value === 3" class="grid grid-cols-1 gap-4 md:grid-cols-3">
                                             <MdFileInput
+                                                class="md:col-span-3"
                                                 v-model="form.foto_principal_path"
                                                 label="Foto principal"
                                                 chips
@@ -322,10 +326,11 @@ const onInvalidForm = () => {
                                                 accept=".png,.jpg,.jpeg,image/*"
                                                 :required="true"
                                                 :max-size-m-b="2"
-                                                class="md:col-span-3"
+                                                :external-error="form.errors.foto_principal_path"
                                             />
 
                                             <MdUploadArea
+                                                class="md:col-span-3"
                                                 v-model="form.galeria_imagenes_path"
                                                 label="Galería de imágenes"
                                                 description="Puedes subir hasta 5 imágenes"
@@ -334,11 +339,9 @@ const onInvalidForm = () => {
                                                 :required="true"
                                                 :max-size-m-b="5"
                                                 :max-files="5"
-                                                class="md:col-span-3"
+                                                :external-error="form.errors.foto_principal_path"
                                             />
 
-                                            <!-- Aquí puedes meter un pequeño resumen si quieres -->
-                                            <!-- Por ejemplo: mostrar nombre_receta, porciones, etc. -->
                                         </div>
                                     </div>
                                 </template>
