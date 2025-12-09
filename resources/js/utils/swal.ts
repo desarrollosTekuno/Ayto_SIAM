@@ -11,6 +11,7 @@ const customSwal = (options) => {
         ...options,
     });
 };
+
 const customToastSwal = (options) => {
     return Swal.fire({
         showCancelButton: false,
@@ -26,6 +27,8 @@ const customToastSwal = (options) => {
         ...options,
     });
 };
+
+
 const customConfirmSwal = (options) => {
     return Swal.fire({
         text: "Esta acción es irreversible",
@@ -48,4 +51,68 @@ const customConfirmSwal = (options) => {
     });
 };
 
-export { customConfirmSwal, customSwal, customToastSwal };
+const successToast = (title = "Guardado correctamente") => {
+    return Swal.fire({
+        icon: "success",
+        title,
+        toast: true,
+        timer: 2000,
+        position: "top-end",
+        showConfirmButton: false,
+        customClass: {
+            container: "my-swal",
+        },
+    });
+};
+
+const infoToast = (title = "Revise por favor") => {
+    return Swal.fire({
+        icon: "info",
+        title,
+        toast: true,
+        timer: 2000,
+        position: "top-end",
+        showConfirmButton: false,
+        customClass: {
+            container: "my-swal",
+        },
+    });
+};
+
+const warningToast = (title = "Revise por favor") => {
+    return Swal.fire({
+        icon: "warning",
+        title,
+        toast: true,
+        timer: 2000,
+        position: "top-end",
+        showConfirmButton: false,
+        customClass: {
+            container: "my-swal",
+        },
+    });
+};
+
+const errorToast = (title = "Error al procesar la acción") => {
+    return Swal.fire({
+        icon: "error",
+        title,
+        toast: true,
+        timer: 2500,
+        position: "top-end",
+        showConfirmButton: false,
+        customClass: {
+            container: "my-swal",
+        },
+    });
+};
+
+export {
+    customConfirmSwal,
+    customSwal,
+    customToastSwal,
+    successToast,
+    infoToast,
+    warningToast,
+    errorToast
+};

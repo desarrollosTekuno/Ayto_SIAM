@@ -22,7 +22,7 @@ import MdUploadArea from '@/Components/MaterialDesign/MdUploadArea.vue';
 import Stepper from '@/Components/Stepper.vue';
 import VBtnCancel from '@/Components/VBtnCancel.vue';
 import VBtnSend from '@/Components/VBtnSend.vue';
-import { customToastSwal } from "@/utils/swal";
+import { customToastSwal, warningToast, errorToast } from "@/utils/swal";
 
 // =============================== PROPS  ===============================
 const props = defineProps({
@@ -33,8 +33,8 @@ const props = defineProps({
 
 
 // =============================== VARIABLES  ===============================
-const showModal = ref(false);
-const isLoading = ref(false);
+const showModal = ref(true);
+const editMode = ref(false);
 
 const step = ref(1);
 const steps = [
@@ -75,10 +75,7 @@ const headers = [
 ];
 
 onMounted(() => {
-    customToastSwal({
-        title: "Residencia creada con éxito!",
-        icon: "success",
-    });
+
 });
 
 // ================================ METODOS  ===============================
@@ -87,8 +84,6 @@ const ChangeModal = () => {
 };
 
 const GuardarModificar = () => {
-    isLoading.value = true;
-
     const options = {
         onSuccess: () => {
             customToastSwal({
@@ -100,14 +95,8 @@ const GuardarModificar = () => {
             showModal.value = false;
         },
         onError: () => {
-            customToastSwal({
-                title: 'Ocurrió un error al guardar',
-                icon: 'error',
-            });
+            errorToast('Ocurrio un error');
             showModal.value = true;
-        },
-        onFinish: () => {
-            isLoading.value = false;
         },
     };
 
@@ -119,10 +108,7 @@ const GuardarModificar = () => {
 };
 
 const onInvalidForm = () => {
-    customToastSwal({
-        title: 'Revisa los campos marcados',
-        icon: 'error',
-    });
+    warningToast('Revisa los campos marcados');
 };
 </script>
 
