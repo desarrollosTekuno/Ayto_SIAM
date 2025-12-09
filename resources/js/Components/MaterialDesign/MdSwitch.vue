@@ -13,6 +13,7 @@
             :class="successClass"
             :color="color"
             density="compact"
+            class="px-2"
             @blur="handleBlur"
             @update:model-value="handleChange"
         />

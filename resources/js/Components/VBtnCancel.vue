@@ -1,3 +1,4 @@
+<!-- resources/js/Components/VBtnCancel.vue -->
 <template>
     <VButton
         v-bind="$attrs"
@@ -11,7 +12,9 @@
         class="siam-btn-cancel"
         @click="emitClick"
     >
-        <slot />
+        <span class="font-semibold text-gray-400 text-uppercase">
+            <slot />
+        </span>
     </VButton>
 </template>
 
@@ -29,11 +32,11 @@ const props = withDefaults(defineProps<{
     type?: BtnType
     loading?: boolean
     disabled?: boolean
-    }>(), {
-    color: '#030712',
-    variant: 'outlined',
-    rounded: 'button',
-    type: 'submit',
+}>(), {
+    color: 'blue-grey-lighten-2',
+    variant: 'tonal',
+    rounded: 'sm',
+    type: 'button',
     loading: false,
     disabled: false,
 })
@@ -48,8 +51,4 @@ const emitClick = (ev: MouseEvent) => {
 </script>
 
 <style scoped>
-.siam-btn-cancel {
-  font-weight: 500;
-  text-transform: none;
-}
 </style>

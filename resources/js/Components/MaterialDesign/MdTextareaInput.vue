@@ -104,7 +104,7 @@ const props = withDefaults(defineProps<MdTextareaProps>(), {
     pattern: null,
     showSuccessState: true,
     density: 'comfortable',
-    rounded: 'xl',
+    rounded: 'sm',
     rows: 3,
     maxRows: null,
     autoGrow: true,

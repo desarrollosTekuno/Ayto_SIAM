@@ -98,7 +98,7 @@ const props = withDefaults(defineProps<MdSelectSearchProps>(), {
     showSuccessState: true,
     density: 'compact',
     variant: 'outlined',
-    rounded: 'xl',
+    rounded: 'sm',
     clearable: true,
     multiple: false,
     returnObject: false,

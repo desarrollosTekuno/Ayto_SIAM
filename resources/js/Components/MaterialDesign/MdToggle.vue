@@ -1,7 +1,7 @@
 <!-- resources/js/Components/MaterialDesign/MdToggle.vue -->
 <template>
     <div class="w-full">
-        <div class="flex flex-col gap-1" :class="successClass">
+        <div class="flex flex-col" :class="successClass">
             <label v-if="label" class="text-sm text-gray-700">
                 {{ label }}
             </label>
@@ -96,7 +96,7 @@ const props = withDefaults(defineProps<MdToggleProps>(), {
     showSuccessState: true,
     color: 'primary',
     density: 'compact',
-    rounded: 'xl',
+    rounded: 'sm',
 });
 
 const emit = defineEmits<{

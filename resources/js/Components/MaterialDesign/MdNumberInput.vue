@@ -103,7 +103,7 @@ const props = withDefaults(defineProps<MdNumberInputProps>(), {
     externalError: '',
     showSuccessState: true,
     density: 'compact',
-    rounded: 'xl',
+    rounded: 'sm',
     allowNegative: false,
 });
 

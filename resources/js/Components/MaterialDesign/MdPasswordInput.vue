@@ -108,7 +108,7 @@ const props = withDefaults(defineProps<MdPasswordInputProps>(), {
     pattern: null,
     showSuccessState: true,
     density: 'compact',
-    rounded: 'xl',
+    rounded: 'sm',
     security: null,
 });
 

@@ -1,3 +1,4 @@
+<!-- resources/js/Components/VBtnSend.vue -->
 <template>
     <VButton
         v-bind="$attrs"
@@ -29,11 +30,12 @@ const props = withDefaults(defineProps<{
     type?: BtnType
     loading?: boolean
     disabled?: boolean
-    }>(), {
-    color: '#0f766e',
-    variant: 'elevated',
-    rounded: 'button',
+}>(), {
+    color: 'var(--color-app-primary)',
+    variant: 'flat',
+    rounded: 'sm',
     type: 'submit',
+
     loading: false,
     disabled: false,
 })
@@ -43,14 +45,14 @@ const emit = defineEmits<{
 }>()
 
 const emitClick = (ev: MouseEvent) => {
-  if (!props.loading && !props.disabled) emit('click', ev)
+    if (!props.loading && !props.disabled) emit('click', ev)
 }
 </script>
 
 <style scoped>
 .siam-btn-primary {
-  text-transform: uppercase;
-  letter-spacing: 0.08em;
-  font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    font-weight: 700;
 }
 </style>

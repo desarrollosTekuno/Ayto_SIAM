@@ -51,6 +51,8 @@ type Variant =
 type ModelValue = string | null | undefined;
 
 interface MdPhoneInputProps {
+    id?: string;
+    name?: string;
     modelValue?: ModelValue;
     label?: string;
     icon?: string;
@@ -67,13 +69,11 @@ interface MdPhoneInputProps {
     showSuccessState?: boolean;
     density?: Density;
     rounded?: boolean | string | number;
-
-    /** Nombre e ID para el input real */
-    name?: string;
-    id?: string;
 }
 
 const props = withDefaults(defineProps<MdPhoneInputProps>(), {
+    id: undefined,
+    name: undefined,
     modelValue: '',
     label: '',
     icon: '',
@@ -89,9 +89,7 @@ const props = withDefaults(defineProps<MdPhoneInputProps>(), {
     pattern: null,
     showSuccessState: true,
     density: 'compact',
-    rounded: 'xl',
-    name: undefined,
-    id: undefined,
+    rounded: 'sm',
 });
 
 const defaultPattern: RegExp = /^[0-9+\-\s]{10,20}$/;

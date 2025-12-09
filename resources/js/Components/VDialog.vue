@@ -8,18 +8,25 @@
         :position="position === 'top' ? 'top' : undefined"
         v-bind="$attrs"
     >
-        <!-- Card como columna y con altura máxima -->
         <v-card :rounded="rounded" class="flex flex-col max-h-[80vh]">
             <!-- HEADER -->
             <header>
                 <slot name="header" :close="close">
                     <v-toolbar
-                        :color="headerColor"
+                        :color="headerColor || undefined"
                         :flat="!headerElevated"
                         density="comfortable"
+                        class=""
                     >
-                        <v-toolbar-title class="text-subtitle-1 font-weight-medium">
-                            {{ title }}
+                        <v-toolbar-title
+                            class="text-subtitle-1 font-weight-bold d-flex align-center"
+                        >
+                            <v-icon v-if="headerIcon" class="mr-2">
+                                {{ headerIcon }}
+                            </v-icon>
+                            <span class="text-uppercase">
+                                {{ title }}
+                            </span>
                         </v-toolbar-title>
 
                         <v-spacer />
@@ -31,6 +38,7 @@
                 </slot>
             </header>
 
+            <!-- BODY -->
             <section class="flex-1 overflow-y-auto">
                 <v-card-text :class="[bodyClass]" style="padding: 0px;">
                     <template v-if="props.loading">
@@ -40,16 +48,21 @@
                         />
                     </template>
                     <template v-else>
-                        <slot name="content"></slot>
+                        <slot name="content" />
                     </template>
                 </v-card-text>
             </section>
 
-            <!-- FOOTER: fijo al fondo del card -->
-            <footer v-if="showFooter" class="bg-white shrink-0 dark:bg-gray-900">
+            <!-- FOOTER -->
+            <footer v-if="showFooter" class="shrink-0 elevation-3">
                 <v-divider />
-                <v-card-actions class="flex justify-end px-2">
-                    <slot name="footer" :cancel="onCancel" :confirm="onConfirm" :close="close" >
+                <v-card-actions class="flex justify-end px-4 py-3">
+                    <slot
+                        name="footer"
+                        :cancel="onCancel"
+                        :confirm="onConfirm"
+                        :close="close"
+                    >
                         <v-btn v-if="showCancel" variant="text" @click="onCancel">
                             {{ cancelText }}
                         </v-btn>
@@ -72,8 +85,11 @@ const props = withDefaults(defineProps<{
     maxWidth?: number | string
     persistent?: boolean
     scrollable?: boolean
+
     headerColor?: string
     headerElevated?: boolean
+    headerIcon?: string
+
     showFooter?: boolean
     showCancel?: boolean
     showConfirm?: boolean
@@ -91,8 +107,10 @@ const props = withDefaults(defineProps<{
     persistent: false,
     scrollable: true,
 
-    headerColor: '',
+    // Header con color por defecto (como el que estás usando)
+    headerColor: '#0d9488',
     headerElevated: false,
+    headerIcon: '',
 
     showFooter: true,
     showCancel: true,
@@ -102,9 +120,10 @@ const props = withDefaults(defineProps<{
     confirmColor: 'primary',
 
     closable: true,
-    rounded: 'lg',
+    rounded: 'sm',
     bodyClass: '',
-    position: 'center',
+    // POR DEFECTO ARRIBA
+    position: 'top',
     loading: false,
 })
 

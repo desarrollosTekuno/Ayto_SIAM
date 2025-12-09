@@ -89,7 +89,7 @@ const props = withDefaults(defineProps<MdDateInputProps>(), {
     showSuccessState: true,
     density: 'compact',
     variant: 'outlined',
-    rounded: 'xl',
+    rounded: 'sm',
     clearable: true,
     min: null,
     max: null,

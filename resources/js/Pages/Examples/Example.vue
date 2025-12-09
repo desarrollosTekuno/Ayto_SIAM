@@ -143,17 +143,7 @@ const onInvalidForm = () => {
         </section>
 
 
-        <VDialog v-model="showModal"  :max-width="1200">
-                <template #header="{ close }">
-                    <v-toolbar color="#0f766e" dark density="comfortable">
-                        <v-toolbar-title>Editar empleado</v-toolbar-title>
-                            <v-spacer />
-                        <v-btn icon variant="text" @click="close">
-                            <v-icon>mdi-close</v-icon>
-                        </v-btn>
-                    </v-toolbar>
-                </template>
-
+        <VDialog v-model="showModal" title="Editar empleado" header-icon="mdi-account-tie" :max-width="1200">
                 <template #content>
                     <FormValidate
                         ref="formValidateRef"
@@ -162,7 +152,7 @@ const onInvalidForm = () => {
                             <Stepper v-model="step" :items="steps" mobile>
                                 <template #item="{ step: currentStep }">
                                     <div>
-                                        <div class="mb-6 font-semibold text-center text-pink-700 uppercase border-b-2 border-pink-700 text-h6">
+                                        <div class="mb-6 text-xl font-semibold text-center text-gray-500 uppercase">
                                             {{ currentStep.title }}
                                         </div>
 
@@ -355,7 +345,7 @@ const onInvalidForm = () => {
                 </template>
 
                 <template #footer="{ close }" >
-                    <VBtnCancel prepend-icon="mdi-close"  @click="close">Cancel</VBtnCancel>
+                    <VBtnCancel prepend-icon="mdi-close"  @click="close">Cancelar</VBtnCancel>
 
                     <VBtnSend prepend-icon="mdi-plus"  @click="formValidateRef?.submit()">
                         Guardar

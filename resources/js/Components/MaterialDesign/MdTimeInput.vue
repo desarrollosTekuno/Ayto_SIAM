@@ -75,7 +75,7 @@ type Variant =
 
 type TimeFormat = 'ampm' | '24hr';
 
-// modelo principal: hora en formato 24h HH:mm o HH:mm:ss
+// hora en formato 24h HH:mm o HH:mm:ss
 type ModelValue = string | null;
 
 interface MdTimeInputProps {
@@ -110,7 +110,7 @@ const props = withDefaults(defineProps<MdTimeInputProps>(), {
     showSuccessState: true,
     density: 'compact',
     variant: 'outlined',
-    rounded: 'xl',
+    rounded: 'sm',
     clearable: true,
     format: '24hr',
     useSeconds: false,

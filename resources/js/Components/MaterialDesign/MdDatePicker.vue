@@ -108,7 +108,7 @@ const props = withDefaults(defineProps<MdDatePickerProps>(), {
     showSuccessState: true,
     density: 'compact',
     variant: 'outlined',
-    rounded: 'xl',
+    rounded: 'sm',
     clearable: true,
     min: null,
     max: null,

@@ -1,4 +1,4 @@
-<!-- VButton.vue -->
+<!-- resources/js/Components/VButton.vue -->
 <template>
     <v-btn
         v-bind="$attrs"
@@ -14,33 +14,33 @@
     >
         <!-- Loader SIAM -->
         <template v-if="loading">
-        <span class="absolute inset-0 flex items-center justify-center">
-            <svg
-            class="w-5 h-5 text-white animate-spin"
-            xmlns="http://www.w3.org/2000/svg"
-            fill="none"
-            viewBox="0 0 24 24"
-            >
-            <circle
-                class="opacity-25"
-                cx="12"
-                cy="12"
-                r="10"
-                stroke="currentColor"
-                stroke-width="4"
-            />
-            <path
-                class="opacity-75"
-                fill="currentColor"
-                d="M4 12a8 8 0 018-8v4l3-3-3-3v4a8 8 0 100 16v-4l-3 3 3 3v-4a8 8 0 01-8-8z"
-            />
-            </svg>
-        </span>
+            <span class="absolute inset-0 flex items-center justify-center">
+                <svg
+                    class="w-5 h-5 text-white animate-spin"
+                    xmlns="http://www.w3.org/2000/svg"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                >
+                    <circle
+                        class="opacity-25"
+                        cx="12"
+                        cy="12"
+                        r="10"
+                        stroke="currentColor"
+                        stroke-width="4"
+                    />
+                    <path
+                        class="opacity-75"
+                        fill="currentColor"
+                        d="M4 12a8 8 0 018-8v4l3-3-3-3v4a8 8 0 100 16v-4l-3 3 3 3v-4a8 8 0 01-8-8z"
+                    />
+                </svg>
+            </span>
         </template>
 
         <!-- Contenido -->
-        <span :class="{ 'opacity-0': loading }">
-        <slot />
+        <span :class="{ 'opacity-0': loading }" class="text-white">
+            <slot />
         </span>
     </v-btn>
 </template>
@@ -58,10 +58,11 @@ const props = withDefaults(defineProps<{
     type?: BtnType
     loading?: boolean
     disabled?: boolean
-    }>(), {
-    color: '#047857',
+}>(), {
+
+    color: 'var(--color-app-primary)',
     variant: 'flat',
-    rounded: 'button',
+    rounded: 'sm',
     type: 'button',
     loading: false,
     disabled: false,
@@ -76,7 +77,7 @@ const emitClick = (e: MouseEvent) => {
 }
 
 const computedClass = computed(() => [
-  'relative font-semibold transition-all duration-150',
+  'relative font-semibold transition-all duration-150 text-white',
   props.disabled || props.loading ? 'cursor-not-allowed opacity-60' : '',
 ])
 </script>

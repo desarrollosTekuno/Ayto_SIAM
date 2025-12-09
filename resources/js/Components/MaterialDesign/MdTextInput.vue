@@ -99,7 +99,7 @@ const props = withDefaults(defineProps<MdTextInputProps>(), {
     pattern: null,
     showSuccessState: true,
     density: 'compact',
-    rounded: 'xl',
+    rounded: 'sm',
     name: undefined,
 });
 
