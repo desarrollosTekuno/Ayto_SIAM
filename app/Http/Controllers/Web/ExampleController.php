@@ -40,28 +40,12 @@ class ExampleController extends Controller {
         return Inertia::render('Examples/Example', compact('Examples', 'Categorias', 'Cocinas'));
     }
 
-    public function create() {
-        return Inertia::render('Examples/Create', [
-            'selects' => $this->getSelectData()
-        ]);
-    }
-
     public function store(Request $request) {
-        $data = $this->validateData($request);
+        return $data = $this->validateData($request);
 
         Examples::create($data);
 
-        return redirect()->route('examples.index')
-            ->with('success', 'Hechizo registrado.');
-    }
-
-    public function edit($id) {
-        $item = Examples::findOrFail($id);
-
-        return Inertia::render('Examples/Edit', [
-            'item'    => $item,
-            'selects' => $this->getSelectData(),
-        ]);
+        return redirect()->back();
     }
 
     public function update(Request $request, $id) {
@@ -81,73 +65,116 @@ class ExampleController extends Controller {
         return back()->with('success', 'Registro enviado al limbo.');
     }
 
-    public function restore($id) {
-        $item = Examples::withTrashed()->findOrFail($id);
-        $item->restore();
-
-        return back()->with('success', 'Registro devuelto del más allá.');
-    }
-
     private function validateData(Request $request) {
         return $request->validate([
-            'hechizo'               => 'required|string|max:80',
-            'ingrediente_principal' => 'required|string|max:100',
-            'codigo_runico'         => 'required|string|max:12',
-            'correo_mago'           => 'required|email|max:150',
-            'telefono_mago'         => 'nullable|string|max:20',
+            'nombre_receta' => [
+                'required',
+                'string',
+                'min:3',
+                'max:150',
+            ],
 
-            'nivel_hechizo'         => 'required|integer|min:1|max:9',
-            'costo_mana'            => 'required|numeric|min:0',
+            'codigo_receta' => [
+                'required',
+                'string',
+                'min:6',
+                'max:6',
+                'regex:/^[0-9]{2}[A-Za-z]{2}[0-9]{2}$/',
+            ],
 
-            'password_grimorio'     => 'nullable|string|max:100',
+            'chef_autor' => [
+                'required',
+                'string',
+                'min:3',
+                'max:120',
+            ],
 
-            'fecha_ritual'          => 'nullable|date',
+            'correo_contacto' => [
+                'required',
+                'email',
+                'max:150',
+            ],
 
-            'bestia_favorita_id'    => 'nullable|integer|min:1|max:5', // Simulación
-            'rango_mago'            => 'nullable|string|max:30',
+            'telefono_contacto' => [
+                'required',
+                'string',
+                'max:25',
+            ],
 
-            'acepta_riesgos_magicos'=> 'boolean',
-            'modo_silencioso'       => 'boolean',
-            'turno_nocturno'        => 'boolean',
-            'canal_hechizo'         => 'string|max:20',
-            'modo_trabajo'          => 'string|max:20',
+            'categoria' => [
+                'required',
+                'string',
+                'max:50',
+            ],
 
-            'diario_mago'           => 'nullable|string',
+            'cocina_id' => [
+                'required',
+                'integer',
+                'min:1',
+            ],
 
-            'pergaminos_path'       => 'nullable|string|max:255',
-            'documentos_arcanos_path' => 'nullable|string',
+            'porciones' => [
+                'required',
+                'integer',
+                'min:1',
+                'max:9',
+            ],
 
-            'grimorio_html'         => 'nullable|string',
+            'fecha_publicacion' => [
+                'required',
+                'date',
+            ],
 
-            'hora_ritual'           => 'nullable',
+            'nivel_picante' => [
+                'required',
+                'integer',
+                'min:0',
+                'max:100',
+            ],
 
-            'poder_encantamiento'   => 'nullable|integer|min:0|max:100',
+            'es_vegetariana' => [
+                'required',
+                'boolean',
+            ],
+
+            'requiere_horno' => [
+                'nullable',
+                'boolean',
+            ],
+
+            'descripcion_breve' => [
+                'required',
+                'string',
+                'min:10',
+                'max:120',
+            ],
+
+            'preparacion_html' => [
+                'required',
+                'string',
+                'min:10',
+                'max:300',
+            ],
+
+            'foto_principal_path' => [
+                'required',
+                'file',
+                'mimes:jpg,jpeg,png,webp',
+                'max:2048',
+            ],
+
+            'galeria_imagenes_path' => [
+                'required',
+                'array',
+            ],
+
+            'galeria_imagenes_path.*' => [
+                'file',
+                'mimes:jpg,jpeg,png,webp',
+                'max:5048',
+            ],
         ]);
     }
 
-    private function getSelectData() {
-        return [
-            'bestias' => [
-                ['id' => 1, 'nombre' => 'Fénix'],
-                ['id' => 2, 'nombre' => 'Dragón Esmeralda'],
-                ['id' => 3, 'nombre' => 'Grifo Dorado'],
-                ['id' => 4, 'nombre' => 'Serpiente Alada'],
-                ['id' => 5, 'nombre' => 'Tortuga Celestial'],
-            ],
-            'rangos' => [
-                'aprendiz',
-                'hechicero',
-                'archimago'
-            ],
-            'canales' => [
-                'etereo',
-                'fisico'
-            ],
-            'modos' => [
-                'normal',
-                'estricto'
-            ]
-        ];
-    }
 
 }
