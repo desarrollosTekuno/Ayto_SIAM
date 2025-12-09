@@ -8,21 +8,21 @@
     --font-sans: 'Fredoka', 'Patrick Hand', 'Caveat', cursive, sans-serif;
 }
 
-/* @theme {
-    --color-app-primary: #7D2447;
-    --color-app-secondary: #4A5350;
+@theme {
+    --color-app-primary: #0d9488;
+    --color-app-secondary: #0284c7;
     --color-app-tertiary: #BFB591;
     --color-app-accent1: #838386;
     --color-app-accent2: #404A6E;
     --color-app-accent3: #B5ACAF;
-} */
+}
 
 [x-cloak] {
     display: none;
 }
 
 .swal2-container.my-swal {
-    z-index: 1000 !important;
+    z-index: 1300 !important;
 }
 
 /* Contenedor completo de la tabla */
