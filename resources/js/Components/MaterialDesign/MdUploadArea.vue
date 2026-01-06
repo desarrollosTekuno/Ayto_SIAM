@@ -6,8 +6,23 @@
             class="block mb-1 text-sm font-medium text-gray-800"
             :for="id || name"
         >
-            {{ label }}
-            <span v-if="required" class="text-red-600">*</span>
+            <span class="inline-flex items-center gap-1">
+                <span v-if="required" class="text-red-600 font-bold">*</span>
+                <span>{{ label }}</span>
+
+                <v-tooltip v-if="tooltip" location="top">
+                    <template #activator="{ props }">
+                        <v-icon
+                            v-bind="props"
+                            size="16"
+                            class="text-gray-400 cursor-help"
+                        >
+                            mdi-information-outline
+                        </v-icon>
+                    </template>
+                    <span>{{ tooltip }}</span>
+                </v-tooltip>
+            </span>
         </label>
 
         <div
@@ -19,7 +34,6 @@
             @drop.prevent="onDrop"
         >
             <div class="flex flex-col items-center max-w-md gap-2 text-center">
-                <!-- Icono redondo -->
                 <div class="flex items-center justify-center w-12 h-12 mb-1 bg-gray-100 rounded-full">
                     <v-icon
                         v-if="icon"
@@ -63,7 +77,6 @@
             @change="onFileChange"
         />
 
-        <!-- Preview lista archivos -->
         <div v-if="filesArray.length" class="mt-3 space-y-2">
             <div
                 v-for="file in filesArray"
@@ -94,12 +107,11 @@
             </div>
         </div>
 
-        <!-- Mensajes -->
         <p v-if="displayedError" class="mt-1 text-xs text-red-600">
             {{ displayedError }}
         </p>
-        <p v-else-if="description" class="mt-1 text-xs text-gray-500">
-            {{ description }}
+        <p v-else-if="computedHint" class="mt-1 text-xs text-gray-500">
+            {{ computedHint }}
         </p>
     </div>
 </template>
@@ -120,7 +132,9 @@ interface MdUploadAreaProps {
     id?: string;
     name?: string;
     label?: string;
+    tooltip?: string;
     description?: string;
+    helperPersistent?: boolean;
     required?: boolean;
     multiple?: boolean;
     accept?: string;
@@ -136,7 +150,9 @@ const props = withDefaults(defineProps<MdUploadAreaProps>(), {
     id: undefined,
     name: undefined,
     label: '',
+    tooltip: '',
     description: '',
+    helperPersistent: false,
     required: false,
     multiple: false,
     accept: undefined,
@@ -157,7 +173,6 @@ const errorMessage = ref('');
 const isDragging = ref(false);
 const fileInputRef = ref<HTMLInputElement | null>(null);
 
-// MdFormContext
 const mdForm = useMdForm();
 const instance = getCurrentInstance();
 const fieldKey =
@@ -194,6 +209,14 @@ const acceptText = computed(() => {
     return `Formatos permitidos: ${props.accept}`;
 });
 
+const computedHint = computed(() => {
+    if (displayedError.value) return '';
+    const txt = (props.description ?? '').trim();
+    if (!txt) return '';
+    if (props.helperPersistent) return txt;
+    return touched.value ? txt : '';
+});
+
 const dropzoneClasses = computed(() => {
     const base: string[] = [];
 
@@ -217,7 +240,6 @@ const dropzoneClasses = computed(() => {
     return base.join(' ');
 });
 
-// ----- validaciones -----
 const isFileAllowed = (file: File): boolean => {
     if (!props.accept) return true;
 
@@ -358,24 +380,15 @@ const validate = (): boolean => {
 };
 
 const focus = () => {
-    // No hay foco "natural" en la zona, usamos el input file
     fileInputRef.value?.focus();
 };
 
-// Registro automático en MdFormContext
 onMounted(() => {
-    if (mdForm) {
-        mdForm.registerField(fieldKey, {
-            validate,
-            focus,
-        });
-    }
+    mdForm?.registerField(fieldKey, { validate, focus });
 });
 
 onBeforeUnmount(() => {
-    if (mdForm) {
-        mdForm.unregisterField(fieldKey);
-    }
+    mdForm?.unregisterField(fieldKey);
 });
 
 defineExpose({ validate, focus });

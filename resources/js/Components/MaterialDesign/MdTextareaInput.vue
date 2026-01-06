@@ -1,10 +1,9 @@
-<!-- resources/js/Components/Inputs/MdTextarea.vue -->
+<!-- resources/js/Components/MaterialDesign/MdTextareaInput.vue -->
 <template>
-    <div class="w-full">
+    <div class="w-full px-2 py-2">
         <v-textarea
             ref="textareaRef"
             v-model="innerValue"
-            :label="label"
             :id="id"
             :name="name"
             :prepend-inner-icon="icon"
@@ -23,10 +22,34 @@
             :hint="helper"
             :persistent-hint="!!helper"
             :readonly="readonly"
-            :autocomplete="'off'"
+            autocomplete="off"
             @keydown="handleKeydown"
             @blur="handleBlur"
-        />
+        >
+            <template #label>
+                <span class="inline-flex items-center gap-1">
+                    <span
+                        v-if="required"
+                        class="text-red-500 font-bold"
+                    >*</span>
+
+                    <span>{{ label }}</span>
+
+                    <v-tooltip v-if="tooltip" location="top">
+                        <template #activator="{ props }">
+                            <v-icon
+                                v-bind="props"
+                                size="16"
+                                class="text-gray-400 cursor-help"
+                            >
+                                mdi-information-outline
+                            </v-icon>
+                        </template>
+                        <span>{{ tooltip }}</span>
+                    </v-tooltip>
+                </span>
+            </template>
+        </v-textarea>
     </div>
 </template>
 
@@ -63,6 +86,7 @@ interface MdTextareaProps {
     id?: string;
     name?: string;
     label?: string;
+    tooltip?: string;
     icon?: string;
     required?: boolean;
     variant?: Variant;
@@ -89,6 +113,7 @@ const props = withDefaults(defineProps<MdTextareaProps>(), {
     id: undefined,
     name: undefined,
     label: '',
+    tooltip: '',
     icon: '',
     required: false,
     variant: 'outlined',
@@ -104,7 +129,7 @@ const props = withDefaults(defineProps<MdTextareaProps>(), {
     pattern: null,
     showSuccessState: true,
     density: 'comfortable',
-    rounded: 'sm',
+    rounded: 'lg',
     rows: 3,
     maxRows: null,
     autoGrow: true,
@@ -117,17 +142,14 @@ const emit = defineEmits<{
 const errorMessage = ref<string>('');
 const touched = ref(false);
 
-// ref al v-textarea para poder hacer focus()
 const textareaRef = ref<any | null>(null);
 
-// MdFormContext
 const mdForm = useMdForm();
 const instance = getCurrentInstance();
 const fieldKey =
     props.name ||
     `MdTextarea_${props.id || instance?.uid || Math.random().toString(36)}`;
 
-// v-model interno
 const innerValue = computed<ModelValue>({
     get() {
         return props.modelValue;
@@ -255,20 +277,12 @@ const focus = () => {
     el?.focus();
 };
 
-// Registro automático en MdFormContext
 onMounted(() => {
-    if (mdForm) {
-        mdForm.registerField(fieldKey, {
-            validate,
-            focus,
-        });
-    }
+    mdForm?.registerField(fieldKey, { validate, focus });
 });
 
 onBeforeUnmount(() => {
-    if (mdForm) {
-        mdForm.unregisterField(fieldKey);
-    }
+    mdForm?.unregisterField(fieldKey);
 });
 
 defineExpose({

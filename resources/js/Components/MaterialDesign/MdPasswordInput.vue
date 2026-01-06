@@ -1,10 +1,9 @@
 <!-- resources/js/Components/MaterialDesign/MdPasswordInput.vue -->
 <template>
-    <div class="w-full">
+    <div class="w-full h-18 py-2 px-2">
         <v-text-field
             ref="inputRef"
             v-model="innerValue"
-            :label="label"
             :id="id"
             :name="name"
             :type="inputType"
@@ -18,14 +17,39 @@
             :maxlength="maxLength ?? undefined"
             :counter="counter && !!maxLength"
             :class="successClass"
-            :hint="helper"
-            :persistent-hint="!!helper"
+            :hint="computedHint"
+            :persistent-hint="persistentHint"
             :readonly="readonly"
             autocomplete="new-password"
+            hide-details="auto"
             @click:append-inner="toggleVisibility"
             @keydown="handleKeydown"
             @blur="handleBlur"
-        />
+        >
+            <template #label>
+                <span class="inline-flex items-center gap-1">
+                    <span
+                        v-if="required"
+                        class="text-red-500 font-bold"
+                    >*</span>
+
+                    <span>{{ label }}</span>
+
+                    <v-tooltip v-if="tooltip" location="top">
+                        <template #activator="{ props }">
+                            <v-icon
+                                v-bind="props"
+                                size="16"
+                                class="text-gray-400 cursor-help"
+                            >
+                                mdi-information-outline
+                            </v-icon>
+                        </template>
+                        <span>{{ tooltip }}</span>
+                    </v-tooltip>
+                </span>
+            </template>
+        </v-text-field>
     </div>
 </template>
 
@@ -56,7 +80,6 @@ type Variant =
 
 type ModelValue = string | null | undefined;
 
-// Niveles de seguridad (solo estructura)
 type PasswordSecurity = 'simple' | 'basic' | 'strong' | 'strict';
 
 interface MdPasswordInputProps {
@@ -66,12 +89,14 @@ interface MdPasswordInputProps {
     id?: string;
     name?: string;
     required?: boolean;
+    tooltip?: string;
     variant?: Variant;
     clearable?: boolean;
     minLength?: number | null;
     maxLength?: number | null;
     counter?: boolean;
     helper?: string;
+    helperPersistent?: boolean;
     readonly?: boolean;
     externalError?: string;
     pattern?: string | RegExp | null;
@@ -79,16 +104,6 @@ interface MdPasswordInputProps {
     density?: Density;
     rounded?: boolean | string | number;
     security?: PasswordSecurity | null;
-    /**
-     * Nivel de seguridad de la contraseña (solo estructura):
-     * - 'simple' : al menos 1 letra
-     * - 'basic'  : al menos 1 letra y 1 número
-     * - 'strong' : al menos 1 mayúscula, 1 minúscula y 1 número
-     * - 'strict' : al menos 1 mayúscula, 1 minúscula, 1 número y 1 carácter especial
-     *
-     * Si es null, NO se valida estructura adicional.
-     */
-
 }
 
 const props = withDefaults(defineProps<MdPasswordInputProps>(), {
@@ -97,18 +112,20 @@ const props = withDefaults(defineProps<MdPasswordInputProps>(), {
     id: undefined,
     name: undefined,
     required: false,
+    tooltip: '',
     variant: 'outlined',
-    clearable: false,
+    clearable: true,
     minLength: null,
     maxLength: null,
     counter: false,
     helper: '',
+    helperPersistent: false,
     readonly: false,
     externalError: '',
     pattern: null,
     showSuccessState: true,
     density: 'compact',
-    rounded: 'sm',
+    rounded: 'lg',
     security: null,
 });
 
@@ -120,10 +137,8 @@ const errorMessage = ref<string>('');
 const touched = ref(false);
 const showPassword = ref(false);
 
-// ref al v-text-field para poder hacer focus()
 const inputRef = ref<any | null>(null);
 
-// MdFormContext
 const mdForm = useMdForm();
 const instance = getCurrentInstance();
 const fieldKey =
@@ -135,7 +150,6 @@ const appendIcon = computed(() =>
     showPassword.value ? 'mdi-eye-off' : 'mdi-eye'
 );
 
-// v-model interno
 const innerValue = computed<ModelValue>({
     get() {
         return props.modelValue;
@@ -147,7 +161,7 @@ const innerValue = computed<ModelValue>({
         newValue = sanitizeByType(
             newValue,
             type,
-            false, // no upper en contraseñas
+            false,
             props.maxLength ?? undefined
         );
 
@@ -159,10 +173,17 @@ const displayedError = computed<string>(() => {
     return props.externalError || errorMessage.value;
 });
 
-/**
- * Valida estructura de la contraseña según el nivel de seguridad.
- * Devuelve mensaje de error o null si pasa.
- */
+/** Si hay error, no mostramos helper para no mezclar mensajes */
+const computedHint = computed<string>(() => {
+    if (displayedError.value) return '';
+    return (props.helper ?? '').trim();
+});
+
+/** Controla si el helper es persistente o solo al focus */
+const persistentHint = computed<boolean>(() => {
+    return !!computedHint.value && !!props.helperPersistent;
+});
+
 const validateSecurityStructure = (
     value: string,
     security: PasswordSecurity
@@ -175,27 +196,19 @@ const validateSecurityStructure = (
 
     switch (security) {
         case 'simple':
-            if (!hasLetter) {
-                return 'Debe contener al menos una letra.';
-            }
+            if (!hasLetter) return 'Debe contener al menos una letra.';
             break;
-
         case 'basic':
-            if (!hasLetter || !hasNumber) {
+            if (!hasLetter || !hasNumber)
                 return 'Debe contener al menos una letra y un número.';
-            }
             break;
-
         case 'strong':
-            if (!hasUpper || !hasLower || !hasNumber) {
+            if (!hasUpper || !hasLower || !hasNumber)
                 return 'Debe contener mayúsculas, minúsculas y al menos un número.';
-            }
             break;
-
         case 'strict':
-            if (!hasUpper || !hasLower || !hasNumber || !hasSpecial) {
+            if (!hasUpper || !hasLower || !hasNumber || !hasSpecial)
                 return 'Debe contener mayúsculas, minúsculas, un número y un carácter especial.';
-            }
             break;
     }
 
@@ -215,19 +228,16 @@ const validate = (): boolean => {
     const trimmed = value.trim();
     const length = trimmed.length;
 
-    // required
     if (props.required && !length) {
         errorMessage.value = 'Este campo es obligatorio';
         return false;
     }
 
-    // vacío y no requerido: no validar nada más
     if (!length && !props.required) {
         errorMessage.value = '';
         return true;
     }
 
-    // longitud
     if (props.minLength != null && length < props.minLength) {
         errorMessage.value = `Debe tener al menos ${props.minLength} caracteres`;
         return false;
@@ -238,7 +248,6 @@ const validate = (): boolean => {
         return false;
     }
 
-    // pattern opcional
     if (props.pattern) {
         let regex: RegExp | null = null;
 
@@ -258,7 +267,6 @@ const validate = (): boolean => {
         }
     }
 
-    // seguridad (solo estructura) si se especifica
     if (props.security) {
         const secError = validateSecurityStructure(value, props.security);
         if (secError) {
@@ -309,20 +317,12 @@ const successClass = computed<string>(() => {
     return 'md-input-success';
 });
 
-// Registro automático en MdFormContext
 onMounted(() => {
-    if (mdForm) {
-        mdForm.registerField(fieldKey, {
-            validate,
-            focus,
-        });
-    }
+    mdForm?.registerField(fieldKey, { validate, focus });
 });
 
 onBeforeUnmount(() => {
-    if (mdForm) {
-        mdForm.unregisterField(fieldKey);
-    }
+    mdForm?.unregisterField(fieldKey);
 });
 
 defineExpose({

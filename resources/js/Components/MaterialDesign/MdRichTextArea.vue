@@ -1,13 +1,28 @@
 <!-- resources/js/Components/MaterialDesign/MdRichTextArea.vue-->
 <template>
-    <div class="w-full mb-4">
+    <div class="w-full mb-2 py-2 px-2">
         <label
             v-if="label"
             class="block mb-1 text-sm font-medium text-gray-700"
             :for="id || name"
         >
-            {{ label }}
-            <span v-if="required" class="text-red-500">*</span>
+            <span class="inline-flex items-center gap-1">
+                <span v-if="required" class="text-red-500 font-bold">*</span>
+                <span>{{ label }}</span>
+
+                <v-tooltip v-if="tooltip" location="top">
+                    <template #activator="{ props }">
+                        <v-icon
+                            v-bind="props"
+                            size="16"
+                            class="text-gray-400 cursor-help"
+                        >
+                            mdi-information-outline
+                        </v-icon>
+                    </template>
+                    <span>{{ tooltip }}</span>
+                </v-tooltip>
+            </span>
         </label>
 
         <div
@@ -30,7 +45,6 @@
             />
         </div>
 
-        <!-- input oculto para name/id en formularios nativos -->
         <input
             v-if="name"
             type="hidden"
@@ -62,96 +76,12 @@ import {
 } from 'vue';
 import { useMdForm } from '@/utils/MdFormContext';
 
-/**
- * Opciones posibles para el toolbar de Quill (core):
- *
- * ── Formato de texto ─────────────────────────────
- *  'bold'
- *  'italic'
- *  'underline'
- *  'strike'
- *
- * ── Encabezados / Títulos ─────────────────────────
- *  { header: 1 }
- *  { header: 2 }
- *  { header: [1, 2, 3, 4, 5, 6, false] }
- *
- * ── Listas ────────────────────────────────────────
- *  { list: 'ordered' }
- *  { list: 'bullet' }
- *
- * ── Alineación ────────────────────────────────────
- *  { align: [] }                // left, center, right, justify
- *
- * ── Citas y código ────────────────────────────────
- *  'blockquote'
- *  'code-block'
- *
- * ── Embeds (insertar elementos) ───────────────────
- *  'link'
- *  'image'
- *  'video'
- *
- * ── Tamaño de texto ───────────────────────────────
- *  { size: ['small', false, 'large', 'huge'] }
- *
- * ── Color y fondo ─────────────────────────────────
- *  { color: [] }
- *  { background: [] }
- *
- * ── Fuentes ───────────────────────────────────────
- *  { font: [] }
- *
- * ── Sangría ───────────────────────────────────────
- *  { indent: '-1' }
- *  { indent: '+1' }
- *
- * ── Subíndice / Superíndice ───────────────────────
- *  { script: 'sub' }
- *  { script: 'super' }
- *
- * ── Dirección de texto ────────────────────────────
- *  { direction: 'rtl' }
- *
- * ── Limpiar formato ───────────────────────────────
- *  'clean'
- *
- * ── Toolbar agrupado (ejemplos válidos) ───────────
- *  ['bold', 'italic']
- *  ['bold', 'italic', 'underline', 'strike']
- *  [{ header: 1 }, { header: 2 }]
- *  [{ list: 'ordered' }, { list: 'bullet' }]
- *  [{ color: [] }, { background: [] }]
- *  [{ align: [] }]
- *  [{ font: [] }]
- *
- * ── Combinación completa típica ───────────────────
- *  [
- *    [{ font: [] }],
- *    [{ size: [] }],
- *    ['bold', 'italic', 'underline', 'strike'],
- *    [{ color: [] }, { background: [] }],
- *    [{ script: 'sub' }, { script: 'super' }],
- *    [{ header: 1 }, { header: 2 }],
- *    [{ align: [] }],
- *    [{ list: 'ordered' }, { list: 'bullet' }],
- *    ['blockquote', 'code-block'],
- *    ['link', 'image', 'video'],
- *    [{ indent: '-1' }, { indent: '+1' }],
- *    ['clean']
- *  ]
- *
- * ── Otras formas válidas ──────────────────────────
- *  []              // sin toolbar
- *  '#my-toolbar'   // toolbar externo por selector
- *
- */
-
 type MdToolbarPreset = 'minimal' | 'essential' | 'full' | '';
 
 interface MdRichTextProps {
     modelValue?: string;
     label?: string;
+    tooltip?: string;
     id?: string;
     name?: string;
     required?: boolean;
@@ -168,6 +98,7 @@ interface MdRichTextProps {
 const props = withDefaults(defineProps<MdRichTextProps>(), {
     modelValue: '',
     label: '',
+    tooltip: '',
     id: '',
     name: '',
     required: false,
@@ -191,7 +122,6 @@ const innerValue = ref(props.modelValue ?? '');
 const internalError = ref<string>('');
 const touched = ref(false);
 
-// MdFormContext
 const mdForm = useMdForm();
 const instance = getCurrentInstance();
 const fieldKey =
@@ -259,26 +189,15 @@ const focus = () => {
     }
 };
 
-// Registro automático en MdFormContext
 onMounted(() => {
-    if (mdForm) {
-        mdForm.registerField(fieldKey, {
-            validate,
-            focus,
-        });
-    }
+    mdForm?.registerField(fieldKey, { validate, focus });
 });
 
 onBeforeUnmount(() => {
-    if (mdForm) {
-        mdForm.unregisterField(fieldKey);
-    }
+    mdForm?.unregisterField(fieldKey);
 });
 
-defineExpose({
-    validate,
-    focus,
-});
+defineExpose({ validate, focus });
 </script>
 
 <style scoped>
@@ -286,7 +205,6 @@ defineExpose({
     width: 100%;
 }
 
-/* toolbar */
 .quill-comentarios .ql-toolbar.ql-snow {
     border: 1px solid #d1d5db;
     border-bottom: none;
@@ -295,7 +213,6 @@ defineExpose({
     padding: 4px 8px;
 }
 
-/* contenedor del editor */
 .quill-comentarios .ql-container.ql-snow {
     border: 1px solid #d1d5db;
     border-top: none;

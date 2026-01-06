@@ -1,20 +1,45 @@
 <!-- resources/js/Components/MaterialDesign/MdCheckbox.vue -->
 <template>
-    <div class="w-full" :style="successColorVar">
+    <div class="w-full h-18 py-2 px-2" :style="successColorVar">
         <v-checkbox
             v-model="innerValue"
             :id="id || name || undefined"
-            :label="label"
             :readonly="readonly"
             :error="!!displayedError"
             :error-messages="displayedError"
             :class="successClass"
             :color="color"
+            :messages="computedHint"
+            :persistent-hint="persistentHint"
             density="compact"
             hide-details="auto"
             @blur="handleBlur"
             @update:model-value="handleChange"
-        />
+        >
+            <template #label>
+                <span class="inline-flex items-center gap-1">
+                    <span
+                        v-if="required"
+                        class="text-red-500 font-bold"
+                    >*</span>
+
+                    <span>{{ label }}</span>
+
+                    <v-tooltip v-if="tooltip" location="top">
+                        <template #activator="{ props }">
+                            <v-icon
+                                v-bind="props"
+                                size="16"
+                                class="text-gray-400 cursor-help"
+                            >
+                                mdi-information-outline
+                            </v-icon>
+                        </template>
+                        <span>{{ tooltip }}</span>
+                    </v-tooltip>
+                </span>
+            </template>
+        </v-checkbox>
     </div>
 </template>
 
@@ -27,7 +52,10 @@ interface MdCheckboxProps {
     name?: string;
     modelValue?: boolean;
     label?: string;
+    tooltip?: string;
     required?: boolean;
+    helper?: string;
+    helperPersistent?: boolean;
     readonly?: boolean;
     externalError?: string;
     showSuccessState?: boolean;
@@ -39,7 +67,10 @@ const props = withDefaults(defineProps<MdCheckboxProps>(), {
     name: '',
     modelValue: false,
     label: '',
+    tooltip: '',
     required: false,
+    helper: '',
+    helperPersistent: false,
     readonly: false,
     externalError: '',
     showSuccessState: true,
@@ -56,7 +87,6 @@ const touched = ref(false);
 
 const formContext = useMdForm();
 
-// sincroniza cambios externos
 watch(
     () => props.modelValue,
     (val) => (rawValue.value = val),
@@ -72,6 +102,17 @@ const innerValue = computed({
 });
 
 const displayedError = computed(() => props.externalError || errorMessage.value);
+
+/** Helper: no lo mostramos si hay error */
+const computedHint = computed(() => {
+    if (displayedError.value) return undefined;
+    const txt = (props.helper ?? '').trim();
+    return txt ? txt : undefined;
+});
+
+const persistentHint = computed(() => {
+    return !!computedHint.value && !!props.helperPersistent;
+});
 
 const validate = () => {
     if (props.readonly) {
@@ -105,7 +146,9 @@ const successClass = computed(() => {
 });
 
 const successColorVar = computed(() => {
-    return props.color ? { '--md-checkbox-success-color': `var(--v-theme-${props.color})` } : {};
+    return props.color
+        ? { '--md-checkbox-success-color': `var(--v-theme-${props.color})` }
+        : {};
 });
 
 const fieldKey = computed(() => {

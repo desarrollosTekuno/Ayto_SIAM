@@ -1,12 +1,11 @@
-<!-- resources/js/Components/MaterialDesign/MdTextInput.vue -->
+<!-- resources/js/Components/MaterialDesign/MdEmailInput.vue -->
 <template>
-    <div class="w-full">
+    <div class="w-full h-18 py-2 px-2">
         <v-text-field
             ref="inputRef"
             :id="id"
             :name="name"
             v-model="innerValue"
-            :label="label"
             :type="type"
             :prepend-inner-icon="icon"
             :density="density"
@@ -18,13 +17,39 @@
             :maxlength="maxLength ?? undefined"
             :counter="counter && !!maxLength"
             :class="successClass"
-            :hint="helper"
-            :persistent-hint="!!helper"
+            :hint="computedHint"
+            :persistent-hint="persistentHint"
             :readonly="readonly"
-            :autocomplete="'off'"
+            :autocomplete="'email'"
+            hide-details="auto"
             @keydown="handleKeydown"
             @blur="handleBlur"
-        />
+        >
+            <!-- Label custom -->
+            <template #label>
+                <span class="inline-flex items-center gap-1">
+                    <span
+                        v-if="required"
+                        class="text-red-500 font-bold"
+                    >*</span>
+
+                    <span>{{ label }}</span>
+
+                    <v-tooltip v-if="tooltip" location="top">
+                        <template #activator="{ props }">
+                            <v-icon
+                                v-bind="props"
+                                size="16"
+                                class="text-gray-400 cursor-help"
+                            >
+                                mdi-information-outline
+                            </v-icon>
+                        </template>
+                        <span>{{ tooltip }}</span>
+                    </v-tooltip>
+                </span>
+            </template>
+        </v-text-field>
     </div>
 </template>
 
@@ -44,7 +69,6 @@ import {
 } from '@/utils/FieldUtils';
 import { useMdForm } from '@/utils/MdFormContext';
 
-// tipos que espera Vuetify
 type Density = 'default' | 'comfortable' | 'compact';
 type Variant =
     | 'outlined'
@@ -65,6 +89,7 @@ interface MdTextInputProps {
     icon?: string;
     type?: string;
     required?: boolean;
+    tooltip?: string;
     variant?: Variant;
     clearable?: boolean;
     uppercase?: boolean;
@@ -72,6 +97,7 @@ interface MdTextInputProps {
     maxLength?: number | null;
     counter?: boolean;
     helper?: string;
+    helperPersistent?: boolean;
     readonly?: boolean;
     externalError?: string;
     allowed?: AllowedType;
@@ -87,60 +113,53 @@ const props = withDefaults(defineProps<MdTextInputProps>(), {
     modelValue: '',
     label: '',
     icon: '',
-    type: 'text',
+    type: 'email',
     required: false,
+    tooltip: '',
     variant: 'outlined',
-    clearable: false,
+    clearable: true,
     uppercase: true,
     minLength: null,
     maxLength: null,
     counter: false,
     helper: '',
+    helperPersistent: false,
     readonly: false,
     externalError: '',
     allowed: 'any',
     pattern: null,
     showSuccessState: true,
     density: 'compact',
-    rounded: 'sm',
+    rounded: 'lg',
 });
 
 const emit = defineEmits<{
     (e: 'update:modelValue', value: ModelValue): void;
 }>();
 
-const errorMessage = ref<string>('');
+const errorMessage = ref('');
 const touched = ref(false);
-
-// ref interno al v-text-field para focus()
 const inputRef = ref<any | null>(null);
 
-// MdFormContext
 const mdForm = useMdForm();
 const instance = getCurrentInstance();
 const fieldKey =
     props.name || `MdTextInput_${instance?.uid ?? Math.random().toString(36)}`;
 
-// v-model interno
 const innerValue = computed<ModelValue>({
-    get() {
-        return props.modelValue;
-    },
+    get: () => props.modelValue,
     set(value) {
         let newValue: ModelValue = value;
         const type: AllowedType = props.allowed ?? 'any';
 
-        if (type === 'any') {
-            if (typeof newValue === 'string') {
-                let s = newValue;
-                s = toUpper(s, props.uppercase ?? true);
+        if (type === 'any' && typeof newValue === 'string') {
+            let s = toUpper(newValue, props.uppercase ?? true);
 
-                if (typeof props.maxLength === 'number' && props.maxLength > 0) {
-                    s = s.slice(0, props.maxLength);
-                }
-
-                newValue = s;
+            if (typeof props.maxLength === 'number' && props.maxLength > 0) {
+                s = s.slice(0, props.maxLength);
             }
+
+            newValue = s;
         } else {
             newValue = sanitizeByType(
                 newValue,
@@ -154,9 +173,22 @@ const innerValue = computed<ModelValue>({
     },
 });
 
-const displayedError = computed<string>(() => {
+const displayedError = computed(() => {
     return props.externalError || errorMessage.value;
 });
+
+/** Si hay error, no mostramos helper para no mezclar mensajes */
+const computedHint = computed<string>(() => {
+    if (displayedError.value) return '';
+    return (props.helper ?? '').trim();
+});
+
+/** Controla si el helper es persistente o solo al focus */
+const persistentHint = computed<boolean>(() => {
+    return !!computedHint.value && !!props.helperPersistent;
+});
+
+const EMAIL_REGEX =/^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i;
 
 const validate = (): boolean => {
     if (props.readonly) {
@@ -165,9 +197,7 @@ const validate = (): boolean => {
     }
 
     touched.value = true;
-
-    const raw = props.modelValue ?? '';
-    const value = String(raw).trim();
+    const value = String(props.modelValue ?? '').trim();
     const length = value.length;
 
     if (props.required && !length) {
@@ -188,6 +218,17 @@ const validate = (): boolean => {
     if (props.maxLength != null && length > props.maxLength) {
         errorMessage.value = `Debe tener máximo ${props.maxLength} caracteres`;
         return false;
+    }
+
+    if (length) {
+        const shouldValidateEmail = (props.type ?? 'email') === 'email';
+
+        if (shouldValidateEmail && !props.pattern) {
+            if (!EMAIL_REGEX.test(value)) {
+                errorMessage.value = 'El correo no tiene un formato válido.';
+                return false;
+            }
+        }
     }
 
     if (props.pattern) {
@@ -213,60 +254,34 @@ const validate = (): boolean => {
     return true;
 };
 
-const handleBlur = () => {
-    validate();
-};
+const handleBlur = () => validate();
 
 const handleKeydown = (e: KeyboardEvent) => {
-    const type: AllowedType = props.allowed ?? 'any';
-    if (!isValidKey(e, type)) {
+    if (!isValidKey(e, props.allowed ?? 'any')) {
         e.preventDefault();
     }
 };
 
 const focus = () => {
-    const comp = inputRef.value as any;
-    if (!comp) return;
-
-    if (typeof comp.focus === 'function') {
-        comp.focus();
-        return;
-    }
-
-    const el: HTMLInputElement | null =
-        (comp.$el && comp.$el.querySelector && comp.$el.querySelector('input')) ||
-        null;
-
-    el?.focus();
+    inputRef.value?.focus?.();
 };
 
-const successClass = computed<string>(() => {
+const successClass = computed(() => {
     if (!props.showSuccessState) return '';
     if (!touched.value) return '';
     if (displayedError.value) return '';
     return 'md-input-success';
 });
 
-// Registro automático en MdFormContext
 onMounted(() => {
-    if (mdForm) {
-        mdForm.registerField(fieldKey, {
-            validate,
-            focus,
-        });
-    }
+    mdForm?.registerField(fieldKey, { validate, focus });
 });
 
 onBeforeUnmount(() => {
-    if (mdForm) {
-        mdForm.unregisterField(fieldKey);
-    }
+    mdForm?.unregisterField(fieldKey);
 });
 
-defineExpose({
-    validate,
-    focus,
-});
+defineExpose({ validate, focus });
 </script>
 
 <style scoped>

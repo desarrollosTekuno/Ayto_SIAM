@@ -1,9 +1,29 @@
 <!-- resources/js/Components/MaterialDesign/MdToggle.vue -->
 <template>
     <div class="w-full">
-        <div class="flex flex-col" :class="successClass">
+        <div class="flex flex-col gap-1" :class="successClass">
             <label v-if="label" class="text-sm text-gray-700">
-                {{ label }}
+                <span class="inline-flex items-center gap-1">
+                    <span
+                        v-if="required"
+                        class="text-red-500 font-bold"
+                    >*</span>
+
+                    <span>{{ label }}</span>
+
+                    <v-tooltip v-if="tooltip" location="top">
+                        <template #activator="{ props }">
+                            <v-icon
+                                v-bind="props"
+                                size="16"
+                                class="text-gray-400 cursor-help"
+                            >
+                                mdi-information-outline
+                            </v-icon>
+                        </template>
+                        <span>{{ tooltip }}</span>
+                    </v-tooltip>
+                </span>
             </label>
 
             <v-btn-toggle
@@ -39,8 +59,8 @@
             <p v-if="displayedError" class="mt-1 text-xs text-red-600">
                 {{ displayedError }}
             </p>
-            <p v-else-if="helper" class="mt-1 text-xs text-gray-500">
-                {{ helper }}
+            <p v-else-if="computedHint" class="mt-1 text-xs text-gray-500">
+                {{ computedHint }}
             </p>
         </div>
     </div>
@@ -66,6 +86,7 @@ interface MdToggleProps {
     id?: string;
     name?: string;
     label?: string;
+    tooltip?: string;
     leftLabel?: string;
     rightLabel?: string;
     leftValue?: ToggleValue;
@@ -73,6 +94,7 @@ interface MdToggleProps {
     required?: boolean;
     readonly?: boolean;
     helper?: string;
+    helperPersistent?: boolean;
     externalError?: string;
     showSuccessState?: boolean;
     color?: string;
@@ -85,6 +107,7 @@ const props = withDefaults(defineProps<MdToggleProps>(), {
     id: undefined,
     name: undefined,
     label: '',
+    tooltip: '',
     leftLabel: 'No',
     rightLabel: 'Sí',
     leftValue: false,
@@ -92,11 +115,12 @@ const props = withDefaults(defineProps<MdToggleProps>(), {
     required: false,
     readonly: false,
     helper: '',
+    helperPersistent: false,
     externalError: '',
     showSuccessState: true,
     color: 'primary',
     density: 'compact',
-    rounded: 'sm',
+    rounded: 'lg',
 });
 
 const emit = defineEmits<{
@@ -107,17 +131,14 @@ const rawValue = ref<ToggleValue>(props.modelValue);
 const errorMessage = ref('');
 const touched = ref(false);
 
-// ref al v-btn-toggle para poder hacer focus()
 const toggleRef = ref<any | null>(null);
 
-// MdFormContext
 const mdForm = useMdForm();
 const instance = getCurrentInstance();
 const fieldKey =
     props.name ||
     `MdToggle_${props.id || instance?.uid || Math.random().toString(36)}`;
 
-// Sincronizar cambios externos
 watch(
     () => props.modelValue,
     (val) => {
@@ -164,6 +185,14 @@ const validate = () => {
     return true;
 };
 
+const computedHint = computed(() => {
+    if (displayedError.value) return '';
+    const txt = (props.helper ?? '').trim();
+    if (!txt) return '';
+    if (props.helperPersistent) return txt;
+    return touched.value ? txt : '';
+});
+
 const successClass = computed(() => {
     if (!props.showSuccessState) return '';
     if (!touched.value) return '';
@@ -175,46 +204,32 @@ const focus = () => {
     const comp = toggleRef.value as any;
     if (!comp) return;
 
-    // Si Vuetify expone focus()
     if (typeof comp.focus === 'function') {
         comp.focus();
         return;
     }
 
-    // Fallback: primer botón del toggle
     const el: HTMLButtonElement | null =
         comp.$el?.querySelector?.('button') ?? null;
 
     el?.focus();
 };
 
-// Registro automático en MdFormContext
 onMounted(() => {
-    if (mdForm) {
-        mdForm.registerField(fieldKey, {
-            validate,
-            focus,
-        });
-    }
+    mdForm?.registerField(fieldKey, { validate, focus });
 });
 
 onBeforeUnmount(() => {
-    if (mdForm) {
-        mdForm.unregisterField(fieldKey);
-    }
+    mdForm?.unregisterField(fieldKey);
 });
 
-defineExpose({
-    validate,
-    focus,
-});
+defineExpose({ validate, focus });
 </script>
 
 <style scoped>
 .md-toggle-group {
     border-radius: 9999px;
     padding: 2px;
-    /* sin borde */
 }
 
 .md-toggle-success :deep(.v-btn--active) {
