@@ -11,9 +11,21 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('configuracion_sistemas', function (Blueprint $table) {
+        Schema::create('configuraciones_sistema', function (Blueprint $table) {
             $table->id();
+
+            $table->string('clave', 80)->unique();
+            $table->text('valor')->nullable();
+
+            $table->string('tipo', 20)->nullable();
+            $table->string('descripcion', 255)->nullable();
+            $table->string('grupo', 50)->nullable();
+
+            $table->boolean('editable')->default(true);
+            $table->boolean('activo')->default(true);
+
             $table->timestamps();
+            $table->softDeletes();
         });
     }
 
@@ -22,6 +34,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('configuracion_sistemas');
+        Schema::dropIfExists('configuraciones_sistema');
     }
 };

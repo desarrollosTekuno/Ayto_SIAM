@@ -4,16 +4,24 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-return new class extends Migration
-{
-    /**
-     * Run the migrations.
-     */
-    public function up(): void
-    {
+return new class extends Migration {
+
+    public function up(): void {
         Schema::create('rangos_procedimientos', function (Blueprint $table) {
             $table->id();
+
+            $table->string('nombre', 120);
+
+            $table->decimal('limite_inferior', 14, 2)->default(0);
+            $table->decimal('limite_superior', 14, 2)->default(0);
+
+            $table->smallInteger('orden')->default(0);
+            $table->boolean('activo')->default(true);
+
+            $table->foreignId('tipo_proceso_id')->constrained('tipos_procesos')->cascadeOnUpdate()->restrictOnDelete();
+
             $table->timestamps();
+            $table->softDeletes();
         });
     }
 
