@@ -1,30 +1,32 @@
 <!-- resources/js/Components/MaterialDesign/MdPhoneInput.vue -->
 <template>
-    <MdTextInput
-        ref="baseRef"
-        :model-value="modelValue"
-        :label="label"
-        :id="id"
-        :name="name"
-        :icon="icon || 'mdi-phone-outline'"
-        :type="'text'"
-        :required="required"
-        :variant="variant"
-        :clearable="clearable"
-        :uppercase="false"
-        :min-length="minLength"
-        :max-length="maxLength"
-        :counter="counter"
-        :helper="helper"
-        :readonly="readonly"
-        :external-error="externalError"
-        :allowed="'phone'"
-        :pattern="pattern || defaultPattern"
-        :show-success-state="showSuccessState"
-        :density="density"
-        :rounded="rounded"
-        @update:model-value="onUpdate"
-    />
+        <MdTextInput
+            ref="baseRef"
+            :model-value="modelValue"
+            :label="label"
+            :tooltip="tooltip"
+            :id="id"
+            :name="name"
+            :icon="icon || 'mdi-phone-outline'"
+            :type="'text'"
+            :required="required"
+            :variant="variant"
+            :clearable="clearable"
+            :uppercase="false"
+            :min-length="minLength"
+            :max-length="maxLength"
+            :counter="counter"
+            :helper="helper"
+            :helper-persistent="helperPersistent"
+            :readonly="readonly"
+            :external-error="externalError"
+            :allowed="'phone'"
+            :pattern="pattern || defaultPattern"
+            :show-success-state="showSuccessState"
+            :density="density"
+            :rounded="rounded"
+            @update:model-value="onUpdate"
+        />
 </template>
 
 <script setup lang="ts">
@@ -51,10 +53,9 @@ type Variant =
 type ModelValue = string | null | undefined;
 
 interface MdPhoneInputProps {
-    id?: string;
-    name?: string;
     modelValue?: ModelValue;
     label?: string;
+    tooltip?: string;
     icon?: string;
     required?: boolean;
     variant?: Variant;
@@ -63,19 +64,22 @@ interface MdPhoneInputProps {
     maxLength?: number | null;
     counter?: boolean;
     helper?: string;
+    helperPersistent?: boolean;
     readonly?: boolean;
     externalError?: string;
     pattern?: string | RegExp | null;
     showSuccessState?: boolean;
     density?: Density;
     rounded?: boolean | string | number;
+
+    name?: string;
+    id?: string;
 }
 
 const props = withDefaults(defineProps<MdPhoneInputProps>(), {
-    id: undefined,
-    name: undefined,
     modelValue: '',
     label: '',
+    tooltip: '',
     icon: '',
     required: false,
     variant: 'outlined',
@@ -84,12 +88,15 @@ const props = withDefaults(defineProps<MdPhoneInputProps>(), {
     maxLength: 15,
     counter: false,
     helper: '',
+    helperPersistent: false,
     readonly: false,
     externalError: '',
     pattern: null,
     showSuccessState: true,
     density: 'compact',
-    rounded: 'sm',
+    rounded: 'lg',
+    name: undefined,
+    id: undefined,
 });
 
 const defaultPattern: RegExp = /^[0-9+\-\s]{10,20}$/;
@@ -100,11 +107,9 @@ const emit = defineEmits<{
 
 const baseRef = ref<InstanceType<typeof MdTextInput> | null>(null);
 
-// MdFormContext
 const mdForm = useMdForm();
 const instance = getCurrentInstance();
 
-// Si el usuario no da "name", se genera uno automático
 const fieldKey =
     props.name ||
     `MdPhoneInput_${props.id || instance?.uid || Math.random().toString(36)}`;
@@ -128,15 +133,11 @@ const focus = () => {
 };
 
 onMounted(() => {
-    if (mdForm) {
-        mdForm.registerField(fieldKey, { validate, focus });
-    }
+    mdForm?.registerField(fieldKey, { validate, focus });
 });
 
 onBeforeUnmount(() => {
-    if (mdForm) {
-        mdForm.unregisterField(fieldKey);
-    }
+    mdForm?.unregisterField(fieldKey);
 });
 
 defineExpose({ validate, focus });

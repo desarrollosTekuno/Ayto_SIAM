@@ -4,7 +4,6 @@
         <v-slider
             ref="sliderRef"
             v-model="innerValue"
-            :label="label"
             :id="id"
             :name="name"
             :min="min"
@@ -22,9 +21,34 @@
             :color="color"
             @blur="handleBlur"
             @update:model-value="handleChange"
-        />
-        <p v-if="helper" class="mt-1 text-xs text-gray-500">
-            {{ helper }}
+        >
+            <template #label>
+                <span class="inline-flex items-center gap-1">
+                    <span
+                        v-if="required"
+                        class="text-red-500 font-bold"
+                    >*</span>
+
+                    <span>{{ label }}</span>
+
+                    <v-tooltip v-if="tooltip" location="top">
+                        <template #activator="{ props }">
+                            <v-icon
+                                v-bind="props"
+                                size="16"
+                                class="text-gray-400 cursor-help"
+                            >
+                                mdi-information-outline
+                            </v-icon>
+                        </template>
+                        <span>{{ tooltip }}</span>
+                    </v-tooltip>
+                </span>
+            </template>
+        </v-slider>
+
+        <p v-if="computedHint" class="mt-1 text-xs text-gray-500">
+            {{ computedHint }}
         </p>
     </div>
 </template>
@@ -43,6 +67,7 @@ import { useMdForm } from '@/utils/MdFormContext';
 interface MdSliderProps {
     modelValue?: number | null;
     label?: string;
+    tooltip?: string;
     id?: string;
     name?: string;
     required?: boolean;
@@ -52,6 +77,7 @@ interface MdSliderProps {
     max?: number;
     step?: number;
     helper?: string;
+    helperPersistent?: boolean;
     externalError?: string;
     showSuccessState?: boolean;
     density?: 'comfortable' | 'compact' | 'default';
@@ -64,6 +90,7 @@ interface MdSliderProps {
 const props = withDefaults(defineProps<MdSliderProps>(), {
     modelValue: null,
     label: '',
+    tooltip: '',
     id: undefined,
     name: undefined,
     required: false,
@@ -73,6 +100,7 @@ const props = withDefaults(defineProps<MdSliderProps>(), {
     max: 100,
     step: 1,
     helper: '',
+    helperPersistent: false,
     externalError: '',
     showSuccessState: true,
     density: 'compact',
@@ -89,10 +117,8 @@ const rawValue = ref<number | null>(props.modelValue);
 const innerValue = ref<number | null>(props.modelValue);
 const isDirty = ref(false);
 
-// ref al v-slider para focus()
 const sliderRef = ref<any | null>(null);
 
-// MdFormContext
 const mdForm = useMdForm();
 const instance = getCurrentInstance();
 const fieldKey =
@@ -108,9 +134,7 @@ watch(
 );
 
 const validationError = computed(() => {
-    if (props.externalError) {
-        return props.externalError;
-    }
+    if (props.externalError) return props.externalError;
 
     const value = rawValue.value;
 
@@ -119,25 +143,27 @@ const validationError = computed(() => {
     }
 
     if (value !== null && value !== undefined) {
-        if (value < props.min) {
-            return `El valor minimo es ${props.min}.`;
-        }
-        if (value > props.max) {
-            return `El valor maximo es ${props.max}.`;
-        }
+        if (value < props.min) return `El valor minimo es ${props.min}.`;
+        if (value > props.max) return `El valor maximo es ${props.max}.`;
     }
 
     return '';
 });
 
-const displayedError = computed(() =>
-    isDirty.value ? validationError.value : ''
-);
+const displayedError = computed(() => (isDirty.value ? validationError.value : ''));
 
 const successClass = computed(() => {
     return props.showSuccessState && isDirty.value && !displayedError.value
         ? 'md-input-success'
         : '';
+});
+
+const computedHint = computed(() => {
+    if (displayedError.value) return '';
+    const txt = (props.helper ?? '').trim();
+    if (!txt) return '';
+    if (props.helperPersistent) return txt;
+    return isDirty.value ? txt : '';
 });
 
 const handleBlur = () => {
@@ -173,30 +199,18 @@ const focus = () => {
     el?.focus();
 };
 
-// Registro automático en MdFormContext
 onMounted(() => {
-    if (mdForm) {
-        mdForm.registerField(fieldKey, {
-            validate,
-            focus,
-        });
-    }
+    mdForm?.registerField(fieldKey, { validate, focus });
 });
 
 onBeforeUnmount(() => {
-    if (mdForm) {
-        mdForm.unregisterField(fieldKey);
-    }
+    mdForm?.unregisterField(fieldKey);
 });
 
-defineExpose({
-    validate,
-    focus,
-});
+defineExpose({ validate, focus });
 </script>
 
 <style scoped>
-
 .md-input-success :deep(.v-label) {
     color: #16a34a !important;
 }

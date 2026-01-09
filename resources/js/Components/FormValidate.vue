@@ -4,61 +4,60 @@
         <slot
             :validateAll="validateAll"
             :isSubmitting="isSubmitting"
+            :isValid="isValid"
+            :isTouched="isTouched"
         />
     </form>
 </template>
 
 <script setup lang="ts">
-import { ref } from 'vue';
-import { useProvideMdForm } from '@/utils/MdFormContext';
+import { ref } from 'vue'
+import { useProvideMdForm } from '@/utils/MdFormContext'
 
 const emit = defineEmits<{
-    (e: 'submit'): void;
-    (e: 'invalid'): void;
-}>();
+    (e: 'submit'): void
+    (e: 'invalid'): void
+}>()
 
-const { validateAll, getFields } = useProvideMdForm();
-const isSubmitting = ref(false);
+const { validateAll, getFields, isValid, isTouched } = useProvideMdForm()
+const isSubmitting = ref(false)
 
 const onSubmit = () => {
-    if (isSubmitting.value) return;
+    if (isSubmitting.value) return
 
-    isSubmitting.value = true;
+    isSubmitting.value = true
 
-    const ok = validateAll();
+    const ok = validateAll()
 
     if (!ok) {
-        emit('invalid');
-        focusFirstInvalid();
-        isSubmitting.value = false;
-        return;
+        emit('invalid')
+        focusFirstInvalid()
+        isSubmitting.value = false
+        return
     }
 
-    emit('submit');
-    isSubmitting.value = false;
-};
+    emit('submit')
+    isSubmitting.value = false
+}
 
-/**
- * Busca el primer campo inválido y llama focus()
- */
 const focusFirstInvalid = () => {
-    const fields = getFields();
+    const fields = getFields()
 
-    for (const [key, field] of Object.entries(fields)) {
-        const valid = field.validate();
+    for (const field of Object.values(fields)) {
+        const valid = field.validate()
         if (!valid) {
-            if (typeof field.focus === 'function') {
-                field.focus();
-            }
-            break;
+            if (typeof field.focus === 'function') field.focus()
+            break
         }
     }
-};
-
+}
 
 defineExpose({
     submit: onSubmit,
     validateAll,
     focusFirstInvalid,
-});
+    isValid,
+    isTouched,
+    isSubmitting,
+})
 </script>

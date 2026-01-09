@@ -1,10 +1,9 @@
 <!-- resources/js/Components/MaterialDesign/MdFileInput.vue -->
 <template>
-    <div class="w-full">
+    <div class="w-full h-18 py-2 px-2">
         <v-file-input
             ref="inputRef"
             v-model="innerValue"
-            :label="label"
             :id="id"
             :name="name"
             :multiple="multiple"
@@ -16,6 +15,7 @@
             :disabled="disabled"
             :density="density"
             :variant="variant"
+            :rounded="rounded"
             :truncate-length="truncateLength"
             :color="color"
             :error="!!displayedError"
@@ -27,7 +27,39 @@
             hide-details="auto"
             @blur="handleBlur"
             @update:model-value="handleChange"
-        />
+        >
+            <template #label>
+                <span class="inline-flex items-center gap-1">
+                    <span
+                        v-if="required"
+                        class="text-red-500 font-bold"
+                    >*</span>
+
+                    <span>{{ label }}</span>
+
+                    <v-tooltip v-if="tooltip" location="top">
+                        <template #activator="{ props }">
+                            <v-icon
+                                v-bind="props"
+                                size="16"
+                                class="text-gray-400 cursor-help"
+                            >
+                                mdi-information-outline
+                            </v-icon>
+                        </template>
+                        <span>{{ tooltip }}</span>
+                    </v-tooltip>
+                </span>
+            </template>
+
+            <template v-if="computedHint" #details>
+                <div class="v-messages">
+                    <div class="v-messages__message">
+                        {{ computedHint }}
+                    </div>
+                </div>
+            </template>
+        </v-file-input>
     </div>
 </template>
 
@@ -55,6 +87,7 @@ type Variant =
 interface MdFileInputProps {
     modelValue?: File | File[] | null;
     label?: string;
+    tooltip?: string;
     id?: string;
     name?: string;
     required?: boolean;
@@ -65,6 +98,8 @@ interface MdFileInputProps {
     showSize?: boolean;
     readonly?: boolean;
     disabled?: boolean;
+    helper?: string;
+    helperPersistent?: boolean;
     externalError?: string;
     showSuccessState?: boolean;
     density?: Density;
@@ -73,11 +108,14 @@ interface MdFileInputProps {
     truncateLength?: number;
     icon?: string;
     maxSizeMB?: number | null;
+
+    rounded?: boolean | string | number;
 }
 
 const props = withDefaults(defineProps<MdFileInputProps>(), {
     modelValue: null,
     label: '',
+    tooltip: '',
     id: undefined,
     name: undefined,
     required: false,
@@ -88,14 +126,17 @@ const props = withDefaults(defineProps<MdFileInputProps>(), {
     showSize: false,
     readonly: false,
     disabled: false,
+    helper: '',
+    helperPersistent: false,
     externalError: '',
     showSuccessState: true,
-    density: 'comfortable',
+    density: 'default',
     variant: 'outlined',
     color: undefined,
     truncateLength: 22,
     icon: 'mdi-paperclip',
     maxSizeMB: null,
+    rounded: 'lg',
 });
 
 const emit = defineEmits<{
@@ -106,10 +147,8 @@ const rawValue = ref<File | File[] | null>(props.modelValue);
 const errorMessage = ref('');
 const touched = ref(false);
 
-// ref al v-file-input para focus()
 const inputRef = ref<any | null>(null);
 
-// MdFormContext
 const mdForm = useMdForm();
 const instance = getCurrentInstance();
 const fieldKey =
@@ -134,9 +173,14 @@ const displayedError = computed(
     () => props.externalError || errorMessage.value
 );
 
-// ----------------------
-// VALIDAR FORMATO / MIME
-// ----------------------
+/** Helper: no lo mostramos si hay error */
+const computedHint = computed(() => {
+    if (displayedError.value) return '';
+    const txt = (props.helper ?? '').trim();
+    if (!txt) return '';
+    return txt;
+});
+
 const isFileAllowed = (file: File): boolean => {
     if (!props.accept) return true;
 
@@ -161,9 +205,6 @@ const isFileAllowed = (file: File): boolean => {
     return false;
 };
 
-// ----------------------
-// VALIDATION
-// ----------------------
 const validate = (): boolean => {
     touched.value = true;
 
@@ -176,7 +217,6 @@ const validate = (): boolean => {
         return false;
     }
 
-    // validar formato segun "accept"
     if (!empty && props.accept) {
         const arr = Array.isArray(files) ? files : [files];
         for (const f of arr) {
@@ -187,7 +227,6 @@ const validate = (): boolean => {
         }
     }
 
-    // validar tamano maximo
     if (!empty && props.maxSizeMB && props.maxSizeMB > 0) {
         const maxBytes = props.maxSizeMB * 1024 * 1024;
         const arr = Array.isArray(files) ? files : [files];
@@ -232,20 +271,12 @@ const successClass = computed(() => {
     return 'md-input-success';
 });
 
-// Registro automático en MdFormContext
 onMounted(() => {
-    if (mdForm) {
-        mdForm.registerField(fieldKey, {
-            validate,
-            focus,
-        });
-    }
+    mdForm?.registerField(fieldKey, { validate, focus });
 });
 
 onBeforeUnmount(() => {
-    if (mdForm) {
-        mdForm.unregisterField(fieldKey);
-    }
+    mdForm?.unregisterField(fieldKey);
 });
 
 defineExpose({ validate, focus });
