@@ -41,8 +41,9 @@ onMounted(() => {
     <v-navigation-drawer
         v-model="drawer"
         :location="$vuetify.display.mobile ? 'left' : undefined"
-        :permanent="props.rail"
-        :rail="$vuetify.display.mobile ? !props.rail : props.rail"
+        :temporary="$vuetify.display.mobile"
+        :permanent="!$vuetify.display.mobile"
+        :rail="!$vuetify.display.mobile && props.rail"
         theme="myDarkTheme"
         class="font-poppins bg-customPrimary"
     >
@@ -68,19 +69,20 @@ onMounted(() => {
             <div v-for="ruta in routes" :key="ruta.value">
                 <div v-if="ruta.group == null">
                     <Link v-if="existSomeRoute(ruta.name)" :href="route(ruta.name)" preserve-scroll>
-                        <v-list-item
-                            elevation="0"
-                            variant="elevated"
-                            rounded="pill"
-                            :title="ruta.title"
-                            active-color="customSecondary"
-                            base-color="customPrimary"
-                            :active="
-                                Array.isArray(ruta.name)
+                            <v-list-item
+                                elevation="0"
+                                variant="elevated"
+                                rounded="pill"
+                                :title="ruta.title"
+                                color="customSecondary"
+                                base-color="customPrimary"
+                                :active="
+                                    Array.isArray(ruta.name)
                                     ? route().current(ruta.name[0])
                                     : route().current(ruta.name)
-                            "
-                        >
+                                "
+                            >
+
                             <template #prepend>
                                 <v-icon :icon="ruta.icon" />
                             </template>
@@ -107,16 +109,14 @@ onMounted(() => {
                         >
                             <!-- v-if="can.includes(groupItem.name)" añadir despues -->
                             <v-list-item
-
                                 class="ml-2"
                                 elevation="0"
                                 variant="elevated"
-                                color="customSecondary"
                                 rounded="pill"
                                 :active="route().current(groupItem.name)"
                                 :prepend-icon="groupItem.icon"
                                 :title="groupItem.title"
-                                active-color="customSecondary"
+                                color="customSecondary"
                                 base-color="customPrimary"
                             />
                         </Link>
