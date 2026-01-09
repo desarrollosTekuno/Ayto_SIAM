@@ -1,11 +1,10 @@
 <!-- resources/js/Components/MaterialDesign/MdSelect.vue -->
 <template>
-    <div class="w-full">
+    <div class="w-full h-18 py-2 px-2">
         <v-select
             ref="selectRef"
             v-model="innerValue"
             :items="items"
-            :label="label"
             :id="id"
             :name="name"
             :item-title="itemTitle"
@@ -16,8 +15,8 @@
             :variant="variant"
             :rounded="rounded"
             :clearable="clearable"
-            :hint="helper"
-            :persistent-hint="!!helper"
+            :hint="computedHint"
+            :persistent-hint="persistentHint"
             :readonly="readonly"
             :error="!!displayedError"
             :error-messages="displayedError"
@@ -25,9 +24,34 @@
             :chips="chips && multiple"
             :menu-props="menuProps"
             autocomplete="off"
+            hide-details="auto"
             @blur="handleBlur"
             @update:model-value="handleChange"
-        />
+        >
+            <template #label>
+                <span class="inline-flex items-center gap-1">
+                    <span
+                        v-if="required"
+                        class="text-red-500 font-bold"
+                    >*</span>
+
+                    <span>{{ label }}</span>
+
+                    <v-tooltip v-if="tooltip" location="top">
+                        <template #activator="{ props }">
+                            <v-icon
+                                v-bind="props"
+                                size="16"
+                                class="text-gray-400 cursor-help"
+                            >
+                                mdi-information-outline
+                            </v-icon>
+                        </template>
+                        <span>{{ tooltip }}</span>
+                    </v-tooltip>
+                </span>
+            </template>
+        </v-select>
     </div>
 </template>
 
@@ -54,12 +78,13 @@ type Variant =
 
 type Primitive = string | number | boolean | null | undefined;
 type SingleValue = Primitive | Record<string, any> | null;
-type MultiValue  = SingleValue[];
-type ModelValue  = SingleValue | MultiValue;
+type MultiValue = SingleValue[];
+type ModelValue = SingleValue | MultiValue;
 
 interface MdSelectProps {
     modelValue?: ModelValue;
     label?: string;
+    tooltip?: string;
     id?: string;
     name?: string;
     items?: any[];
@@ -68,6 +93,7 @@ interface MdSelectProps {
     icon?: string;
     required?: boolean;
     helper?: string;
+    helperPersistent?: boolean;
     readonly?: boolean;
     externalError?: string;
     showSuccessState?: boolean;
@@ -85,6 +111,7 @@ interface MdSelectProps {
 const props = withDefaults(defineProps<MdSelectProps>(), {
     modelValue: null,
     label: '',
+    tooltip: '',
     id: '',
     name: '',
     items: () => [],
@@ -93,12 +120,13 @@ const props = withDefaults(defineProps<MdSelectProps>(), {
     icon: '',
     required: false,
     helper: '',
+    helperPersistent: false,
     readonly: false,
     externalError: '',
     showSuccessState: true,
     density: 'compact',
     variant: 'outlined',
-    rounded: 'sm',
+    rounded: 'lg',
     clearable: true,
     multiple: false,
     returnObject: false,
@@ -117,17 +145,14 @@ const rawValue = ref<ModelValue>(
 const errorMessage = ref<string>('');
 const touched = ref(false);
 
-// ref al v-select para focus()
 const selectRef = ref<any | null>(null);
 
-// MdFormContext
 const mdForm = useMdForm();
 const instance = getCurrentInstance();
 const fieldKey =
     props.name ||
     `MdSelect_${props.id || instance?.uid || Math.random().toString(36)}`;
 
-// Sincronizar cambios externos
 watch(
     () => props.modelValue,
     (val) => {
@@ -136,7 +161,6 @@ watch(
     { immediate: true }
 );
 
-// v-model interno
 const innerValue = computed<ModelValue>({
     get() {
         return rawValue.value;
@@ -151,10 +175,20 @@ const displayedError = computed<string>(() => {
     return props.externalError || errorMessage.value;
 });
 
-// Props para el menú (ajustable si quieres)
 const menuProps = computed(() => ({
     maxHeight: 320,
 }));
+
+/** Helper: no lo mostramos si hay error */
+const computedHint = computed<string>(() => {
+    if (displayedError.value) return '';
+    return (props.helper ?? '').trim();
+});
+
+/** Controla si el helper es persistente o solo al focus */
+const persistentHint = computed<boolean>(() => {
+    return !!computedHint.value && !!props.helperPersistent;
+});
 
 const validate = (): boolean => {
     if (props.readonly) {
@@ -165,7 +199,6 @@ const validate = (): boolean => {
     touched.value = true;
     const v = rawValue.value;
 
-    // Normalizar a array si es múltiple
     if (props.multiple) {
         const arr = Array.isArray(v) ? v : [];
 
@@ -188,7 +221,6 @@ const validate = (): boolean => {
         return true;
     }
 
-    // Valor simple
     if (props.required) {
         if (
             v == null ||
@@ -229,7 +261,6 @@ const focus = () => {
         return;
     }
 
-    // fallback al input interno de Vuetify
     const el: HTMLInputElement | null =
         comp.$el?.querySelector?.('input') ??
         comp.$el?.querySelector?.('[role="combobox"]') ??
@@ -245,26 +276,15 @@ const successClass = computed<string>(() => {
     return 'md-input-success';
 });
 
-// Registro automático en MdFormContext
 onMounted(() => {
-    if (mdForm) {
-        mdForm.registerField(fieldKey, {
-            validate,
-            focus,
-        });
-    }
+    mdForm?.registerField(fieldKey, { validate, focus });
 });
 
 onBeforeUnmount(() => {
-    if (mdForm) {
-        mdForm.unregisterField(fieldKey);
-    }
+    mdForm?.unregisterField(fieldKey);
 });
 
-defineExpose({
-    validate,
-    focus,
-});
+defineExpose({ validate, focus });
 </script>
 
 <style scoped>

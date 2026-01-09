@@ -1,6 +1,6 @@
 <!-- resources/js/Components/MaterialDesign/MdTextInput.vue -->
 <template>
-    <div class="w-full">
+    <div class="w-full h-18 py-2 px-2">
         <v-text-field
             ref="inputRef"
             v-model="innerValue"
@@ -12,14 +12,15 @@
             :rounded="rounded"
             :error="!!displayedError"
             :error-messages="displayedError"
-            :clearable="clearable"
+            :clearable="clearable && !readonly"
             :maxlength="maxLength ?? undefined"
             :counter="counter && !!maxLength"
-            :class="successClass"
-            :hint="helper"
-            :persistent-hint="!!helper"
+            :class="[successClass, readonlyClass]"
+            :hint="computedHint"
+            :persistent-hint="persistentHint"
             :readonly="readonly"
-            :autocomplete="'off'"
+            autocomplete="off"
+            hide-details="auto"
             @keydown="handleKeydown"
             @blur="handleBlur"
         />
@@ -34,15 +35,16 @@ import {
     onBeforeUnmount,
     getCurrentInstance,
 } from 'vue';
+
 import {
     toUpper,
     isValidKey,
     sanitizeByType,
     type AllowedType,
 } from '@/utils/FieldUtils';
+// @ts-ignore
 import { useMdForm } from '@/utils/MdFormContext';
 
-// tipos que espera Vuetify
 type Density = 'default' | 'comfortable' | 'compact';
 type Variant =
     | 'outlined'
@@ -68,6 +70,7 @@ interface MdTextInputProps {
     maxLength?: number | null;
     counter?: boolean;
     helper?: string;
+    helperPersistent?: boolean;
     readonly?: boolean;
     externalError?: string;
     allowed?: AllowedType;
@@ -75,8 +78,6 @@ interface MdTextInputProps {
     showSuccessState?: boolean;
     density?: Density;
     rounded?: boolean | string | number;
-
-    /** Nombre/clave opcional para MdFormContext */
     name?: string;
 }
 
@@ -87,19 +88,20 @@ const props = withDefaults(defineProps<MdTextInputProps>(), {
     type: 'text',
     required: false,
     variant: 'outlined',
-    clearable: false,
+    clearable: true,
     uppercase: true,
     minLength: null,
     maxLength: null,
     counter: false,
     helper: '',
+    helperPersistent: false,
     readonly: false,
     externalError: '',
     allowed: 'any',
     pattern: null,
     showSuccessState: true,
     density: 'compact',
-    rounded: 'sm',
+    rounded: 'lg',
     name: undefined,
 });
 
@@ -109,17 +111,13 @@ const emit = defineEmits<{
 
 const errorMessage = ref<string>('');
 const touched = ref(false);
-
-// ref interno al v-text-field para focus()
 const inputRef = ref<any | null>(null);
 
-// MdFormContext
 const mdForm = useMdForm();
 const instance = getCurrentInstance();
 const fieldKey =
     props.name || `MdTextInput_${instance?.uid ?? Math.random().toString(36)}`;
 
-// v-model interno
 const innerValue = computed<ModelValue>({
     get() {
         return props.modelValue;
@@ -154,6 +152,17 @@ const innerValue = computed<ModelValue>({
 
 const displayedError = computed<string>(() => {
     return props.externalError || errorMessage.value;
+});
+
+/** Hint: si es readonly, lo dejamos explícito */
+const computedHint = computed<string>(() => {
+    if (displayedError.value) return '';
+    if (props.readonly) return 'Solo lectura';
+    return (props.helper ?? '').trim();
+});
+
+const persistentHint = computed<boolean>(() => {
+    return !!computedHint.value && (!!props.helperPersistent || props.readonly);
 });
 
 const validate = (): boolean => {
@@ -216,6 +225,11 @@ const handleBlur = () => {
 };
 
 const handleKeydown = (e: KeyboardEvent) => {
+    if (props.readonly) {
+        e.preventDefault();
+        return;
+    }
+
     const type: AllowedType = props.allowed ?? 'any';
     if (!isValidKey(e, type)) {
         e.preventDefault();
@@ -223,6 +237,8 @@ const handleKeydown = (e: KeyboardEvent) => {
 };
 
 const focus = () => {
+    if (props.readonly) return;
+
     const comp = inputRef.value as any;
     if (!comp) return;
 
@@ -245,13 +261,13 @@ const successClass = computed<string>(() => {
     return 'md-input-success';
 });
 
-// Registro automático en MdFormContext
+const readonlyClass = computed<string>(() => {
+    return props.readonly ? 'md-input-readonly' : '';
+});
+
 onMounted(() => {
     if (mdForm) {
-        mdForm.registerField(fieldKey, {
-            validate,
-            focus,
-        });
+        mdForm.registerField(fieldKey, { validate, focus });
     }
 });
 
@@ -261,13 +277,11 @@ onBeforeUnmount(() => {
     }
 });
 
-defineExpose({
-    validate,
-    focus,
-});
+defineExpose({ validate, focus });
 </script>
 
 <style scoped>
+/* SUCCESS */
 .md-input-success :deep(.v-field__outline__start),
 .md-input-success :deep(.v-field__outline__notch),
 .md-input-success :deep(.v-field__outline__end) {
@@ -280,5 +294,30 @@ defineExpose({
 
 .md-input-success :deep(.v-field__prepend-inner .v-icon) {
     color: #16a34a !important;
+}
+
+/* READONLY */
+.md-input-readonly :deep(.v-field) {
+    background: rgba(148, 163, 184, 0.18) !important;
+}
+
+.md-input-readonly :deep(.v-field__outline__start),
+.md-input-readonly :deep(.v-field__outline__notch),
+.md-input-readonly :deep(.v-field__outline__end) {
+    border-style: dashed !important;
+    border-color: rgba(100, 116, 139, 0.75) !important;
+}
+
+.md-input-readonly :deep(input) {
+    cursor: not-allowed !important;
+    color: rgba(15, 23, 42, 0.75) !important;
+}
+
+.md-input-readonly :deep(.v-label) {
+    color: rgba(100, 116, 139, 0.9) !important;
+}
+
+.md-input-readonly :deep(.v-field__prepend-inner .v-icon) {
+    color: rgba(100, 116, 139, 0.9) !important;
 }
 </style>

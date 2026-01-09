@@ -1,6 +1,6 @@
 <!-- resources/js/Components/Inputs/MdTimeInput.vue -->
 <template>
-    <div class="w-full">
+    <div class="w-full h-18 px-2 py-2">
         <v-menu
             v-model="menu"
             :close-on-content-click="false"
@@ -13,7 +13,6 @@
                     ref="inputRef"
                     v-bind="activatorProps"
                     :model-value="displayValue"
-                    :label="label"
                     :id="id"
                     :name="name"
                     :variant="variant"
@@ -22,15 +21,39 @@
                     :prepend-inner-icon="icon"
                     hide-details="auto"
                     :clearable="clearable"
-                    :hint="helper"
-                    :persistent-hint="!!helper"
+                    :hint="computedHint"
+                    :persistent-hint="persistentHint"
                     :readonly="true"
                     :error="!!displayedError"
                     :error-messages="displayedError"
                     :class="successClass"
                     @click:clear="handleClear"
                     @blur="handleBlur"
-                />
+                >
+                    <template #label>
+                        <span class="inline-flex items-center gap-1">
+                            <span
+                                v-if="required"
+                                class="text-red-500 font-bold"
+                            >*</span>
+
+                            <span>{{ label }}</span>
+
+                            <v-tooltip v-if="tooltip" location="top">
+                                <template #activator="{ props }">
+                                    <v-icon
+                                        v-bind="props"
+                                        size="16"
+                                        class="text-gray-400 cursor-help"
+                                    >
+                                        mdi-information-outline
+                                    </v-icon>
+                                </template>
+                                <span>{{ tooltip }}</span>
+                            </v-tooltip>
+                        </span>
+                    </template>
+                </v-text-field>
             </template>
 
             <v-time-picker
@@ -74,8 +97,6 @@ type Variant =
     | 'underlined';
 
 type TimeFormat = 'ampm' | '24hr';
-
-// hora en formato 24h HH:mm o HH:mm:ss
 type ModelValue = string | null;
 
 interface MdTimeInputProps {
@@ -83,9 +104,11 @@ interface MdTimeInputProps {
     id?: string;
     name?: string;
     label?: string;
+    tooltip?: string;
     icon?: string;
     required?: boolean;
     helper?: string;
+    helperPersistent?: boolean;
     readonly?: boolean;
     externalError?: string;
     showSuccessState?: boolean;
@@ -102,15 +125,17 @@ const props = withDefaults(defineProps<MdTimeInputProps>(), {
     id: undefined,
     name: undefined,
     label: '',
+    tooltip: '',
     icon: 'mdi-clock-time-four-outline',
     required: false,
     helper: '',
+    helperPersistent: false,
     readonly: false,
     externalError: '',
     showSuccessState: true,
     density: 'compact',
     variant: 'outlined',
-    rounded: 'sm',
+    rounded: 'lg',
     clearable: true,
     format: '24hr',
     useSeconds: false,
@@ -126,17 +151,14 @@ const menu = ref(false);
 const errorMessage = ref<string>('');
 const touched = ref(false);
 
-// ref al v-text-field activador para poder hacer focus()
 const inputRef = ref<any | null>(null);
 
-// MdFormContext
 const mdForm = useMdForm();
 const instance = getCurrentInstance();
 const fieldKey =
     props.name ||
     `MdTimeInput_${props.id || instance?.uid || Math.random().toString(36)}`;
 
-// sync con el padre
 watch(
     () => props.modelValue,
     (val) => {
@@ -148,7 +170,6 @@ watch(
     { immediate: true }
 );
 
-// cuando se abre el menú, inicializamos tempValue
 watch(
     () => menu.value,
     (open) => {
@@ -176,6 +197,16 @@ const displayedError = computed<string>(() => {
     return props.externalError || errorMessage.value;
 });
 
+/** Helper: no lo mostramos si hay error */
+const computedHint = computed<string>(() => {
+    if (displayedError.value) return '';
+    return (props.helper ?? '').trim();
+});
+
+const persistentHint = computed<boolean>(() => {
+    return !!computedHint.value && !!props.helperPersistent;
+});
+
 const validate = (): boolean => {
     if (props.readonly) {
         errorMessage.value = '';
@@ -196,8 +227,6 @@ const validate = (): boolean => {
 };
 
 const handleBlur = () => {
-    // el blur del text-field no siempre coincide con cerrar el menú,
-    // pero mantenemos la misma idea que en MdDateInput
     validate();
 };
 
@@ -241,26 +270,15 @@ const focus = () => {
     el?.focus();
 };
 
-// Registro automático en MdFormContext
 onMounted(() => {
-    if (mdForm) {
-        mdForm.registerField(fieldKey, {
-            validate,
-            focus,
-        });
-    }
+    mdForm?.registerField(fieldKey, { validate, focus });
 });
 
 onBeforeUnmount(() => {
-    if (mdForm) {
-        mdForm.unregisterField(fieldKey);
-    }
+    mdForm?.unregisterField(fieldKey);
 });
 
-defineExpose({
-    validate,
-    focus,
-});
+defineExpose({ validate, focus });
 </script>
 
 <style scoped>

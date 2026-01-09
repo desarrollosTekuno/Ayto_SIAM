@@ -4,19 +4,44 @@
         <v-radio-group
             ref="groupRef"
             v-model="innerValue"
-            :label="label"
             :id="id"
             :name="name"
             :readonly="readonly"
             :error="!!displayedError"
             :error-messages="displayedError"
             :class="successClass"
+            :messages="computedHint"
+            :persistent-hint="persistentHint"
             color="transparent"
             density="compact"
             hide-details="auto"
             @blur="handleBlur"
             @update:model-value="handleChange"
         >
+            <template #label>
+                <span class="inline-flex items-center gap-1">
+                    <span
+                        v-if="required"
+                        class="text-red-500 font-bold"
+                    >*</span>
+
+                    <span>{{ label }}</span>
+
+                    <v-tooltip v-if="tooltip" location="top">
+                        <template #activator="{ props }">
+                            <v-icon
+                                v-bind="props"
+                                size="16"
+                                class="text-gray-400 cursor-help"
+                            >
+                                mdi-information-outline
+                            </v-icon>
+                        </template>
+                        <span>{{ tooltip }}</span>
+                    </v-tooltip>
+                </span>
+            </template>
+
             <v-radio
                 v-for="item in items"
                 :key="item[itemValue]"
@@ -42,12 +67,15 @@ import { useMdForm } from '@/utils/MdFormContext';
 interface MdRadioGroupProps {
     modelValue?: string | number | boolean | null;
     label?: string;
+    tooltip?: string;
     id?: string;
     name?: string;
     items?: Array<any>;
     itemTitle?: string;
     itemValue?: string;
     required?: boolean;
+    helper?: string;
+    helperPersistent?: boolean;
     readonly?: boolean;
     externalError?: string;
     showSuccessState?: boolean;
@@ -57,12 +85,15 @@ interface MdRadioGroupProps {
 const props = withDefaults(defineProps<MdRadioGroupProps>(), {
     modelValue: null,
     label: '',
+    tooltip: '',
     id: '',
     name: '',
     items: () => [],
     itemTitle: 'label',
     itemValue: 'value',
     required: false,
+    helper: '',
+    helperPersistent: false,
     readonly: false,
     externalError: '',
     showSuccessState: true,
@@ -77,17 +108,14 @@ const rawValue = ref(props.modelValue);
 const errorMessage = ref('');
 const touched = ref(false);
 
-// ref al v-radio-group para poder hacer focus()
 const groupRef = ref<any | null>(null);
 
-// MdFormContext
 const mdForm = useMdForm();
 const instance = getCurrentInstance();
 const fieldKey =
     props.name ||
     `MdRadioGroup_${props.id || instance?.uid || Math.random().toString(36)}`;
 
-// Sincroniza cambios desde fuera
 watch(
     () => props.modelValue,
     (val) => (rawValue.value = val),
@@ -105,6 +133,17 @@ const innerValue = computed({
 const displayedError = computed(
     () => props.externalError || errorMessage.value
 );
+
+/** Helper: no lo mostramos si hay error */
+const computedHint = computed(() => {
+    if (displayedError.value) return undefined;
+    const txt = (props.helper ?? '').trim();
+    return txt ? txt : undefined;
+});
+
+const persistentHint = computed(() => {
+    return !!computedHint.value && !!props.helperPersistent;
+});
 
 const validate = () => {
     if (props.readonly) {
@@ -142,7 +181,6 @@ const successClass = computed(() => {
     return 'md-input-success';
 });
 
-// color para el estado de exito
 const successColorVar = computed(() => {
     return props.color
         ? { '--md-radio-success-color': `var(--v-theme-${props.color})` }
@@ -153,7 +191,6 @@ const focus = () => {
     const comp = groupRef.value as any;
     if (!comp) return;
 
-    // Vuetify puede exponer focus en el grupo
     if (typeof comp.focus === 'function') {
         comp.focus();
         return;
@@ -165,20 +202,12 @@ const focus = () => {
     el?.focus();
 };
 
-// Registro automático en MdFormContext
 onMounted(() => {
-    if (mdForm) {
-        mdForm.registerField(fieldKey, {
-            validate,
-            focus,
-        });
-    }
+    mdForm?.registerField(fieldKey, { validate, focus });
 });
 
 onBeforeUnmount(() => {
-    if (mdForm) {
-        mdForm.unregisterField(fieldKey);
-    }
+    mdForm?.unregisterField(fieldKey);
 });
 
 defineExpose({ validate, focus });

@@ -1,19 +1,17 @@
 <!-- resources/js/Components/MaterialDesign/MdDatePicker.vue -->
 <template>
-    <div class="w-full">
+    <div class="w-full h-18 py-2 px-2">
         <v-menu
             v-model="menu"
             :close-on-content-click="false"
             transition="scale-transition"
             offset-y
         >
-            <!-- Activador: input con mismo diseño que MdTextInput/MdNumberInput -->
             <template #activator="{ props: menuProps }">
                 <v-text-field
                     ref="inputRef"
                     v-bind="menuProps"
                     v-model="displayText"
-                    :label="label"
                     :id="id"
                     :name="name"
                     :prepend-inner-icon="icon"
@@ -21,17 +19,41 @@
                     :variant="variant"
                     :rounded="rounded"
                     :clearable="clearable"
-                    :hint="helper"
-                    :persistent-hint="!!helper"
+                    :hint="computedHint"
+                    :persistent-hint="persistentHint"
                     :readonly="true"
                     :error="!!displayedError"
                     :error-messages="displayedError"
                     :class="successClass"
                     autocomplete="off"
-                />
+                    hide-details="auto"
+                >
+                    <template #label>
+                        <span class="inline-flex items-center gap-1">
+                            <span
+                                v-if="required"
+                                class="text-red-500 font-bold"
+                            >*</span>
+
+                            <span>{{ label }}</span>
+
+                            <v-tooltip v-if="tooltip" location="top">
+                                <template #activator="{ props }">
+                                    <v-icon
+                                        v-bind="props"
+                                        size="16"
+                                        class="text-gray-400 cursor-help"
+                                    >
+                                        mdi-information-outline
+                                    </v-icon>
+                                </template>
+                                <span>{{ tooltip }}</span>
+                            </v-tooltip>
+                        </span>
+                    </template>
+                </v-text-field>
             </template>
 
-            <!-- Calendario -->
             <v-date-picker
                 v-model="innerValue"
                 :multiple="computedMultiple"
@@ -67,7 +89,6 @@ type Variant =
     | 'solo-inverted'
     | 'underlined';
 
-// Aceptamos también Date/Date[] por si Vuetify los devuelve
 type SingleDate = string | Date | null;
 type MultiDate = (string | Date)[];
 type ModelValue = SingleDate | MultiDate;
@@ -77,9 +98,11 @@ interface MdDatePickerProps {
     id?: string;
     name?: string;
     label?: string;
+    tooltip?: string;
     icon?: string;
     required?: boolean;
     helper?: string;
+    helperPersistent?: boolean;
     readonly?: boolean;
     externalError?: string;
     showSuccessState?: boolean;
@@ -98,17 +121,19 @@ interface MdDatePickerProps {
 const props = withDefaults(defineProps<MdDatePickerProps>(), {
     modelValue: null,
     label: '',
+    tooltip: '',
     id: undefined,
     name: undefined,
     icon: 'mdi-calendar',
     required: false,
     helper: '',
+    helperPersistent: false,
     readonly: false,
     externalError: '',
     showSuccessState: true,
     density: 'compact',
     variant: 'outlined',
-    rounded: 'sm',
+    rounded: 'lg',
     clearable: true,
     min: null,
     max: null,
@@ -129,16 +154,13 @@ const rawValue = ref<ModelValue>(
 const errorMessage = ref('');
 const touched = ref(false);
 
-// ref al v-text-field para focus()
 const inputRef = ref<any | null>(null);
 
-// MdFormContext
 const mdForm = useMdForm();
 const instance = getCurrentInstance();
 const fieldKey =
     props.name || `MdDatePicker_${instance?.uid ?? Math.random().toString(36)}`;
 
-// Sincroniza cuando el padre cambia el modelValue
 watch(
     () => props.modelValue,
     (val) => {
@@ -147,14 +169,12 @@ watch(
     { immediate: true }
 );
 
-// multiple real para v-date-picker
 const computedMultiple = computed(() => {
     if (props.range) return 'range';
     if (props.multiple) return true;
     return false;
 });
 
-// v-model interno hacia v-date-picker
 const innerValue = computed<ModelValue>({
     get() {
         return rawValue.value;
@@ -165,15 +185,9 @@ const innerValue = computed<ModelValue>({
     },
 });
 
-// Formateo de texto que se ve en el input
 const formatDate = (value: string | Date): string => {
     if (!value) return '';
-    let d: Date;
-    if (value instanceof Date) {
-        d = value;
-    } else {
-        d = new Date(value);
-    }
+    const d = value instanceof Date ? value : new Date(value);
     if (Number.isNaN(d.getTime())) return '';
     return d.toLocaleDateString(props.locale || 'es-MX');
 };
@@ -198,13 +212,22 @@ const displayText = computed<string>({
 
         return formatDate(v as SingleDate);
     },
-    set() {
-        // el usuario no edita texto directamente, solo via calendario
-    },
+    set() {},
 });
 
 const displayedError = computed(() => {
     return props.externalError || errorMessage.value;
+});
+
+/** Helper: no lo mostramos si hay error */
+const computedHint = computed<string>(() => {
+    if (displayedError.value) return '';
+    return (props.helper ?? '').trim();
+});
+
+/** Controla si el helper es persistente o solo al focus */
+const persistentHint = computed<boolean>(() => {
+    return !!computedHint.value && !!props.helperPersistent;
 });
 
 const validate = (): boolean => {
@@ -245,12 +268,10 @@ const validate = (): boolean => {
     return true;
 };
 
-// Cuando el usuario selecciona fechas en el calendario
 const handleSelect = (value: any) => {
     rawValue.value = value;
     emit('update:modelValue', value);
 
-    // Cerrar el menú cuando la selección esté completa
     if (!props.range && !props.multiple) {
         menu.value = false;
     } else if (props.range) {
@@ -286,26 +307,15 @@ const successClass = computed(() => {
     return 'md-input-success';
 });
 
-// Registro automático en MdFormContext
 onMounted(() => {
-    if (mdForm) {
-        mdForm.registerField(fieldKey, {
-            validate,
-            focus,
-        });
-    }
+    mdForm?.registerField(fieldKey, { validate, focus });
 });
 
 onBeforeUnmount(() => {
-    if (mdForm) {
-        mdForm.unregisterField(fieldKey);
-    }
+    mdForm?.unregisterField(fieldKey);
 });
 
-defineExpose({
-    validate,
-    focus,
-});
+defineExpose({ validate, focus });
 </script>
 
 <style scoped>
