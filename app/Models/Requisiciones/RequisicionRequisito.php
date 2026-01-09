@@ -1,19 +1,18 @@
 <?php
 
-namespace App\Models\Configuracion;
+namespace App\Models\Requisiciones;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
-class ConfiguracionSistema extends Model {
+class RequisicionRequisito extends Model {
     use HasFactory, SoftDeletes;
 
-    protected $table = 'configuraciones_sistema';
     protected $guarded = ['id', 'created_at', 'updated_at'];
     protected $dates = ['deleted_at'];
 
-    public function TiposProceso() {
-        return $this->belongsTo(TiposProceso::class, 'tipo_proceso_id');
+    public function Requisicion() {
+        return $this->belongsTo(Requisicion::class, 'requisicion_id');
     }
 }
