@@ -9,6 +9,7 @@
             :name="name"
             :type="inputType"
             :append-inner-icon="appendIcon"
+            :prepend-inner-icon="prependIcon"
             :density="density"
             :variant="variant"
             :rounded="rounded"
@@ -56,7 +57,7 @@ type Variant =
 
 type ModelValue = string | null | undefined;
 
-// Niveles de seguridad (solo estructura)
+// Niveles de seguridad
 type PasswordSecurity = 'simple' | 'basic' | 'strong' | 'strict';
 
 interface MdPasswordInputProps {
@@ -80,13 +81,12 @@ interface MdPasswordInputProps {
     rounded?: boolean | string | number;
     security?: PasswordSecurity | null;
     /**
-     * Nivel de seguridad de la contraseña (solo estructura):
+     * Nivel de seguridad de la contraseña
      * - 'simple' : al menos 1 letra
      * - 'basic'  : al menos 1 letra y 1 número
-     * - 'strong' : al menos 1 mayúscula, 1 minúscula y 1 número
-     * - 'strict' : al menos 1 mayúscula, 1 minúscula, 1 número y 1 carácter especial
+     * - 'strong' : al menos 1 may, 1 minuscula y 1 numero
+     * - 'strict' : al menos 1 mayus, 1 , minus, 1 numero y 1 carácter especial
      *
-     * Si es null, NO se valida estructura adicional.
      */
 
 }
@@ -120,7 +120,6 @@ const errorMessage = ref<string>('');
 const touched = ref(false);
 const showPassword = ref(false);
 
-// ref al v-text-field para poder hacer focus()
 const inputRef = ref<any | null>(null);
 
 // MdFormContext
@@ -130,7 +129,9 @@ const fieldKey =
     props.name ||
     `MdPasswordInput_${props.id || instance?.uid || Math.random().toString(36)}`;
 
+
 const inputType = computed(() => (showPassword.value ? 'text' : 'password'));
+const prependIcon = computed(() => props.icon || 'mdi-lock-outline');
 const appendIcon = computed(() =>
     showPassword.value ? 'mdi-eye-off' : 'mdi-eye'
 );

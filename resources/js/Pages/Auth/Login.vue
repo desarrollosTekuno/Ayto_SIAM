@@ -57,6 +57,7 @@ const submit = () => {
             <MdPasswordInput
                 v-model="form.password"
                 label="Contraseña"
+                icon="mdi-key"
                 required
                 :external-error="form.errors.password"
                 class="my-4"
