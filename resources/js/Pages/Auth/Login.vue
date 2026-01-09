@@ -1,36 +1,29 @@
 <script setup>
-import AuthenticationCard from "@/Components/AuthenticationCard.vue";
-import AuthenticationCardLogo from "@/Components/AuthenticationCardLogo.vue";
-import Checkbox from "@/Components/Checkbox.vue";
-import PasswordField from "@/Components/PasswordField.vue";
-import InputError from "@/Components/InputError.vue";
-import Loader from "@/Components/Loader.vue";
-import { isLoading } from "@/loading";
-import { Head, Link, useForm } from "@inertiajs/vue3";
+import { Head, Link, useForm } from '@inertiajs/vue3'
+import AuthenticationCard from '@/Components/AuthenticationCard.vue'
+import AuthenticationCardLogo from '@/Components/AuthenticationCardLogo.vue'
+import MdTextInput from '@/Components/MaterialDesign/MdTextInput.vue'
+import MdPasswordInput from '@/Components/MaterialDesign/MdPasswordInput.vue'
+import Loader from '@/Components/Loader.vue'
+import { isLoading } from '@/loading'
 
 const props = defineProps({
     canResetPassword: Boolean,
     status: String,
-    loginField: String, // "username" o "email"
-});
+    loginField: String, // 'username' | 'email'
+})
 
 const form = useForm({
-    username: "",
-    email: "",
-    password: "",
-    remember: false,
-});
+    username: '',
+    email: '',
+    password: '',
+})
 
 const submit = () => {
-    form
-        .transform((data) => ({
-            ...data,
-            remember: form.remember ? "on" : "",
-        }))
-        .post(route("login"), {
-            onFinish: () => form.reset("password"),
-        });
-};
+    form.post(route('login'), {
+        onFinish: () => form.reset('password'),
+    })
+}
 </script>
 
 <template>
@@ -41,60 +34,53 @@ const submit = () => {
             <AuthenticationCardLogo />
         </template>
 
-        <!-- Mensaje de estado -->
-        <div v-if="status" class="mb-4 text-sm font-medium text-green-600 dark:text-green-400">
-            {{ status }}
+        <div class="h-16"></div>
+
+        <div class="mb-6 text-center">
+            <a
+                href="#"
+                class="text-sm text-blue-600 underline"
+            >
+                Lineamientos generales
+            </a>
         </div>
 
-        <form @submit.prevent="submit">
-            <div>
-                <v-text-field
-                    required
-                    v-model="form[loginField]"
-                    :prepend-inner-icon="loginField === 'email' ? 'mdi-email' : 'mdi-account'"
-                    :label="loginField === 'email' ? 'Correo electrónico' : 'Usuario'"
-                    variant="outlined"
-                    :type="loginField === 'email' ? 'email' : 'text'"
-                    :autocomplete="loginField"
-                ></v-text-field>
+        <form @submit.prevent="submit" class="space-y-4">
+            <MdTextInput
+                v-model="form[loginField]"
+                :label="loginField === 'email' ? 'Correo electrónico' : 'Usuario'"
+                :icon="loginField === 'email' ? 'mdi-email' : 'mdi-account'"
+                required
+                :external-error="form.errors[loginField]"
+            />
 
-                <InputError class="mt-2" :message="form.errors[loginField]" />
-            </div>
+            <MdPasswordInput
+                v-model="form.password"
+                label="Contraseña"
+                required
+                :external-error="form.errors.password"
+                class="my-4"
+            />
 
-            <!-- Contraseña -->
-            <div class="mt-4">
-                <PasswordField
-                    v-model="form.password"
-                    label="Contraseña"
-                />
-                <InputError class="mt-2" :message="form.errors.password" />
-            </div>
-
-            <!-- Recordarme -->
-            <div class="block mt-4">
-                <label class="flex items-center">
-                    <Checkbox v-model:checked="form.remember" name="remember" />
-                    <span class="text-sm text-gray-600 ms-2 dark:text-gray-400">
-                        Recuérdame
-                    </span>
-                </label>
-            </div>
-
-            <!-- Botones -->
-            <div class="flex items-center justify-end mt-4">
+            <div class="text-center">
                 <Link
                     v-if="canResetPassword"
                     :href="route('password.request')"
-                    class="text-sm text-gray-600 underline rounded-md dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-100 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 dark:focus:ring-offset-gray-800"
+                    class="text-sm text-blue-600 underline"
                 >
-                    ¿Olvidaste tu contraseña?
+                    Restablecer contraseña
                 </Link>
-
-                <v-btn type="submit" prepend-icon="mdi-login">
-                    Ingresar
-                </v-btn>
             </div>
 
+            <v-btn
+                type="submit"
+                block
+                size="large"
+                class="mt-2 text-white"
+                style="background-color:#7A1F3D"
+            >
+                Ingresar
+            </v-btn>
         </form>
 
         <Loader :overlay="isLoading" />
