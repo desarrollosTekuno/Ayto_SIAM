@@ -1,68 +1,56 @@
+// resources/js/routing/routing.ts
+
 interface Routing {
-    name: string | Array<string>;
-    title: string;
-    icon: string;
-    value: string;
-    group: string | null;
+    name: string | string[]
+    title: string
+    icon: string
+    value: string
+    group: string | null
     groupItems?: Array<{
-        name: string;
-        title: string;
-        icon: string;
-        value: string;
-    }>;
+        name: string
+        title: string
+        icon: string
+        value: string
+    }>
 }
+
 const routes: Routing[] = [
-    /* Rutas para superadministrador */
     {
-        name: "profile.show",
-        title: "Mi perfil",
-        icon: "mdi-account-circle-outline",
-        value: "profile",
+        name: 'dashboard',
+        title: 'Inicio',
+        icon: 'mdi-home-outline',
+        value: 'dashboard',
         group: null,
-        // groupItems: null
     },
+
     {
-        name: "dashboard",
-        title: "Inicio",
-        icon: "mdi-home-outline",
-        value: "dashboard",
-        group: null,
-        // groupItems: null
-    },
-    /* 
-    {
-        name: ["dashboard"],
-        title: "Pagos",
-        icon: "mdi-cash-multiple",
-        value: "pagosMenu",
-        group: "Pagos",
+        // Menú Administrador (mock para probar)
+        name: ['admin.users.index', 'admin.roles.index', 'admin.settings.index'],
+        title: 'Administración',
+        icon: 'mdi-shield-account-outline',
+        value: 'adminMenu',
+        group: 'Administración',
         groupItems: [
-            {
-                name: "dashboard",
-                title: "Cobros y conceptos",
-                icon: "mdi-credit-card-outline",
-                value: "cobros-conceptos",
-            },
-            {
-                name: "dashboard",
-                title: "Pagos registrados",
-                icon: "mdi-cash-check",
-                value: "cobros-conceptos",
-            },
-            {
-                name: "dashboard",
-                title: "Historial y reportes",
-                icon: "mdi-history",
-                value: "cobros-conceptos",
-            },
-            {
-                name: "dashboard",
-                title: "Métodos de cobro",
-                icon: "mdi-cog",
-                value: "cobros-conceptos",
-            },
+        {
+            name: 'admin',
+            title: 'Usuarios',
+            icon: 'mdi-account-multiple-outline',
+            value: 'admin-users',
+        },
+        {
+            name: 'admin',
+            title: 'Permisos',
+            icon: 'mdi-key-outline',
+            value: 'admin-permissions',
+        },
+        {
+            name: 'admin',
+            title: 'Configuración',
+            icon: 'mdi-cog-outline',
+            value: 'admin-settings',
+        },
         ],
     },
-     */
-];
-export default routes;
+]
+
+export default routes
