@@ -1,4 +1,4 @@
-<!-- resources/js/Components/MaterialDesign/MdModal.vue -->
+<!-- resources/js/Components/Vuetify/VdIalog.vue -->
 <template>
     <v-dialog
         v-model="internalValue"
@@ -30,7 +30,7 @@
                     </slot>
                 </header>
 
-            <section class="flex-1 overflow-y-auto mx-3 py-2 my-2">
+            <section class="flex-1 py-2 mx-3 my-2 overflow-y-auto">
                 <v-card-text :class="[bodyClass]" style="padding: 1px;">
                     <template v-if="props.loading">
                         <v-skeleton-loader
@@ -115,24 +115,24 @@ const emit = defineEmits<{
 }>()
 
 const internalValue = computed<boolean>({
-  get: () => props.modelValue,
-  set: (value) => {
-    if (!value) emit('close')
-    else emit('open')
-    emit('update:modelValue', value)
-  },
+    get: () => props.modelValue,
+    set: (value) => {
+        if (!value) emit('close')
+        else emit('open')
+        emit('update:modelValue', value)
+    },
 })
 
 function close() {
-  internalValue.value = false
+    internalValue.value = false
 }
 
 function onCancel() {
-  emit('cancel')
-  close()
+    emit('cancel')
+    close()
 }
 
 function onConfirm() {
-  emit('confirm')
+    emit('confirm')
 }
 </script>

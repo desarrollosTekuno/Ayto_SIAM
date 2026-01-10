@@ -4,7 +4,6 @@ import { createVuetify } from "vuetify";
 import * as components from "vuetify/components";
 import * as directives from "vuetify/directives";
 import { mdi } from "vuetify/iconsets/mdi";
-
 import { VDateInput } from "vuetify/labs/VDateInput";
 
 import DateFnsAdapter from "@date-io/date-fns";
@@ -26,29 +25,31 @@ export const vuetify = createVuetify({
         locale: { es: es, en: enUS },
     },
     theme: {
-        defaultTheme: "myTheme",
-        themes: {
-            myTheme: {
-                dark: false,
-                colors: {
-                    customPrimary: "#0C1A2C",
-                    customSecondary: "#D9D9D9",
-                    customThird: "#F1EFE8",
-                    customFourth: "#E03A3E",
-                    customFifth: "#B0B0B0",
-                },
-            },
-            myDarkTheme: {
-                dark: true,
-                colors: {
-                    primary: "#F1EFE8",
-                    background: "#B0B0B0",
-                    drawer: "#E03A3E",
-                    customPrimary: "#F0F0F0",
-                },
-            },
+    defaultTheme: "myTheme",
+    themes: {
+        myTheme: {
+        dark: false,
+        colors: {
+            customPrimary: "#7d2447",
+            customPrimaryDark: "#6a1f3c",
+            customSecondary: "#41504d",
+            customTertiary: "#636569",
+            customSurface: "#f1f0f0",
+            customMuted: "#bfb591",
+            customDark: "#0d0d0d",
+        },
+        },
+        myDarkTheme: {
+        dark: true,
+        colors: {
+            customPrimary: "#41504d",
+            customSecondary: "#bfb591",
+            customSurface: "#0d0d0d",
+        },
         },
     },
+    }
+
 });
 
 export default vuetify;
