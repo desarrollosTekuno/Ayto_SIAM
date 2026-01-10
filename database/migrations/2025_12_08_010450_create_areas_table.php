@@ -18,7 +18,7 @@ return new class extends Migration
             $table->string('alias', 100)->nullable();
 
             $table->string('usado_en', 20)->nullable();
-            $table->boolean('ayto_biometricos')->default(true)->nullable();
+            $table->boolean('ayto_biometricos')->default(false)->nullable();
 
             $table->timestamps();
             $table->softDeletes();

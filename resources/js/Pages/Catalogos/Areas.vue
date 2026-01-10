@@ -1,5 +1,6 @@
 <script setup>
 import { ref, onMounted } from 'vue'
+import { router } from '@inertiajs/vue3'
 import AppLayout from '@/Layouts/AppLayout.vue'
 import VButton from '@/Components/Vuetify/VButton.vue';
 import DataTableServer from '@/Components/DataTableServer.vue'
@@ -38,6 +39,14 @@ const headers = [
 ]
 
 // =============================== METHODS ===============================
+const ReloadTable = () => {
+    router.reload({
+        only: ['Areas'],
+        preserveScroll: true,
+        preserveState: true,
+    })
+}
+
 const ChangeModal = (item = null) => {
     if (item) {
         editMode.value = true
@@ -65,6 +74,7 @@ const GuardarModificar = () => {
             })
             showModal.value = false
             form.reset()
+            ReloadTable()
         },
         onError: () => {
             errorToast('Ocurrió un error')
@@ -81,11 +91,10 @@ const GuardarModificar = () => {
 const Eliminar = (id) => {
     form.delete(route('areas.destroy', id), {
         preserveScroll: true,
-        onSuccess: () =>
-            customToastSwal({
-                title: 'Área eliminada',
-                icon: 'success',
-            }),
+        onSuccess: () => {
+            customToastSwal({ title: 'Área eliminada', icon: 'success' })
+            ReloadTable()
+        },
     })
 }
 
@@ -123,7 +132,7 @@ onMounted(() => {})
                             variant="flat"
                             color="teal-darken-1"
                             icon="mdi-pencil-outline"
-                            @click="ChangeModal(item.raw)"
+                            @click="ChangeModal(item)"
                             class="mr-2"
                         />
 
@@ -132,7 +141,7 @@ onMounted(() => {})
                             variant="flat"
                             color="red-darken-1"
                             icon="mdi-trash-can-outline"
-                            @click="Eliminar(item.raw.id)"
+                            @click="Eliminar(item.id)"
                         />
                     </div>
                 </template>
