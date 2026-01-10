@@ -3,6 +3,7 @@
 //@ts-nocheck
 import Loader from '@/Components/Loader.vue';
 import Navigation from '@/Layouts/Navigation.vue';
+import TopBar from './TopBar.vue';
 import { isLoading } from '@/loading';
 import { Head } from '@inertiajs/vue3';
 import { ref, computed } from 'vue';
@@ -34,14 +35,7 @@ const clicStop = (displayMobile: boolean) => {
         <v-app>
             <Head :title="fullTitle" />
 
-            <v-app-bar prominent>
-                <v-app-bar-nav-icon
-                    :icon="$vuetify.display.mobile ? (!drawer ? 'mdi-backburger' : 'mdi-menu') : 'mdi-menu'"
-                    variant="text"
-                    @click.stop="clicStop($vuetify.display.mobile)"
-                />
-                <v-spacer />
-            </v-app-bar>
+            <TopBar :title="title ?? 'SIAM'" @toggle-drawer="clicStop($vuetify.display.mobile)"></TopBar>
 
             <Navigation :rail="rail" v-model:drawer="drawer" />
 
