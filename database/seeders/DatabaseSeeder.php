@@ -10,15 +10,16 @@ use Illuminate\Support\Facades\Hash;
 class DatabaseSeeder extends Seeder {
 
     public function run(): void {
-        User::factory()->create([
-            'name' => 'Super Administrator',
-            'username' => 'admin',
-            'email' => 'admin@example.com',
-            'password' => Hash::make('1234'),
-        ]);
-
         $this->call([
             ExamplesSeeder::class,
+            RolesSeeder::class,
+            TiposProcesoSeeder::class,
+            UnidadMedidaSeeder::class,
+            ConfiguracionSistemaSeeder::class,
+            DependenciaSeeder::class,
+            UnidadAdministrativaSeeder::class,
+            RangosProcedimientoSeeder::class,
+            UsersSeeder::class,
         ]);
     }
 }

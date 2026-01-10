@@ -4,7 +4,6 @@ import { onMounted, reactive, ref } from 'vue';
 import AppLayout from '@/Layouts/AppLayout.vue';
 import VButton from '@/Components/VButton.vue';
 import DataTableServer from '@/Components/DataTableServer.vue';
-import VDialog from '@/Components/VDialog.vue';
 import FormValidate from '@/Components/FormValidate.vue';
 import MdTextInput from '@/Components/MaterialDesign/MdTextInput.vue';
 import MdEmailInput from '@/Components/MaterialDesign/MdEmailInput.vue';
