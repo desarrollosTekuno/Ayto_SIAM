@@ -1,10 +1,9 @@
 <script setup lang="ts">
-import { required } from "@/constants/validationRules";
+//@ts-nocheck
 import AppLayout from "@/Layouts/AppLayout.vue";
 import { Head, useForm, usePage } from "@inertiajs/vue3";
 import { ref } from "vue";
-const can = usePage().props.auth.permissions;
-const canRole = usePage().props.auth.roles;
+
 interface Props {
     categories?: any;
 }
@@ -15,73 +14,9 @@ interface Category {
     description: string;
 }
 
-// const props = defineProps<Props>();
 const props = withDefaults(defineProps<Props>(), {
     categories: null,
 });
-
-/* refs */
-let showModal = ref(false);
-const formSendRef = ref();
-
-/* forms */
-const form = useForm<Category>({
-    id: null,
-    name: "",
-    description: "",
-});
-
-const create = () => {
-    showModal.value = true;
-};
-const save = () => {
-    formSendRef.value?.validate().then(({ valid: isValid }) => {
-        console.log(isValid);
-        if (!isValid) {
-            return;
-        } else {
-            if (form.id) {
-                // form.put(route('head-quarters.update', form.id), {
-                //     onSuccess: () => { showModal.value = false, form.reset() }
-                // });
-            } else {
-                // form.post(route('head-quarters.store'), {
-                //     onSuccess: () => { showModal.value = false, form.reset() },
-                //     onError: () => { console.log(form.errors) },
-                // });
-            }
-        }
-    });
-};
-const edit = (data: any) => {
-    // headQuarterForm.id = data.id;
-    // headQuarterForm.name = data.name;
-    // headQuarterForm.latitude = data.latitude;
-    // headQuarterForm.longitude = data.longitude;
-    showModal.value = true;
-};
-
-const destroy = (data: any) => {
-    // headQuarterForm.delete(route('head-quarters.destroy', data.id), {
-    //     onSuccess: () => { },
-    // });
-};
-const close = () => {
-    form.reset();
-    showModal.value = false;
-};
-// rules validation example
-// const rules = {
-//     name: [
-//         (v) => !!v || 'El nombre es requerido',
-//     ],
-//     latitude: [
-//         (v) => !!v || 'La latitud es requerida',
-//     ],
-//     longitude: [
-//         (v) => !!v || 'La longitud es requerida',
-//     ],
-// }
 </script>
 
 <template>
@@ -90,37 +25,8 @@ const close = () => {
     <AppLayout>
         <template #header> Inicio </template>
 
-        <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg">
-            <!-- <div class="p-6 border-b border-gray-200"> -->
-            
-            <!-- </div> -->
+        <div class="flex items-center justify-center m-auto h-[75vh]">
+            <img src="/Img/logoTk.png" alt="LogoPuebla" class="h-72">
         </div>
-        <v-dialog v-model="showModal" max-width="600" persistent>
-            <v-form @submit.prevent="save" ref="formSendRef">
-                <v-card
-                    prepend-icon="mdi-account"
-                    :title="`Form|${form.id ? 'Edit' : 'Create'}`"
-                >
-                    <v-card-text>
-                        <v-text-field
-                            v-model="form.name"
-                            label="Nombre"
-                            persistent-hint
-                            :rules="[required]"
-                        />
-                    </v-card-text>
-                    <v-card-actions>
-                        <v-spacer></v-spacer>
-                        <v-btn text="Cerrar" type="button" @click="close" />
-                        <v-btn
-                            prepend-icon="mdi-home"
-                            :text="form.id ? 'update' : 'save'"
-                            type="submit"
-                        />
-                    </v-card-actions>
-                </v-card>
-            </v-form>
-        </v-dialog>
-        <!-- <Loader :overlay="form.processing" /> -->
     </AppLayout>
 </template>
