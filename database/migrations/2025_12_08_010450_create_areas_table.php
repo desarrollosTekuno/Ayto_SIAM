@@ -11,14 +11,14 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('dependencias', function (Blueprint $table) {
+        Schema::create('areas', function (Blueprint $table) {
             $table->id();
-            $table->string('nombre', 100);
-
+            $table->string('nombre');
             $table->string('abreviatura', 100)->nullable();
             $table->string('alias', 100)->nullable();
 
-            $table->string('usado_en', 20)->default('DP')->nullable();
+            $table->string('usado_en', 20)->nullable();
+            $table->boolean('ayto_biometricos')->default(true)->nullable();
 
             $table->timestamps();
             $table->softDeletes();
@@ -30,6 +30,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('dependencias');
+        Schema::dropIfExists('areas');
     }
 };
