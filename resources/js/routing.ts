@@ -52,6 +52,16 @@ const routes: Routing[] = [
             'dependencias.create',
             'dependencias.edit',
             'dependencias.show',
+
+            'areas.index',
+            'areas.create',
+            'areas.edit',
+            'areas.show',
+
+            'departamentos.index',
+            'departamentos.create',
+            'departamentos.edit',
+            'departamentos.show',
         ],
         title: 'Catálogos',
         icon: 'mdi-database-outline',
@@ -64,8 +74,21 @@ const routes: Routing[] = [
                 icon: 'mdi-office-building-outline',
                 value: 'catalog-dependencias',
             },
+            {
+                name: 'areas.index',
+                title: 'Áreas',
+                icon: 'mdi-domain-outline',
+                value: 'catalog-areas',
+            },
+            {
+                name: 'departamentos.index',
+                title: 'Departamentos',
+                icon: 'mdi-office-building-cog-outline',
+                value: 'catalog-departamentos',
+            },
         ],
     },
+
 ]
 
 export default routes

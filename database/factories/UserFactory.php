@@ -22,7 +22,7 @@ class UserFactory extends Factory
             'username' => null,
             'email' => $this->faker->unique()->safeEmail(),
             'email_verified_at' => now(),
-            'password' => Hash::make('password'),
+            'password' => null,
             'remember_token' => Str::random(10),
         ];
     }
@@ -31,6 +31,7 @@ class UserFactory extends Factory
         return $this->afterCreating(function (User $user) {
             $prefix = Carbon::now()->format('Y');
             $user->username = $prefix . str_pad((string)$user->id, 2, '0', STR_PAD_LEFT);
+            $user->password = Hash::make($user->username);
             $user->save();
 
             UserDato::create([

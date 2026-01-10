@@ -1,4 +1,4 @@
-<!-- resources/js/Components/VButton.vue -->
+<!-- resources/js/Components/Vuetify/VButton.vue -->
 <template>
     <v-btn
         v-bind="$attrs"
@@ -12,7 +12,6 @@
         :class="computedClass"
         @click="emitClick"
     >
-        <!-- Loader SIAM -->
         <template v-if="loading">
             <span class="absolute inset-0 flex items-center justify-center">
                 <svg
@@ -38,18 +37,23 @@
             </span>
         </template>
 
-        <!-- Contenido -->
-        <span :class="{ 'opacity-0': loading }" class="text-white">
+        <template v-if="isIconBtn">
+            <v-icon :icon="iconName" class="text-white" />
+        </template>
+
+        <span v-else :class="{ 'opacity-0': loading }" class="text-white">
             <slot />
         </span>
     </v-btn>
 </template>
 
 <script setup lang="ts">
-import { computed } from 'vue'
+import { computed, useAttrs } from 'vue'
 
 type BtnVariant = 'flat' | 'text' | 'elevated' | 'outlined' | 'plain' | 'tonal'
 type BtnType = 'button' | 'submit' | 'reset'
+
+const attrs = useAttrs()
 
 const props = withDefaults(defineProps<{
     color?: string
@@ -59,7 +63,6 @@ const props = withDefaults(defineProps<{
     loading?: boolean
     disabled?: boolean
 }>(), {
-
     color: 'var(--color-app-tertiary)',
     variant: 'flat',
     rounded: 'button',
@@ -69,22 +72,28 @@ const props = withDefaults(defineProps<{
 })
 
 const emit = defineEmits<{
-  (e: 'click', ev: MouseEvent): void
+    (e: 'click', ev: MouseEvent): void
 }>()
 
 const emitClick = (e: MouseEvent) => {
-  if (!props.loading && !props.disabled) emit('click', e)
+    if (!props.loading && !props.disabled) emit('click', e)
 }
 
+const iconName = computed(() => {
+    return typeof attrs.icon === 'string' ? (attrs.icon as string) : null
+})
+
+const isIconBtn = computed(() => !!iconName.value)
+
 const computedClass = computed(() => [
-  'relative font-semibold transition-all duration-150 text-white',
-  props.disabled || props.loading ? 'cursor-not-allowed opacity-60' : '',
+    'relative font-semibold transition-all duration-150 text-white',
+    props.disabled || props.loading ? 'cursor-not-allowed opacity-60' : '',
 ])
 </script>
 
 <style scoped>
 .v-btn {
-  text-transform: none;
-  border-radius: 0.45rem;
+    text-transform: none;
+    border-radius: 0.45rem;
 }
 </style>

@@ -2,6 +2,8 @@
 
 namespace Database\Seeders;
 
+use App\Models\Catalogos\Area;
+use App\Models\Catalogos\Departamento;
 use App\Models\Catalogos\Dependencia;
 use Illuminate\Database\Seeder;
 use PhpOffice\PhpSpreadsheet\IOFactory;
@@ -76,7 +78,7 @@ class DependenciasSeeder extends Seeder {
             $areaId = null;
             if ($areaNombre !== '') {
                 if (!isset($areaCache[$areaNombre])) {
-                    $area = Areas::withTrashed()->updateOrCreate(
+                    $area = Area::withTrashed()->updateOrCreate(
                         ['nombre' => $areaNombre],
                         [
                             'abreviatura'      => null,
@@ -93,7 +95,7 @@ class DependenciasSeeder extends Seeder {
                 $areaId = $areaCache[$areaNombre];
             }
 
-            $dpto = Departamentos::withTrashed()->updateOrCreate(
+            $dpto = Departamento::withTrashed()->updateOrCreate(
                 ['nombre' => $dptoNombre, 'usado_en' => 'DP'],
                 [
                     'abreviatura'      => null,
@@ -101,7 +103,6 @@ class DependenciasSeeder extends Seeder {
                     'ayto_biometricos' => true,
                     'area_id'          => $areaId,
                     'dependencia_id'   => $dependenciaId,
-                    'empresa_id'       => null,
                     'deleted_at'       => null,
                 ]
             );
