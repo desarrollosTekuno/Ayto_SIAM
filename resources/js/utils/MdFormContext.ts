@@ -1,9 +1,11 @@
 // resources/js/utils/MdFormContext.ts
-import { reactive, provide, inject } from 'vue';
-
+import { reactive, provide, inject, computed, type ComputedRef } from 'vue';
 export interface MdFormField {
     validate: () => boolean;
     focus?: () => void;
+
+    isValid?: boolean;
+    touched?: boolean;
 }
 
 export interface MdFormContext {
@@ -11,6 +13,10 @@ export interface MdFormContext {
     unregisterField: (key: string) => void;
     validateAll: () => boolean;
     getFields: () => Record<string, MdFormField>;
+
+    isValid: ComputedRef<boolean>;
+
+    isTouched: ComputedRef<boolean>;
 }
 
 const MdFormContextKey = Symbol('MdFormContext');
@@ -33,19 +39,34 @@ export function useProvideMdForm() {
 
         Object.entries(fields).forEach(([key, field]) => {
             const ok = field.validate();
-            // console.log(`Validando "${key}" →`, ok ? 'OK' : 'ERROR');
             if (!ok) allValid = false;
         });
 
-        // console.info('Formulario:', allValid ? 'CORRECO' : 'INCORRECTO');
         return allValid;
     };
+
+    const isValid = computed(() => {
+        const list = Object.values(fields);
+
+        if (list.length === 0) return false;
+
+        return list.every((f) => f.isValid === true);
+    });
+
+    const isTouched = computed(() => {
+        const list = Object.values(fields);
+        if (list.length === 0) return false;
+
+        return list.some((f) => f.touched === true);
+    });
 
     const context: MdFormContext = {
         registerField,
         unregisterField,
         validateAll,
         getFields,
+        isValid,
+        isTouched,
     };
 
     provide(MdFormContextKey, context);
