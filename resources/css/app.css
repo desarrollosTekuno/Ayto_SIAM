@@ -1,6 +1,7 @@
 /* resources/css/app.css */
 @import "tailwindcss";
 @import url("normalize.css");
+@import url("DatatableVuetify.css");
 
 @import url('https://fonts.googleapis.com/css2?family=Caveat:wght@400;500;600;700&family=Fredoka:wght@300;400;500;600;700&family=Patrick+Hand&display=swap');
 
@@ -30,117 +31,4 @@
 
 .swal2-container.my-swal {
     z-index: 2500 !important;
-}
-
-/* Contenedor completo de la tabla */
-.vuetify-data-table {
-    border-radius: 4px;
-    overflow: hidden;
-    border: 1px solid #14532d;
-}
-
-/* Header de arriba (título + buscador) */
-.vuetify-dt-header {
-    background: #14532d;
-    border-bottom: 1px solid #1f2937;
-    color: #e5e7eb;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-}
-
-/* Título */
-.vuetify-dt-title {
-    color: #f9fafb;
-}
-
-/* Wrapper para que el buscador sea largo pero no 100% */
-.vuetify-dt-search-wrapper {
-    width: 95%;
-    max-width: 100%;
-    margin: 0 auto;
-}
-
-/* El propio input de búsqueda */
-.vuetify-dt-search .v-field {
-    border-radius: 5px;
-}
-
-/* Encabezados de columnas tipo ag-grid */
-.vuetify-data-table .v-data-table__thead th,
-.vuetify-data-table .v-table__wrapper thead th {
-    background-color: #14532d !important;
-    color: #f9fafb !important;
-    font-weight: 600 !important;
-    border-bottom: 1px solid #064e3b !important;
-}
-
-/* Filas hover suaves */
-.vuetify-data-table .v-data-table__tbody tr:hover {
-    background-color: rgba(16, 185, 129, 0.06);
-}
-
-/* Footer */
-.vuetify-data-table .v-data-table-footer {
-    border-top: 1px solid #064e3b;
-}
-
-/* Footer SIAM compacto */
-.vuetify-data-table .v-data-table-footer {
-    padding-top: 2px !important;
-    padding-bottom: 2px !important;
-    height: 40px !important;
-    border-top: 2px solid #14532d !important;
-    font-size: 0.85rem !important;
-}
-
-/* Wrapper interno ordenado */
-.vuetify-data-table .v-data-table-footer .v-data-table-footer__content {
-  display: flex !important;
-  justify-content: flex-start !important;
-  align-items: center !important;
-  gap: 20px; /* separa tamaño y paginación */
-}
-
-/* Etiqueta “Tamaño:” alineada */
-.vuetify-data-table .v-data-table-footer .v-data-table-footer__items-per-page {
-  display: flex !important;
-  align-items: center !important;
-  gap: 6px !important;
-  font-size: 0.85rem !important;
-}
-
-
-.vuetify-data-table .v-data-table-footer .v-select {
-  max-width: 70px !important;
-  height: 30px !important;
-}
-
-.vuetify-data-table .v-data-table-footer .v-select .v-field {
-  height: 30px !important;
-  min-height: 30px !important;
-  padding: 0 4px !important;
-}
-
-
-.vuetify-data-table .v-data-table-footer .v-select .v-field__input {
-    height: 30px !important;
-    min-height: 30px !important;
-    padding-top: 0 !important;
-    padding-bottom: 0 !important;
-}
-
-
-.vuetify-data-table .v-data-table-footer .v-select__selection-text {
-    line-height: 30px !important;
-    font-size: 0.85rem !important;
-    font-weight: 400 !important;
-    padding-left: 0px;
-    padding-right: 25px;
-}
-
-.vuetify-data-table .v-data-table-footer .v-btn {
-    height: 26px !important;
-    width: 26px !important;
-    min-width: 26px !important;
 }

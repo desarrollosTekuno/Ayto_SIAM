@@ -1,0 +1,79 @@
+/* ===============================
+   Vuetify DataTable - colores SIAM
+   (solo colores, sin tocar tamaños)
+   =============================== */
+
+/* Contenedor completo de la tabla */
+.vuetify-data-table {
+  border: 1px solid var(--color-app-secondary);
+  background: var(--color-app-surface);
+  color: var(--color-app-dark);
+}
+
+/* Header de arriba (título + buscador) */
+.vuetify-dt-header {
+  background: var(--color-app-primary);
+  border-bottom: 1px solid var(--color-app-primary-dark);
+  color: #fff;
+}
+
+/* Título */
+.vuetify-dt-title {
+  color: #fff;
+}
+
+/* Encabezados de columnas */
+.vuetify-data-table .v-data-table__thead th,
+.vuetify-data-table .v-table__wrapper thead th {
+  background-color: var(--color-app-primary) !important;
+  color: #fff !important;
+  border-bottom: 1px solid var(--color-app-primary-dark) !important;
+}
+
+/* Filas hover suaves (vino muy leve) */
+.vuetify-data-table .v-data-table__tbody tr:hover {
+  background-color: rgba(125, 36, 71, 0.08) !important; /* primary con alpha */
+}
+
+/* Separadores de celdas (sutil con secondary) */
+.vuetify-data-table .v-data-table__tbody td {
+    border-bottom: 1px solid rgba(65, 80, 77, 0.18);
+}
+
+/* Footer */
+.vuetify-data-table .v-data-table-footer {
+    border-top: 2px solid var(--color-app-primary) !important;
+    background: rgba(65, 80, 77, 0.06); /* secondary con alpha */
+    color: var(--color-app-dark);
+}
+
+/* Select del tamaño (solo colores) */
+.vuetify-data-table .v-data-table-footer .v-select .v-field {
+    background: var(--color-app-surface);
+    border: 1px solid rgba(65, 80, 77, 0.25);
+    color: var(--color-app-dark);
+}
+
+/* Botones paginación (solo colores) */
+.vuetify-data-table .v-data-table-footer .v-btn {
+    color: var(--color-app-primary) !important;
+}
+
+.vuetify-data-table .v-data-table-footer .v-btn:hover {
+    background: rgba(125, 36, 71, 0.10) !important;
+}
+
+/* Input de búsqueda (solo colores) */
+.vuetify-dt-search .v-field {
+    background: var(--color-app-surface);
+    border: 1px solid rgba(65, 80, 77, 0.25);
+}
+
+.vuetify-dt-search .v-field .v-field__input {
+    color: var(--color-app-dark);
+}
+
+.vuetify-data-table .v-data-table__tbody tr:nth-child(even) {
+    background-color: rgba(65, 80, 77, 0.035);
+}
+
