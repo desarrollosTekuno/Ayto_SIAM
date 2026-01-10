@@ -23,36 +23,25 @@ const routes: Routing[] = [
         group: null,
     },
 
+
     {
-        // Menú Administración
         name: [
             'Usuarios.index',
             'Usuarios.create',
             'Usuarios.edit',
+            'Usuarios.show',
         ],
-        title: 'Administración',
-        icon: 'mdi-shield-account-outline',
-        value: 'adminMenu',
-        group: 'Administración',
+            title: 'Administracion',
+            icon: 'mdi-shield-account-outline',
+            value: 'adminMenu',
+            group: 'Administracion',
         groupItems: [
-            {
-                name: 'Usuarios.index',
-                title: 'Usuarios',
-                icon: 'mdi-account-multiple-outline',
-                value: 'admin-users',
-            },
-            // {
-            //     name: 'Roles.index',
-            //     title: 'Roles',
-            //     icon: 'mdi-key-outline',
-            //     value: 'admin-roles',
-            // },
-            // {
-            //     name: 'Configuracion.index',
-            //     title: 'Configuración',
-            //     icon: 'mdi-cog-outline',
-            //     value: 'admin-settings',
-            // },
+        {
+            name: 'Usuarios.index',
+            title: 'Usuarios',
+            icon: 'mdi-account-multiple-outline',
+            value: 'admin-users',
+        },
         ],
     },
 ]

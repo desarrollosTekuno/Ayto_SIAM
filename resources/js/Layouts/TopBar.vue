@@ -63,14 +63,11 @@ const initials = computed(() => {
             <template #activator="{ props: act }">
             <v-btn v-bind="act" variant="text" class="px-2 text-white hover:text-white">
                 <span class="hidden mr-2 font-semibold sm:inline opacity-90">
-                {{ userName }}
+                    {{ userName }}
                 </span>
 
-                <v-avatar
-                size="32"
-                class="shadow-md border border-white/20 !bg-app-primary text-white"
-                >
-                <span class="font-bold text-[12px]">{{ initials }}</span>
+                <v-avatar size="32" class="shadow-md border border-white/20 !bg-app-primary text-white">
+                    <span class="font-bold text-[12px]">{{ initials }}</span>
                 </v-avatar>
 
                 <v-icon class="ml-1 opacity-80">mdi-chevron-down</v-icon>
@@ -80,7 +77,7 @@ const initials = computed(() => {
             <v-card class="min-w-[220px]">
                 <v-list density="compact">
                     <Link :href="route('logout')" method="post" as="button" class="w-full text-left">
-                    <v-list-item title="Salir" prepend-icon="mdi-logout" />
+                        <v-list-item title="Salir" prepend-icon="mdi-logout" />
                     </Link>
                 </v-list>
             </v-card>
