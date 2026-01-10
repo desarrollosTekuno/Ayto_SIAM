@@ -23,25 +23,47 @@ const routes: Routing[] = [
         group: null,
     },
 
-
+    // ADMINISTRACIÓN
     {
         name: [
-            'Usuarios.index',
-            'Usuarios.create',
-            'Usuarios.edit',
-            'Usuarios.show',
+            'usuarios.index',
+            'usuarios.create',
+            'usuarios.edit',
+            'usuarios.show',
         ],
-            title: 'Administracion',
-            icon: 'mdi-shield-account-outline',
-            value: 'adminMenu',
-            group: 'Administracion',
+        title: 'Administración',
+        icon: 'mdi-shield-account-outline',
+        value: 'adminMenu',
+        group: 'Administración',
         groupItems: [
-        {
-            name: 'Usuarios.index',
-            title: 'Usuarios',
-            icon: 'mdi-account-multiple-outline',
-            value: 'admin-users',
-        },
+            {
+                name: 'usuarios.index',
+                title: 'Usuarios',
+                icon: 'mdi-account-multiple-outline',
+                value: 'admin-users',
+            },
+        ],
+    },
+
+    // CATALOGOS
+    {
+        name: [
+            'dependencias.index',
+            'dependencias.create',
+            'dependencias.edit',
+            'dependencias.show',
+        ],
+        title: 'Catálogos',
+        icon: 'mdi-database-outline',
+        value: 'catalogosMenu',
+        group: 'Catálogos',
+        groupItems: [
+            {
+                name: 'dependencias.index',
+                title: 'Dependencias',
+                icon: 'mdi-office-building-outline',
+                value: 'catalog-dependencias',
+            },
         ],
     },
 ]
