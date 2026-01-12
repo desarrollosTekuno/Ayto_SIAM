@@ -79,6 +79,14 @@ const routes: Routing[] = [
                 icon: 'mdi-account-tie-outline',
                 value: 'catalog-cargos',
             },
+
+            {
+                name: 'titulares.index',
+                title: 'Personas Titulares',
+                icon: 'mdi-account-tie-outline',
+                value: 'catalog-titulares',
+            },
+
             {
                 name: 'dependencias.index',
                 title: 'Dependencias',
