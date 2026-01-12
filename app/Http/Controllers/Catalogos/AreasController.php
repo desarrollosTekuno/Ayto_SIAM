@@ -36,7 +36,7 @@ class AreasController extends Controller {
         return redirect()->route('areas.index')->with('success', 'Área registrada correctamente');
     }
 
-    public function update(Request $request, Area $area) {
+    public function update(Request $request) {
         $validated = $request->validate([
             'nombre'         => ['required', 'string', 'min:3', 'max:255'],
             'abreviatura'    => ['nullable', 'string', 'max:100'],
@@ -45,13 +45,20 @@ class AreasController extends Controller {
             'ayto_biometricos' => ['nullable', 'boolean'],
         ]);
 
-        $area->update([
+        Area::where('id', $request->id)->update([
             'nombre'          => $validated['nombre'],
             'abreviatura'     => $validated['abreviatura'] ?? null,
             'alias'           => $validated['alias'] ?? null,
             'usado_en'        => $validated['usado_en'] ?? null,
-            'ayto_biometricos'=> $validated['ayto_biometricos'] ?? $area->ayto_biometricos,
         ]);
+
+        // $area->update([
+        //     'nombre'          => $validated['nombre'],
+        //     'abreviatura'     => $validated['abreviatura'] ?? null,
+        //     'alias'           => $validated['alias'] ?? null,
+        //     'usado_en'        => $validated['usado_en'] ?? null,
+        //     'ayto_biometricos'=> $validated['ayto_biometricos'] ?? $area->ayto_biometricos,
+        // ]);
 
         return redirect()->route('areas.index')->with('success', 'Área actualizada correctamente');
     }

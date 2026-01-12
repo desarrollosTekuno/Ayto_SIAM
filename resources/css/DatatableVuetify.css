@@ -12,8 +12,8 @@
 
 /* Header de arriba (título + buscador) */
 .vuetify-dt-header {
-  background: var(--color-app-primary);
-  border-bottom: 1px solid var(--color-app-primary-dark);
+  /* background: var(--color-app-primary); */
+  /* border-bottom: 1px solid var(--color-app-primary-dark); */
   color: #fff;
 }
 
@@ -27,7 +27,7 @@
 .vuetify-data-table .v-table__wrapper thead th {
   background-color: var(--color-app-primary) !important;
   color: #fff !important;
-  border-bottom: 1px solid var(--color-app-primary-dark) !important;
+  /* border-bottom: 1px solid var(--color-app-primary-dark) !important; */
 }
 
 /* Filas hover suaves (vino muy leve) */
