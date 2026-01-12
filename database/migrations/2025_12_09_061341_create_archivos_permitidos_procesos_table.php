@@ -19,7 +19,7 @@ return new class extends Migration
             $table->boolean('obligatorio')->default(false);
             $table->boolean('activo')->default(true);
 
-            $table->foreignId('tipo_proceso_id')->constrained('tipos_procesos')->cascadeOnUpdate()->restrictOnDelete();
+            $table->foreignId('tipo_proceso_id')->constrained('tipos_procesos')->cascadeOnUpdate();
 
             $table->timestamps();
             $table->softDeletes();

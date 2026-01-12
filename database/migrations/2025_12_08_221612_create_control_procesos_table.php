@@ -27,8 +27,7 @@ return new class extends Migration
 
             $table->foreignId('tipo_proceso_id')
                 ->constrained('tipos_procesos')
-                ->cascadeOnUpdate()
-                ->restrictOnDelete();
+                ->cascadeOnUpdate();
 
             $table->timestamps();
             $table->softDeletes();

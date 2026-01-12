@@ -11,14 +11,14 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('dependencias', function (Blueprint $table) {
+        Schema::create('municipios', function (Blueprint $table) {
             $table->id();
-            $table->string('nombre', 100);
 
-            $table->string('abreviatura', 100)->nullable();
-            $table->string('alias', 100)->nullable();
+            $table->string('nombre', 150);
+            $table->string('clave', 15)->nullable();
 
-            $table->string('usado_en', 20)->default('DP')->nullable();
+            $table->unsignedBigInteger('estado_id')->nullable();
+            $table->foreign('estado_id')->references("id")->on("estados");
 
             $table->timestamps();
             $table->softDeletes();
@@ -30,6 +30,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('dependencias');
+        Schema::dropIfExists('municipios');
     }
 };

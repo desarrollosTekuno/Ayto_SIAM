@@ -11,7 +11,7 @@ use PhpOffice\PhpSpreadsheet\IOFactory;
 class DependenciasSeeder extends Seeder {
 
     public function run(): void {
-        $path = database_path('seeders/data/CatalogosDp.xlsx');
+        $path = database_path('seeders/data/DependenciasEntidades.xlsx');
 
         if (!file_exists($path)) {
             throw new \RuntimeException("No existe el archivo: {$path}");
@@ -25,101 +25,57 @@ class DependenciasSeeder extends Seeder {
             return;
         }
 
-        // ===== Headers =====
         $header = array_shift($rows);
-        $colDep = $colDpto = $colArea = null;
+
+        $colCveDep  = null;
+        $colCveURes = null;
+        $colNombre  = null;
 
         foreach ($header as $col => $title) {
             $t = mb_strtoupper(trim((string)$title));
-            if ($t === 'DEPENDENCIA')  $colDep  = $col;
-            if ($t === 'DEPARTAMENTO') $colDpto = $col;
-            if ($t === 'AREA')         $colArea = $col;
+
+            if ($t === 'CVEDEP')   $colCveDep  = $col;
+            if ($t === 'CVEURES')  $colCveURes = $col;
+            if ($t === 'NOMBRE' || $t === 'DEPENDENCIA') $colNombre = $col;
         }
 
-        if (!$colDep || !$colDpto || !$colArea) {
-            throw new \RuntimeException('Faltan columnas requeridas: DEPENDENCIA / DEPARTAMENTO / AREA.');
+        if (!$colNombre) {
+            throw new \RuntimeException('Falta columna requerida: nombre.');
         }
 
-        $depCache  = [];
-        $areaCache = [];
+        $created = 0;
+        $updated = 0;
 
-        $createdDep = $updatedDep = 0;
-        $createdArea = $updatedArea = 0;
-        $createdDpto = $updatedDpto = 0;
+        $seen = [];
 
-        foreach ($rows as $idx => $row) {
-            $depNombre  = $this->norm($row[$colDep] ?? '');
-            $dptoNombre = $this->norm($row[$colDpto] ?? '');
-            $areaNombre = $this->norm($row[$colArea] ?? '');
+        foreach ($rows as $row) {
+            $nombre = $this->norm($row[$colNombre] ?? '');
+            if ($nombre === '') continue;
 
-            if ($dptoNombre === '') {
-                continue;
-            }
+            if (isset($seen[$nombre])) continue;
+            $seen[$nombre] = true;
 
-            $dependenciaId = null;
-            if ($depNombre !== '') {
-                if (!isset($depCache[$depNombre])) {
-                    $dep = Dependencia::withTrashed()->updateOrCreate(
-                        ['nombre' => $depNombre],
-                        [
-                            'abreviatura' => null,
-                            'alias'       => null,
-                            'usado_en'    => 'DP',
-                            'deleted_at'  => null,
-                        ]
-                    );
+            $cveDep  = $this->norm($row[$colCveDep] ?? '');
+            $cveURes = $this->norm($row[$colCveURes] ?? '');
 
-                    $depCache[$depNombre] = $dep->id;
-                    $dep->wasRecentlyCreated ? $createdDep++ : $updatedDep++;
-                }
-                $dependenciaId = $depCache[$depNombre];
-            }
-
-            $areaId = null;
-            if ($areaNombre !== '') {
-                if (!isset($areaCache[$areaNombre])) {
-                    $area = Area::withTrashed()->updateOrCreate(
-                        ['nombre' => $areaNombre],
-                        [
-                            'abreviatura'      => null,
-                            'alias'            => null,
-                            'usado_en'         => 'DP',
-                            'ayto_biometricos' => true,
-                            'deleted_at'       => null,
-                        ]
-                    );
-
-                    $areaCache[$areaNombre] = $area->id;
-                    $area->wasRecentlyCreated ? $createdArea++ : $updatedArea++;
-                }
-                $areaId = $areaCache[$areaNombre];
-            }
-
-            $dpto = Departamento::withTrashed()->updateOrCreate(
-                ['nombre' => $dptoNombre, 'usado_en' => 'DP'],
+            $dep = Dependencia::withTrashed()->updateOrCreate(
+                ['nombre' => $nombre],
                 [
-                    'abreviatura'      => null,
-                    'alias'            => null,
-                    'ayto_biometricos' => true,
-                    'area_id'          => $areaId,
-                    'dependencia_id'   => $dependenciaId,
-                    'deleted_at'       => null,
+                    'cveDep'      => $cveDep  !== '' ? $cveDep  : null,
+                    'cveURes'     => $cveURes !== '' ? $cveURes : null,
+                    'abreviatura' => null,
+                    'usado_en'    => 'DP',
+                    'deleted_at'  => null,
                 ]
             );
 
-            $dpto->wasRecentlyCreated ? $createdDpto++ : $updatedDpto++;
+            $dep->wasRecentlyCreated ? $created++ : $updated++;
         }
 
-        $this->command?->info(
-            "Catálogos DP listos.\n" .
-            "Dependencias -> Creadas: {$createdDep}, Actualizadas: {$updatedDep}\n" .
-            "Áreas        -> Creadas: {$createdArea}, Actualizadas: {$updatedArea}\n" .
-            "Departamentos-> Creados: {$createdDpto}, Actualizados: {$updatedDpto}"
-        );
+        $this->command?->info("Dependencias listas. Creadas: {$created}, Actualizadas: {$updated}");
     }
 
-    private function norm($value): string
-    {
+    private function norm($value): string {
         $s = trim((string)$value);
         if ($s === '') return '';
         $s = preg_replace('/\s+/u', ' ', $s);

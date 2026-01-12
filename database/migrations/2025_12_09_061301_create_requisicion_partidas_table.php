@@ -23,13 +23,11 @@ return new class extends Migration
 
             $table->foreignId('unidad_medida_id')
                 ->constrained('unidades_medidas')
-                ->cascadeOnUpdate()
-                ->restrictOnDelete();
+                ->cascadeOnUpdate();
 
             $table->foreignId('requisicion_id')
                 ->constrained('requisiciones')
-                ->cascadeOnUpdate()
-                ->restrictOnDelete();
+                ->cascadeOnUpdate();
 
             $table->timestamps();
             $table->softDeletes();

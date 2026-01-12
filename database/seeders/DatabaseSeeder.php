@@ -2,7 +2,11 @@
 
 namespace Database\Seeders;
 
+use App\Models\Catalogos\Cargo;
 use App\Models\User;
+use Database\Seeders\Catalogos\CargosSeeder;
+use Database\Seeders\Catalogos\EstadosSeeder;
+use Database\Seeders\Catalogos\MunicipiosSeeder;
 // use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\Hash;
@@ -15,10 +19,14 @@ class DatabaseSeeder extends Seeder {
             RolesSeeder::class,
             TiposProcesoSeeder::class,
             UnidadMedidaSeeder::class,
-            ConfiguracionSistemaSeeder::class,
+            EstadosSeeder::class,
+            MunicipiosSeeder::class,
+            CargosSeeder::class,
             DependenciasSeeder::class,
-            // DependenciaSeeder::class,
             UnidadAdministrativaSeeder::class,
+            ObjetoGastoSeeder::class,
+
+            ConfiguracionSistemaSeeder::class,
             RangosProcedimientoSeeder::class,
             UsersSeeder::class,
         ]);

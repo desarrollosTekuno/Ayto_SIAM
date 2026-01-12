@@ -11,16 +11,13 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('requisiciones_objetos_gastos', function (Blueprint $table) {
+        Schema::create('dependencias', function (Blueprint $table) {
             $table->id();
-
-            $table->foreignId('requisicion_id')
-                ->constrained('requisiciones')
-                ->cascadeOnUpdate();
-
-            $table->foreignId('objeto_gasto_id')
-                ->constrained('objetos_gastos')
-                ->cascadeOnUpdate();
+            $table->string('nombre', 150);
+            $table->string('cveDep', 5)->nullable();
+            $table->string('cveURes', 4)->nullable();
+            $table->string('abreviatura', 100)->nullable();
+            $table->string('usado_en', 20)->default('SIAM')->nullable();
 
             $table->timestamps();
             $table->softDeletes();
@@ -32,6 +29,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('requisiciones_objetos_gastos');
+        Schema::dropIfExists('dependencias');
     }
 };

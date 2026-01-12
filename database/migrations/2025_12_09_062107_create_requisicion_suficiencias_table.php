@@ -31,8 +31,7 @@ return new class extends Migration
 
             $table->foreign('requisicion_id')
                 ->references('id')->on('requisiciones')
-                ->cascadeOnUpdate()
-                ->restrictOnDelete();
+                ->cascadeOnUpdate();
 
             $table->timestamps();
             $table->softDeletes();

@@ -9,18 +9,19 @@ return new class extends Migration
     /**
      * Run the migrations.
      */
-    public function up(): void
-    {
-        Schema::create('requisicion_clave_presupuestales', function (Blueprint $table) {
+    public function up(): void {
+        Schema::create('dependencia_datos', function (Blueprint $table) {
             $table->id();
 
-            $table->foreignId('requisicion_id')
-                ->constrained('requisiciones')
-                ->cascadeOnUpdate()
-                ->cascadeOnDelete();
+            $table->string('nombre_titular', 150);
+            $table->string('cargo_titular', 150);
 
-            $table->foreignId('clave_presupuestal_id')
-                ->constrained('claves_presupuestales')
+            $table->string('telefono', 20);
+            $table->string('extension', 10)->nullable();
+
+            $table->foreignId('dependencia_id')
+                ->unique()
+                ->constrained('dependencias')
                 ->cascadeOnUpdate()
                 ->cascadeOnDelete();
 
@@ -34,6 +35,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('requisicion_clave_presupuestals');
+        Schema::dropIfExists('dependencia_datos');
     }
 };

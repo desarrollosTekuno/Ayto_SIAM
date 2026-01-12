@@ -16,4 +16,12 @@ class Dependencia extends Model {
     public function Requisiciones() {
         return $this->hasMany(Requisicion::class, 'dependencia_id');
     }
+
+    public function Datos() {
+        return $this->hasOne(DependenciaDato::class, 'dependencia_id');
+    }
+
+    public function Direccion() {
+        return $this->hasOne(DependenciaDireccion::class, 'dependencia_id');
+    }
 }

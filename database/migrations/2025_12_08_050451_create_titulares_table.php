@@ -11,16 +11,12 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('requisiciones_objetos_gastos', function (Blueprint $table) {
+        Schema::create('titulares', function (Blueprint $table) {
             $table->id();
+            $table->string('nombre', 150);
 
-            $table->foreignId('requisicion_id')
-                ->constrained('requisiciones')
-                ->cascadeOnUpdate();
-
-            $table->foreignId('objeto_gasto_id')
-                ->constrained('objetos_gastos')
-                ->cascadeOnUpdate();
+            $table->unsignedBigInteger('cargo_id')->nullable();
+            $table->foreign('cargo_id')->references("id")->on("cargos");
 
             $table->timestamps();
             $table->softDeletes();
@@ -32,6 +28,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('requisiciones_objetos_gastos');
+        Schema::dropIfExists('titulares');
     }
 };

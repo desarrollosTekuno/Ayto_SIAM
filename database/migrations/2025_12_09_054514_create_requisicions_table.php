@@ -53,14 +53,12 @@ return new class extends Migration
             $table->foreignId('dependencia_id');
             $table->foreign('dependencia_id')
                 ->references('id')->on('dependencias')
-                ->cascadeOnUpdate()
-                ->restrictOnDelete();
+                ->cascadeOnUpdate();
 
             $table->foreignId('unidad_administrativa_id');
             $table->foreign('unidad_administrativa_id')
                 ->references('id')->on('unidades_administrativas')
-                ->cascadeOnUpdate()
-                ->restrictOnDelete();
+                ->cascadeOnUpdate();
 
             $table->foreignId('paaas_id')->nullable();
             $table->foreign('paaas_id')
