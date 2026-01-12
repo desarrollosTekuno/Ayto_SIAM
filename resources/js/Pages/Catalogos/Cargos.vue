@@ -1,6 +1,6 @@
 <script setup>
-import { ref, onMounted, computed } from 'vue'
-import { router, useForm, usePage } from '@inertiajs/vue3'
+import { ref, computed } from 'vue'
+import { useForm, usePage } from '@inertiajs/vue3'
 import AppLayout from '@/Layouts/AppLayout.vue'
 import VButton from '@/Components/Vuetify/VButton.vue'
 import DataTableServer from '@/Components/DataTableServer.vue'
@@ -13,13 +13,13 @@ import { customToastSwal, warningToast, errorToast } from '@/utils/swal'
 
 // =============================== PERMISOS ===============================
 const can = computed(() => usePage().props.auth?.permissions ?? [])
-const canCreate = computed(() => can.value.includes('areas.store'))
-const canUpdate = computed(() => can.value.includes('areas.update'))
-const canDelete = computed(() => can.value.includes('areas.destroy'))
+const canCreate = computed(() => can.value.includes('cargos.store'))
+const canUpdate = computed(() => can.value.includes('cargos.update'))
+const canDelete = computed(() => can.value.includes('cargos.destroy'))
 
 // =============================== PROPS ===============================
-const props = defineProps({
-    Areas: Object,
+defineProps({
+    Cargos: Object,
 })
 
 // =============================== STATE ===============================
@@ -32,15 +32,12 @@ const DTableRef = ref(null)
 const form = useForm({
     id: null,
     nombre: '',
-    abreviatura: '',
-    alias: '',
 })
 
 // =============================== TABLE ===============================
 const headers = [
     { title: 'ID', key: 'id', sortable: true },
     { title: 'Nombre', key: 'nombre', sortable: true },
-    { title: 'Abreviatura', key: 'abreviatura', sortable: false },
     { title: 'Acciones', key: 'actions', sortable: false },
 ]
 
@@ -55,8 +52,6 @@ const ChangeModal = (item = null) => {
         editMode.value = true
         form.id = item.id
         form.nombre = item.nombre
-        form.abreviatura = item.abreviatura
-        form.alias = item.alias
     } else {
         if (!canCreate.value) return
         editMode.value = false
@@ -71,36 +66,30 @@ const GuardarModificar = () => {
         preserveScroll: true,
         onSuccess: () => {
             customToastSwal({
-                title: editMode.value
-                    ? 'Área actualizada correctamente'
-                    : 'Área registrada correctamente',
+                title: form.id
+                    ? 'Cargo actualizado correctamente'
+                    : 'Cargo registrado correctamente',
                 icon: 'success',
             })
             showModal.value = false
             form.reset()
             ReloadTable()
         },
-        onError: () => {
-            errorToast('Ocurrió un error')
-        },
+        onError: () => errorToast('Ocurrió un error'),
     }
 
     if (form.id) {
-        if (!canUpdate.value) return
-        form.put(route('areas.update', form.id), options)
+        form.put(route('cargos.update', form.id), options)
     } else {
-        if (!canCreate.value) return
-        form.post(route('areas.store'), options)
+        form.post(route('cargos.store'), options)
     }
 }
 
 const Eliminar = (id) => {
-    if (!canDelete.value) return
-
-    form.delete(route('areas.destroy', id), {
+    form.delete(route('cargos.destroy', id), {
         preserveScroll: true,
         onSuccess: () => {
-            customToastSwal({ title: 'Área eliminada', icon: 'success' })
+            customToastSwal({ title: 'Cargo eliminado', icon: 'success' })
             ReloadTable()
         },
     })
@@ -109,12 +98,10 @@ const Eliminar = (id) => {
 const onInvalidForm = () => {
     warningToast('Revisa los campos marcados')
 }
-
-onMounted(() => {})
 </script>
 
 <template>
-    <AppLayout title="Áreas">
+    <AppLayout title="Cargos">
         <template #actions>
             <VButton
                 v-if="canCreate"
@@ -129,12 +116,12 @@ onMounted(() => {})
         <section>
             <DataTableServer
                 ref="DTableRef"
-                title="Catálogo de Áreas"
+                title="Catálogo de Cargos"
                 searchable
-                search-label="Buscar área"
+                search-label="Buscar cargo"
                 search-placeholder="Escribe el nombre..."
-                server-route="areas.index"
-                server-prop="Areas"
+                server-route="cargos.index"
+                server-prop="Cargos"
                 :headers="headers"
                 :items-per-page="10"
             >
@@ -146,8 +133,8 @@ onMounted(() => {})
                             variant="flat"
                             color="teal-darken-1"
                             icon="mdi-pencil-outline"
-                            @click="ChangeModal(item)"
                             class="mr-2"
+                            @click="ChangeModal(item)"
                         />
 
                         <VButton
@@ -166,9 +153,9 @@ onMounted(() => {})
         <!-- MODAL -->
         <VDialog
             v-model="showModal"
-            :title="editMode ? 'Editar área' : 'Nueva área'"
-            header-icon="mdi-domain-outline"
-            max-width="600"
+            :title="form.id ? 'Editar cargo' : 'Nuevo cargo'"
+            header-icon="mdi-briefcase-outline"
+            max-width="500"
         >
             <template #content>
                 <FormValidate
@@ -176,30 +163,14 @@ onMounted(() => {})
                     @submit="GuardarModificar"
                     @invalid="onInvalidForm"
                 >
-                    <div class="grid grid-cols-1 gap-4">
-                        <MdTextInput
-                            v-model="form.nombre"
-                            label="Nombre"
-                            :required="true"
-                            :minLength="3"
-                            :maxLength="100"
-                            counter
-                        />
-
-                        <MdTextInput
-                            v-model="form.abreviatura"
-                            label="Abreviatura"
-                            :maxLength="100"
-                            counter
-                        />
-
-                        <MdTextInput
-                            v-model="form.alias"
-                            label="Alias"
-                            :maxLength="100"
-                            counter
-                        />
-                    </div>
+                    <MdTextInput
+                        v-model="form.nombre"
+                        label="Nombre"
+                        :required="true"
+                        :minLength="3"
+                        :maxLength="150"
+                        counter
+                    />
                 </FormValidate>
             </template>
 
