@@ -48,6 +48,11 @@ const routes: Routing[] = [
     // CATALOGOS
     {
         name: [
+            'cargos.index',
+            'cargos.create',
+            'cargos.edit',
+            'cargos.show',
+
             'dependencias.index',
             'dependencias.create',
             'dependencias.edit',
@@ -68,6 +73,12 @@ const routes: Routing[] = [
         value: 'catalogosMenu',
         group: 'Catálogos',
         groupItems: [
+            {
+                name: 'cargos.index',
+                title: 'Cargos',
+                icon: 'mdi-account-tie-outline',
+                value: 'catalog-cargos',
+            },
             {
                 name: 'dependencias.index',
                 title: 'Dependencias',
