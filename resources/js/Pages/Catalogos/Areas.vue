@@ -21,6 +21,7 @@ const props = defineProps({
 const showModal = ref(false)
 const editMode = ref(false)
 const formValidateRef = ref(null)
+const DTableRef = ref(null)
 
 // =============================== FORM ===============================
 const form = useForm({
@@ -40,11 +41,7 @@ const headers = [
 
 // =============================== METHODS ===============================
 const ReloadTable = () => {
-    router.reload({
-        only: ['Areas'],
-        preserveScroll: true,
-        preserveState: true,
-    })
+    DTableRef.value?.reload?.()
 }
 
 const ChangeModal = (item = null) => {
@@ -116,6 +113,7 @@ onMounted(() => {})
         <!-- TABLA -->
         <section>
             <DataTableServer
+                ref="DTableRef"
                 title="Catálogo de Áreas"
                 searchable
                 search-label="Buscar área"
@@ -197,7 +195,7 @@ onMounted(() => {})
                     prepend-icon="mdi-content-save-outline"
                     @click="formValidateRef?.submit()"
                 >
-                    Guardar
+                    {{ form.id ? 'Actualizar' : 'Guardar' }}
                 </VBtnSend>
             </template>
         </VDialog>

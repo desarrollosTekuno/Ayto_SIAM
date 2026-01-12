@@ -58,7 +58,6 @@ class AreasController extends Controller {
 
     public function destroy(Area $area) {
         $area->delete();
-
-            return redirect()->route('areas.index')->with('success', 'Área eliminada correctamente');
+        return redirect()->route('areas.index')->with('success', 'Área eliminada correctamente');
     }
 }

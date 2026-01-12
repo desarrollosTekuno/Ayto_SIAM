@@ -294,6 +294,12 @@ function onUpdateOptions(newOptions) {
     }
 }
 
+function reload() {
+    if (props.serverRoute) {
+        fetchFromServer(internalOptions.value)
+    }
+}
+
 onMounted(() => {
     if (props.serverRoute) {
         fetchFromServer(internalOptions.value)
@@ -303,4 +309,6 @@ onMounted(() => {
 onBeforeUnmount(() => {
     if (searchTimeout) clearTimeout(searchTimeout)
 })
+
+defineExpose({ reload })
 </script>
