@@ -90,7 +90,7 @@ const props = withDefaults(defineProps<{
     persistent: false,
     scrollable: true,
 
-    headerColor: '',
+    headerColor: 'customPrimaryDark',
     headerElevated: false,
 
     showFooter: true,

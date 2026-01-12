@@ -56,7 +56,7 @@ const form = useForm({
     codigo_postal: '',
     estado_id: null,
     municipio_id: null,
-    })
+})
 
 // =============================== TABLE ===============================
 const headers = [
@@ -82,6 +82,8 @@ const ResetForm = () => {
 }
 
 const ChangeModal = (item = null) => {
+    console.log(item);
+
     if (item) {
         if (!canUpdate.value) return
             form.id = item.id
@@ -91,18 +93,18 @@ const ChangeModal = (item = null) => {
             form.abreviatura = item.abreviatura ?? ''
             form.usado_en = item.usado_en ?? 'SIAM'
 
-            form.nombre_titular = item.nombre_titular ?? ''
-            form.cargo_titular = item.cargo_titular ?? ''
-            form.telefono = item.telefono ?? ''
-            form.extension = item.extension ?? ''
+            form.nombre_titular = item.datos.nombre_titular ?? ''
+            form.cargo_titular = item.datos.cargo_titular ?? ''
+            form.telefono = item.datostelefono ?? ''
+            form.extension = item.datos.extension ?? ''
 
-            form.calle = item.calle ?? ''
-            form.numero_exterior = item.numero_exterior ?? ''
-            form.numero_interior = item.numero_interior ?? ''
-            form.colonia = item.colonia ?? ''
-            form.codigo_postal = item.codigo_postal ?? ''
-            form.estado_id = item.estado_id ?? null
-            form.municipio_id = item.municipio_id ?? null
+            form.calle = item.direccion.calle ?? ''
+            form.numero_exterior = item.direccion.numero_exterior ?? ''
+            form.numero_interior = item.direccion.numero_interior ?? ''
+            form.colonia = item.direccion.colonia ?? ''
+            form.codigo_postal = item.direccion.codigo_postal ?? ''
+            form.estado_id = item.direccion.estado_id ?? null
+            form.municipio_id = item.direccion.municipio_id ?? null
         } else {
             if (!canCreate.value) return
             ResetForm()
@@ -158,13 +160,13 @@ const onInvalidForm = () => {
 watch(() => form.estado_id,
     async (estadoId) => {
         form.municipio_id = null
-        municipios.value = []
+        Municipios.value = []
 
         try {
         const { data } = await axios.get(route('estados.municipios', estadoId))
-            municipios.value = data
+            Municipios.value = data
         } catch (e) {
-            errorToast('No se pudieron cargar los municipios')
+            warning.log('No se pudieron obtener los municipios', e);
         }
     }
 )
