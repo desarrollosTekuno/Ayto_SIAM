@@ -2,11 +2,11 @@
 
 namespace Database\Seeders;
 
-use App\Models\Catalogos\Cargo;
+use App\Models\Cargo;
 use App\Models\User;
-use Database\Seeders\Catalogos\CargosSeeder;
-use Database\Seeders\Catalogos\EstadosSeeder;
-use Database\Seeders\Catalogos\MunicipiosSeeder;
+use Database\Seeders\CargosSeeder;
+use Database\Seeders\EstadosSeeder;
+use Database\Seeders\MunicipiosSeeder;
 // use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\Hash;
