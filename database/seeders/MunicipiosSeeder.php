@@ -1,6 +1,6 @@
 <?php
 
-namespace Database\Seeders\Catalogos;
+namespace Database\Seeders;
 
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\Http;
@@ -24,29 +24,34 @@ class MunicipiosSeeder extends Seeder {
             }
 
             $items = $response->json();
+            $datos = $items['datos'] ?? [];
 
-            foreach ($items as $it) {
+            if (empty($datos)) {
+                continue;
+            }
+
+            $now = now();
+
+            foreach ($datos as $it) {
                 $nombre = $it['nomgeo'] ?? null;
                 $cveMun = $it['cve_mun'] ?? null;
 
                 if (!$nombre || !$cveMun) continue;
 
-                $rows[] = [
-                    'estado_id'   => $estado->id,
-                    'nombre'      => $nombre,
-                    'clave'         => $cveMun,
-                    'created_at'  => now(),
-                    'updated_at'  => now(),
-                    'deleted_at'  => null,
-                ];
+                DB::table('municipios')->updateOrInsert(
+                    [
+                        'estado_id' => $estado->id,
+                        'clave' => $cveMun,
+                    ],
+                    [
+                        'nombre' => $nombre,
+                        'created_at' => $now,
+                        'updated_at' => $now,
+                        'deleted_at' => null,
+                    ]
+                );
 
             }
         }
-
-        DB::table('municipios')->upsert(
-            $rows,
-            ['estado_id', 'nombre'],
-            ['updated_at', 'deleted_at']
-        );
     }
 }
