@@ -27,6 +27,7 @@ const props = defineProps({
     Dependencias: Object,
     Estados: Array,
     Municipios: Array,
+    Titulares: Array,
 })
 
 const showModal = ref(false)
@@ -46,6 +47,7 @@ const form = useForm({
 
     nombre_titular: '',
     cargo_titular: '',
+    titular_id: null,
     telefono: '',
     extension: '',
 
@@ -93,6 +95,7 @@ const ChangeModal = (item = null) => {
             form.abreviatura = item.abreviatura ?? ''
             form.usado_en = item.usado_en ?? 'SIAM'
 
+            form.titular_id = item.datos.titular_id ?? null
             form.nombre_titular = item.datos.nombre_titular ?? ''
             form.cargo_titular = item.datos.cargo_titular ?? ''
             form.telefono = item.datostelefono ?? ''
@@ -264,22 +267,13 @@ watch(() => form.estado_id,
                             </div>
                         </div>
 
-                        <MdTextInput
-                            v-model="form.nombre_titular"
-                            label="Nombre del titular"
-                            icon="mdi-account-tie-outline"
-                            :required="true"
-                            :maxLength="150"
-                            counter
-                        />
-
-                        <MdTextInput
-                            v-model="form.cargo_titular"
-                            label="Cargo del titular"
-                            icon="mdi-badge-account-outline"
-                            :required="true"
-                            :maxLength="150"
-                            counter
+                        <MdSelect
+                            v-model="form.titular_id"
+                            label="Persona titular"
+                            :items="Titulares"
+                            item-value="id"
+                            item-title="nombre"
+                            clearable
                         />
 
                         <MdTextInput

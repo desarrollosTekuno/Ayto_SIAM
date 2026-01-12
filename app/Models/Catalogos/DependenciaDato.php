@@ -15,4 +15,8 @@ class DependenciaDato extends Model {
     public function Dependencia() {
         return $this->belongsTo(Dependencia::class, 'dependencia_id');
     }
+
+    public function Titular() {
+        return $this->belongsTo(Titular::class, 'titular_id');
+    }
 }

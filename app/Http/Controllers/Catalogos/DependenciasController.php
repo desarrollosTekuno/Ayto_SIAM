@@ -7,6 +7,7 @@ use App\Models\Catalogos\Dependencia;
 use App\Models\Catalogos\DependenciaDato;
 use App\Models\Catalogos\DependenciaDireccion;
 use App\Models\Catalogos\Estado;
+use App\Models\Catalogos\Titular;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Inertia\Inertia;
@@ -15,8 +16,9 @@ use Inertia\Inertia;
 class DependenciasController extends Controller {
 
     public function index(Request $request) {
+        $Titulares = Titular::select('id', 'nombre')->orderBy('nombre')->get();
         $Estados = Estado::select('id', 'nombre')->orderBy('nombre')->get();
-        $Dependencias = Dependencia::with('Direccion', 'Datos')->forDataTable($request, defaultPerPage: 10);
+        $Dependencias = Dependencia::with('Direccion', 'Datos.Titular')->forDataTable($request, defaultPerPage: 10);
         // $search = trim((string) $request->get('search', ''));
 
         // $query = Dependencia::query()
@@ -81,7 +83,7 @@ class DependenciasController extends Controller {
 
         // $perPage = $request->integer('per_page', 10);
         // $Dependencias = $query->paginate($perPage)->withQueryString();
-        return Inertia::render('Catalogos/Dependencias', compact('Dependencias', 'Estados'));
+        return Inertia::render('Catalogos/Dependencias', compact('Titulares', 'Dependencias', 'Estados'));
     }
 
     public function store(Request $request) {
@@ -92,8 +94,7 @@ class DependenciasController extends Controller {
             'abreviatura' => ['nullable', 'string', 'max:100'],
             'usado_en' => ['nullable', 'string', 'max:20'],
 
-            'nombre_titular' => ['required', 'string', 'max:150'],
-            'cargo_titular' => ['required', 'string', 'max:150'],
+            'titular_id' => ['nullable'],
             'telefono' => ['required', 'string', 'max:20'],
             'extension' => ['nullable', 'string', 'max:10'],
 
@@ -117,8 +118,7 @@ class DependenciasController extends Controller {
 
             DependenciaDato::create([
                 'dependencia_id' => $dependencia->id,
-                'nombre_titular' => $validated['nombre_titular'],
-                'cargo_titular' => $validated['cargo_titular'],
+                'titular_id' => $validated['titular_id'] ?? null,
                 'telefono' => $validated['telefono'],
                 'extension' => $validated['extension'] ?? null,
             ]);
@@ -146,8 +146,7 @@ class DependenciasController extends Controller {
             'abreviatura' => ['nullable', 'string', 'max:100'],
             'usado_en' => ['nullable', 'string', 'max:20'],
 
-            'nombre_titular' => ['required', 'string', 'max:150'],
-            'cargo_titular' => ['required', 'string', 'max:150'],
+            'titular_id' => ['nullable'],
             'telefono' => ['required', 'string', 'max:20'],
             'extension' => ['nullable', 'string', 'max:10'],
 
@@ -172,8 +171,7 @@ class DependenciasController extends Controller {
             $dependencia->Datos()->updateOrCreate(
                 ['dependencia_id' => $dependencia->id],
                 [
-                    'nombre_titular' => $validated['nombre_titular'],
-                    'cargo_titular' => $validated['cargo_titular'],
+                    'titular_id' => $validated['titular_id'] ?? null,
                     'telefono' => $validated['telefono'],
                     'extension' => $validated['extension'] ?? null,
                 ]

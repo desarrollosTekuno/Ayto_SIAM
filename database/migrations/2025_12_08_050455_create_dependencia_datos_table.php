@@ -13,17 +13,17 @@ return new class extends Migration
         Schema::create('dependencia_datos', function (Blueprint $table) {
             $table->id();
 
-            $table->string('nombre_titular', 150);
-            $table->string('cargo_titular', 150);
+            $table->string('nombre_titular', 150)->nullable();
+            $table->string('cargo_titular', 150)->nullable();
 
             $table->string('telefono', 20);
             $table->string('extension', 10)->nullable();
 
-            $table->foreignId('dependencia_id')
-                ->unique()
-                ->constrained('dependencias')
-                ->cascadeOnUpdate()
-                ->cascadeOnDelete();
+            $table->unsignedBigInteger('titular_id')->nullable();
+            $table->foreign('titular_id')->references("id")->on("titulares");
+
+            $table->unsignedBigInteger('dependencia_id')->nullable();
+            $table->foreign('dependencia_id')->references("id")->on("dependencias");
 
             $table->timestamps();
             $table->softDeletes();
