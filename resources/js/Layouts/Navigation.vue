@@ -1,9 +1,8 @@
 <script setup lang="ts">
 import routes from '@/routing'
 import { Link, usePage } from '@inertiajs/vue3'
-import { onMounted, ref } from 'vue'
+import { onMounted, ref, computed } from 'vue'
 import { route } from 'ziggy-js'
-
 
 type AuthUser = {
     name: string
@@ -34,12 +33,18 @@ const existSomeRoute = (routeNames: string | string[]): boolean => {
         : can.includes(routeNames)
 }
 
+const isActiveRoute = (name: string | string[]) => {
+    return Array.isArray(name)
+        ? route().current(name[0])
+        : route().current(name)
+}
+
 onMounted(() => {
     opened.value =
         routes
             .filter((ruta) => ruta.groupItems?.some((gi) => route().current(gi.name)))
             .map((ruta) => ruta.group) ?? []
-    })
+})
 </script>
 
 <template>
@@ -50,13 +55,12 @@ onMounted(() => {
         :rail="$vuetify.display.mobile ? !props.rail : props.rail"
         class="font-poppins bg-customSurface"
     >
-
         <v-list
             class="bg-[url(/assets/images/Logo.png)]"
             open-strategy="multiple"
             :opened="opened"
             @update:opened="newOpened => { opened = newOpened; }"
-            density="comfortable"
+            density="compact"
             nav
         >
             <div v-for="ruta in routes" :key="ruta.value">
@@ -65,10 +69,17 @@ onMounted(() => {
                     <Link :href="route(Array.isArray(ruta.name) ? ruta.name[0] : ruta.name)" preserve-scroll>
                         <v-list-item
                             elevation="0"
-                            variant="elevated"
+                            variant="flat"
+                            density="compact"
                             :title="ruta.title"
-                            base-color="customSurface"
-                            :active="ruta.name instanceof Array ? route().current(ruta.name[0]) : route().current(ruta.name)"
+                            :active="isActiveRoute(ruta.name)"
+                            active-class="nav-item-active"
+                            :class="[
+                                'rounded-lg transition-all',
+                                isActiveRoute(ruta.name)
+                                    ? 'shadow-sm'
+                                    : 'hover:bg-black/5 dark:hover:bg-white/5'
+                            ]"
                         >
                             <template #prepend>
                                 <v-icon :icon="ruta.icon"></v-icon>
@@ -79,13 +90,13 @@ onMounted(() => {
 
                 <div v-else>
                     <!-- <v-list-group v-if="existSomeRoute(ruta.name)" :value="ruta.group" fluid> -->
-                    <v-list-group :value="ruta.group" fluid>
-                        <template v-slot:activator="{ props }">
+                    <v-list-group :value="ruta.group" fluid :active="false">
+                        <template v-slot:activator="{ props: groupProps }">
                             <v-list-item
-                                color="customSecondary"
-                                v-bind="props"
+                                v-bind="groupProps"
                                 :title="ruta.title"
                                 :prepend-icon="ruta.icon"
+                                class="rounded-lg"
                             ></v-list-item>
                         </template>
 
@@ -97,14 +108,19 @@ onMounted(() => {
                         >
                             <!-- v-if="can.includes(groupItem.name)" -->
                             <v-list-item
-                                elevation="0 ml-2"
-                                variant="elevated"
-                                color="customPrimaryDark"
+                                elevation="0"
+                                variant="flat"
                                 :active="route().current(groupItem.name)"
+                                active-class="nav-item-active"
                                 :prepend-icon="groupItem.icon"
                                 :title="groupItem.title"
-                                base-color="customPrimary"
-                                rounded="shaped"
+                                rounded="lg"
+                                class="ml-2 transition-all rounded-lg"
+                                :class="[
+                                    route().current(groupItem.name)
+                                        ? 'shadow-xl hover:shadow-2xl'
+                                        : 'hover:shadow-2xl'
+                                ]"
                             >
                             </v-list-item>
                         </Link>
@@ -114,3 +130,25 @@ onMounted(() => {
         </v-list>
     </v-navigation-drawer>
 </template>
+
+<style scoped>
+.v-list-item {
+    background-color: rgb(var(--v-theme-customSurface));
+    transition: transform 0.15s ease, box-shadow 0.15s ease, background-color 0.15s ease;
+}
+
+.v-list-item:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 6px 16px rgba(0, 0, 0, 0.12);
+    background-color: rgba(var(--v-theme-customPrimary), 0.08);
+}
+
+.nav-item-active {
+    background-color: rgb(var(--v-theme-customPrimary));
+    color: rgb(var(--v-theme-customSurface));
+}
+
+.nav-item-active :deep(.v-icon) {
+    color: currentColor !important;
+}
+</style>
