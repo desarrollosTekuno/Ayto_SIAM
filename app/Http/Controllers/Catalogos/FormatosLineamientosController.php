@@ -16,6 +16,10 @@ class FormatosLineamientosController extends Controller {
         return Inertia::render('Formatos/Lineamientos', compact('Formatos'));
     }
 
+    public function ListarFormatos(Request $request) {
+        return LineamientoGeneralArchivo::get();
+    }
+
     public function store(Request $request) {
         $validated = $request->validate([
             'nombre' => ['required', 'string', 'max:100'],

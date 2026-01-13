@@ -28,6 +28,10 @@ return Application::configure(basePath: dirname(__DIR__))
                 Route::middleware(['web', 'auth'])
                     ->prefix('Catalogos')
                     ->group(base_path('routes/Catalogos.php'));
+
+                Route::middleware(['web'])
+                    ->prefix('Publico')
+                    ->group(base_path('routes/Publico.php'));
             },
         )
         ->withMiddleware(function (Middleware $middleware) {
