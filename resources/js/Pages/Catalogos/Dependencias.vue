@@ -84,8 +84,6 @@ const ResetForm = () => {
 }
 
 const ChangeModal = (item = null) => {
-    console.log(item);
-
     if (item) {
         if (!canUpdate.value) return
             form.id = item.id
@@ -95,19 +93,19 @@ const ChangeModal = (item = null) => {
             form.abreviatura = item.abreviatura ?? ''
             form.usado_en = item.usado_en ?? 'SIAM'
 
-            form.titular_id = item.datos.titular_id ?? null
-            form.nombre_titular = item.datos.nombre_titular ?? ''
-            form.cargo_titular = item.datos.cargo_titular ?? ''
-            form.telefono = item.datostelefono ?? ''
-            form.extension = item.datos.extension ?? ''
+            form.titular_id = item.datos?.titular_id ?? null
+            form.nombre_titular = item.datos?.nombre_titular ?? ''
+            form.cargo_titular = item.datos?.cargo_titular ?? ''
+            form.telefono = item.datos?.telefono ?? ''
+            form.extension = item.datos?.extension ?? ''
 
-            form.calle = item.direccion.calle ?? ''
-            form.numero_exterior = item.direccion.numero_exterior ?? ''
-            form.numero_interior = item.direccion.numero_interior ?? ''
-            form.colonia = item.direccion.colonia ?? ''
-            form.codigo_postal = item.direccion.codigo_postal ?? ''
-            form.estado_id = item.direccion.estado_id ?? null
-            form.municipio_id = item.direccion.municipio_id ?? null
+            form.calle = item.direccion?.calle ?? ''
+            form.numero_exterior = item.direccion?.numero_exterior ?? ''
+            form.numero_interior = item.direccion?.numero_interior ?? ''
+            form.colonia = item.direccion?.colonia ?? ''
+            form.codigo_postal = item.direccion?.codigo_postal ?? ''
+            form.estado_id = item.direccion?.estado_id ?? null
+            form.municipio_id = item.direccion?.municipio_id ?? null
         } else {
             if (!canCreate.value) return
             ResetForm()
@@ -155,24 +153,41 @@ const Eliminar = (id) => {
     })
 }
 
+const ConsultaMunicipios = async () => {
+    form.municipio_id = null
+    Municipios.value = []
+    console.log(form.estado_id);
+
+    try {
+        const { data } = await axios.get(route('estados.municipios', form.estado_id))
+        Municipios.value = data
+    } catch (e) {
+        console.info('No se pudieron obtener los municipios', e);
+    }
+}
+
+const ConsultaPersonaTitular = async (id) => {
+    try {
+        const response = await axios.get(route('titulares.show', id))
+        if (response.data) {
+            form.telefono = response.data?.telefono ?? ''
+            form.extension = response.data?.extension ?? ''
+        }
+    } catch (error) {
+        console.error('Error al obtener la informacion:', error)
+    }
+}
+
 const onInvalidForm = () => {
     warningToast('Revisa los campos marcados')
 }
 
 // =============================== WATCHERS ===============================
-watch(() => form.estado_id,
-    async (estadoId) => {
-        form.municipio_id = null
-        Municipios.value = []
-
-        try {
-        const { data } = await axios.get(route('estados.municipios', estadoId))
-            Municipios.value = data
-        } catch (e) {
-            warning.log('No se pudieron obtener los municipios', e);
-        }
+watch(() => form.titular_id, (newValue) => {
+    if (newValue) {
+        ConsultaPersonaTitular(newValue);
     }
-)
+});
 </script>
 
 <template>
@@ -351,6 +366,7 @@ watch(() => form.estado_id,
                             item-value="id"
                             item-title="nombre"
                             clearable
+                            @update:modelValue="ConsultaMunicipios"
                         />
 
                         <MdSelect

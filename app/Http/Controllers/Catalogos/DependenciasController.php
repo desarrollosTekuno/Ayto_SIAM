@@ -16,7 +16,7 @@ use Inertia\Inertia;
 class DependenciasController extends Controller {
 
     public function index(Request $request) {
-        $Titulares = Titular::select('id', 'nombre')->orderBy('nombre')->get();
+        $Titulares = Titular::Catalogo();
         $Estados = Estado::select('id', 'nombre')->orderBy('nombre')->get();
         $Dependencias = Dependencia::with('Direccion', 'Datos.Titular')->forDataTable($request, defaultPerPage: 10);
         // $search = trim((string) $request->get('search', ''));

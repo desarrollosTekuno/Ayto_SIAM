@@ -13,4 +13,25 @@ class Titular extends Model {
     protected $table = 'titulares';
     protected $guarded = ['id', 'created_at', 'updated_at'];
     protected $dates = ['deleted_at'];
+
+    //  =========================================== Aceesos Directos ============================================
+    public static function Catalogo() {
+        return self::select(
+                'id',
+                'nombre',
+                'apellido_paterno',
+                'apellido_materno'
+            )
+            ->orderBy('nombre')
+            ->get()
+            ->map(function ($titular) {
+                return [
+                    'id' => $titular->id,
+                    'nombre' => trim(
+                        "{$titular->nombre} {$titular->apellido_paterno} {$titular->apellido_materno}"
+                    ),
+                ];
+            });
+    }
+
 }

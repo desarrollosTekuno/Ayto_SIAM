@@ -17,6 +17,10 @@ class TitularesController extends Controller {
         return Inertia::render('Catalogos/Titulares', compact('Titular', 'Cargos'));
     }
 
+    public function show($id) {
+        return Titular::findOrFail($id);
+    }
+
     public function store(Request $request) {
         $validated = $request->validate([
             'nombre' => ['required', 'string', 'min:3', 'max:150'],
