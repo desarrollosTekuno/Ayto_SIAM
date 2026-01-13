@@ -67,6 +67,16 @@ const routes: Routing[] = [
             'departamentos.create',
             'departamentos.edit',
             'departamentos.show',
+
+            'lineamientos.index',
+            'lineamientos.create',
+            'lineamientos.edit',
+            'lineamientos.show',
+
+            'titulares.index',
+            'titulares.create',
+            'titulares.edit',
+            'titulares.show',
         ],
         title: 'Catálogos',
         icon: 'mdi-database-outline',
@@ -93,6 +103,14 @@ const routes: Routing[] = [
                 icon: 'mdi-office-building-outline',
                 value: 'catalog-dependencias',
             },
+
+            {
+                name: 'lineamientos.index',
+                title: 'Formatos Lineamientos',
+                icon: 'mdi-file-document-outline',
+                value: 'catalog-lineamientos',
+            },
+
             {
                 name: 'areas.index',
                 title: 'Áreas',

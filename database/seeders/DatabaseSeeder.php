@@ -25,10 +25,10 @@ class DatabaseSeeder extends Seeder {
             DependenciasSeeder::class,
             UnidadAdministrativaSeeder::class,
             ObjetoGastoSeeder::class,
-
             ConfiguracionSistemaSeeder::class,
             RangosProcedimientoSeeder::class,
             UsersSeeder::class,
+            LineamientoGeneralArchivoSeeder::class,
         ]);
     }
 }

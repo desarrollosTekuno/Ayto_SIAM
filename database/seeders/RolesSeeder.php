@@ -29,6 +29,7 @@ class RolesSeeder extends Seeder {
             'titulares',
             'areas',
             'dependencias',
+            'lineamientos',
         ];
 
         $acciones = [
