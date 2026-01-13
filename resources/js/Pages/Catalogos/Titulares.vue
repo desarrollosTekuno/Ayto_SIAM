@@ -34,6 +34,11 @@ const DTableRef = ref(null)
 const form = useForm({
     id: null,
     nombre: '',
+    apellido_paterno: '',
+    apellido_materno: '',
+    correo: '',
+    telefono: '',
+    extension: '',
     cargo_id: null,
 })
 
@@ -41,6 +46,11 @@ const form = useForm({
 const headers = [
     { title: 'ID', key: 'id', sortable: true },
     { title: 'Nombre', key: 'nombre', sortable: true },
+    { title: 'Apellido Paterno', key: 'apellido_paterno', sortable: true },
+    { title: 'Apellido Materno', key: 'apellido_materno', sortable: true },
+    { title: 'Correo', key: 'correo', sortable: true },
+    { title: 'Teléfono', key: 'telefono', sortable: true },
+    { title: 'Extensión', key: 'extension', sortable: true },
     { title: 'Cargo', key: 'cargo_nombre', sortable: false },
     { title: 'Acciones', key: 'actions', sortable: false },
 ]
@@ -59,8 +69,14 @@ const ChangeModal = (item = null) => {
     if (item) {
         if (!canUpdate.value) return
         editMode.value = true
+
         form.id = item.id
-        form.nombre = item.nombre
+        form.nombre = item.nombre ?? ''
+        form.apellido_paterno = item.apellido_paterno ?? ''
+        form.apellido_materno = item.apellido_materno ?? ''
+        form.correo = item.correo ?? ''
+        form.telefono = item.telefono ?? ''
+        form.extension = item.extension ?? ''
         form.cargo_id = item.cargo_id ?? null
     } else {
         if (!canCreate.value) return
@@ -178,29 +194,76 @@ const onInvalidForm = () => {
             max-width="600"
         >
             <template #content>
-                <FormValidate
-                    ref="formValidateRef"
-                    @submit="GuardarModificar"
-                    @invalid="onInvalidForm"
-                >
-                    <div class="grid grid-cols-1 gap-4">
+                <FormValidate ref="formValidateRef" @submit="GuardarModificar" @invalid="onInvalidForm">
+                    <div class="grid grid-cols-1 gap-2 md:grid-cols-2">
+                        <div class="md:col-span-2">
+                            <MdTextInput
+                                v-model="form.nombre"
+                                label="Nombre"
+                                icon="mdi-account-outline"
+                                :required="true"
+                                :minLength="3"
+                                :maxLength="150"
+                                counter
+                            />
+                        </div>
+
                         <MdTextInput
-                            v-model="form.nombre"
-                            label="Nombre"
-                            :required="true"
-                            :minLength="3"
+                            v-model="form.apellido_paterno"
+                            label="Apellido paterno"
+                            icon="mdi-account-details-outline"
                             :maxLength="150"
                             counter
                         />
 
-                        <MdSelect
-                            v-model="form.cargo_id"
-                            label="Cargo"
-                            :items="Cargos"
-                            item-value="id"
-                            item-title="nombre"
-                            clearable
+                        <MdTextInput
+                            v-model="form.apellido_materno"
+                            label="Apellido materno"
+                            icon="mdi-account-details-outline"
+                            :maxLength="150"
+                            counter
                         />
+
+                        <div class="md:col-span-2">
+                            <MdTextInput
+                                v-model="form.correo"
+                                label="Correo"
+                                icon="mdi-email-outline"
+                                type="email"
+                                :maxLength="95"
+                                counter
+                                :allowed="'any'"
+                                :pattern="/^[^\s@]+@[^\s@]+\.[^\s@]+$/"
+                            />
+                        </div>
+
+                        <MdTextInput
+                            v-model="form.telefono"
+                            label="Teléfono"
+                            icon="mdi-phone-outline"
+                            :maxLength="10"
+                            counter
+                        />
+
+                        <MdTextInput
+                            v-model="form.extension"
+                            label="Extensión"
+                            icon="mdi-phone-in-talk-outline"
+                            :maxLength="5"
+                            counter
+                        />
+
+                        <div class="md:col-span-2">
+                            <MdSelect
+                                v-model="form.cargo_id"
+                                label="Cargo"
+                                icon="mdi-briefcase-outline"
+                                :items="Cargos"
+                                item-value="id"
+                                item-title="nombre"
+                                clearable
+                            />
+                        </div>
                     </div>
                 </FormValidate>
             </template>
