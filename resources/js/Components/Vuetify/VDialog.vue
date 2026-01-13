@@ -17,21 +17,21 @@
                             :flat="!headerElevated"
                             density="comfortable"
                         >
-                            <v-toolbar-title class="text-subtitle-1 font-weight-medium">
+                            <v-toolbar-title class="ml-6 text-subtitle-1 font-weight-semibold text-uppercase">
                                 {{ title }}
                             </v-toolbar-title>
 
                             <v-spacer />
 
-                            <v-btn v-if="closable" icon variant="text" @click="close">
+                            <v-btn v-if="closable" icon variant="text" @click="close" class="mr-4">
                                 <v-icon>mdi-close</v-icon>
                             </v-btn>
                         </v-toolbar>
                     </slot>
                 </header>
 
-            <section class="flex-1 py-2 mx-3 my-2 overflow-y-auto">
-                <v-card-text :class="[bodyClass]" style="padding: 1px;">
+            <section class="flex-1 py-2 mx-4 my-2 overflow-y-auto">
+                <v-card-text :class="[bodyClass]" style="padding: 1px 4px 1px 0px;">
                     <template v-if="props.loading">
                         <v-skeleton-loader
                             type="article, actions"
@@ -47,7 +47,7 @@
             <!-- FOOTER-->
             <footer v-if="showFooter" class="bg-white shrink-0 dark:bg-gray-900">
                 <v-divider />
-                <v-card-actions class="flex justify-end mx-2">
+                <v-card-actions class="flex justify-end mx-4">
                     <slot name="footer" :cancel="onCancel" :confirm="onConfirm" :close="close" >
                         <v-btn v-if="showCancel" variant="text" @click="onCancel">
                             {{ cancelText }}
