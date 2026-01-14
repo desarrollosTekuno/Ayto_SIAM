@@ -124,18 +124,19 @@ const routes: Routing[] = [
                 value: 'catalog-lineamientos',
             },
 
-            {
-                name: 'areas.index',
-                title: 'Áreas',
-                icon: 'mdi-domain-outline',
-                value: 'catalog-areas',
-            },
-            {
-                name: 'departamentos.index',
-                title: 'Departamentos',
-                icon: 'mdi-office-building-cog-outline',
-                value: 'catalog-departamentos',
-            },
+            // {
+            //     name: 'areas.index',
+            //     title: 'Áreas',
+            //     icon: 'mdi-domain-outline',
+            //     value: 'catalog-areas',
+            // },
+
+            // {
+            //     name: 'departamentos.index',
+            //     title: 'Departamentos',
+            //     icon: 'mdi-office-building-cog-outline',
+            //     value: 'catalog-departamentos',
+            // },
         ],
     },
 

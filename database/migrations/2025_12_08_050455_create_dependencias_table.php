@@ -13,11 +13,17 @@ return new class extends Migration
     {
         Schema::create('dependencias', function (Blueprint $table) {
             $table->id();
+
             $table->string('nombre', 150);
             $table->string('cveDep', 5)->nullable();
             $table->string('cveURes', 4)->nullable();
             $table->string('abreviatura', 100)->nullable();
+            $table->tinyInteger('tipo')->default(0);
+            $table->tinyInteger('centralizada')->default(true);
+
             $table->string('usado_en', 20)->default('SIAM')->nullable();
+
+            $table->foreignId('dependencia_padre_id')->nullable()->constrained('dependencias')->nullOnDelete();
 
             $table->timestamps();
             $table->softDeletes();

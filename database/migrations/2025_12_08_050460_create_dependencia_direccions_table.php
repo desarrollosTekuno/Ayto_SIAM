@@ -11,7 +11,7 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('dependencia_direccions', function (Blueprint $table) {
+        Schema::create('dependencia_direcciones', function (Blueprint $table) {
             $table->id();
 
             $table->string('calle', 150);
@@ -20,21 +20,11 @@ return new class extends Migration
             $table->string('colonia', 120);
             $table->string('codigo_postal', 10);
 
-            $table->foreignId('dependencia_id')
-                ->unique()
-                ->constrained('dependencias')
-                ->cascadeOnUpdate()
-                ->cascadeOnDelete();
+            $table->foreignId('estado_id')->nullable()->constrained('estados')->nullOnDelete();
 
-            $table->foreignId('estado_id')
-                ->nullable()
-                ->constrained('estados')
-                ->nullOnDelete();
+            $table->foreignId('municipio_id')->nullable()->constrained('municipios')->nullOnDelete();
 
-            $table->foreignId('municipio_id')
-                ->nullable()
-                ->constrained('municipios')
-                ->nullOnDelete();
+            $table->foreignId('dependencia_id')->constrained('dependencias')->cascadeOnDelete();
 
             $table->timestamps();
             $table->softDeletes();

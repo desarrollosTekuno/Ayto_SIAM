@@ -29,11 +29,6 @@ class Secretaria extends Model {
         return $this->hasOne(SecretariaDireccion::class, 'secretaria_id');
     }
 
-    public function SubDirecciones() {
-        return $this->hasMany(Direccion::class, 'secretaria_id');
-    }
-
-
     //  =========================================== Aceesos Directos ============================================
     public static function CatalogoPadre() {
         return self::select(

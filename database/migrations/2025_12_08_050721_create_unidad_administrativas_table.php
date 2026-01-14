@@ -17,9 +17,11 @@ return new class extends Migration
             $table->string('nombre', 150);
             $table->string('abreviatura', 100)->nullable();
             $table->string('alias', 100)->nullable();
+            $table->tinyInteger('tipo')->default(0); // dIRECCION, DEPARTAMENTO, JEFATURA
 
-            $table->unsignedBigInteger('secretaria_id')->nullable();
-            $table->foreign('secretaria_id')->references("id")->on("secretarias");
+            $table->foreignId('unidad_padre_id')->nullable()->constrained('unidades_administrativas')->nullOnDelete();
+
+            $table->foreignId('dependencia_id')->constrained('dependencias')->cascadeOnDelete();
 
             $table->timestamps();
             $table->softDeletes();
