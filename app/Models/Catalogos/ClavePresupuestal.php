@@ -14,12 +14,12 @@ class ClavePresupuestal extends Model {
 
     protected $table = 'claves_presupuestales';
 
-    public function Requisiciones() {
-        return $this->belongsToMany(
-            Requisicion::class,
-            'requisiciones_claves_presupuestales',
-            'clave_presupuestal_id',
-            'requisicion_id'
-        )->withTimestamps();
-    }
+    // public function Requisiciones() {
+    //     return $this->belongsToMany(
+    //         Requisicion::class,
+    //         'requisiciones_claves_presupuestales',
+    //         'clave_presupuestal_id',
+    //         'requisicion_id'
+    //     )->withTimestamps();
+    // }
 }
