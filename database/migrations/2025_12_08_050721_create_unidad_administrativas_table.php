@@ -15,6 +15,7 @@ return new class extends Migration
             $table->id();
 
             $table->string('nombre', 150);
+            $table->string('siglas', 50)->nullable();
             $table->string('abreviatura', 100)->nullable();
             $table->string('alias', 100)->nullable();
             $table->tinyInteger('tipo')->default(0); // dIRECCION, DEPARTAMENTO, JEFATURA

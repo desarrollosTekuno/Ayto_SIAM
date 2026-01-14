@@ -19,71 +19,9 @@ class DependenciasController extends Controller {
         $Titulares = Titular::Catalogo();
         $Estados = Estado::select('id', 'nombre')->orderBy('nombre')->get();
         $Dependencias = Dependencia::with('Direccion', 'Datos.Titular')->forDataTable($request, defaultPerPage: 10);
-        // $search = trim((string) $request->get('search', ''));
+        $DependenciasPadre = Dependencia::CatalogoPadre();
 
-        // $query = Dependencia::query()
-        //     ->leftJoin('dependencia_datos as dd', function ($join) {
-        //         $join->on('dd.dependencia_id', '=', 'dependencias.id')
-        //             ->whereNull('dd.deleted_at');
-        //     })
-        //     ->leftJoin('dependencia_direccions as dir', function ($join) {
-        //         $join->on('dir.dependencia_id', '=', 'dependencias.id')
-        //             ->whereNull('dir.deleted_at');
-        //     })
-        //     ->select([
-        //         'dependencias.id',
-        //         'dependencias.nombre',
-        //         'dependencias.cveDep',
-        //         'dependencias.cveURes',
-        //         'dependencias.abreviatura',
-        //         'dependencias.usado_en',
-        //         'dd.nombre_titular',
-        //         'dd.cargo_titular',
-        //         'dd.telefono',
-        //         'dd.extension',
-        //         'dir.calle',
-        //         'dir.numero_exterior',
-        //         'dir.numero_interior',
-        //         'dir.colonia',
-        //         'dir.codigo_postal',
-        //         'dir.estado_id',
-        //         'dir.municipio_id',
-        //     ]);
-
-        // if ($search !== '') {
-        //     $query->where(function ($q) use ($search) {
-        //         $q->where('dependencias.nombre', 'like', '%' . $search . '%')
-        //             ->orWhere('dependencias.cveDep', 'like', '%' . $search . '%')
-        //             ->orWhere('dependencias.abreviatura', 'like', '%' . $search . '%')
-        //             ->orWhere('dd.nombre_titular', 'like', '%' . $search . '%')
-        //             ->orWhere('dd.telefono', 'like', '%' . $search . '%');
-        //     });
-        // }
-
-        // $sortMap = [
-        //     'id' => 'dependencias.id',
-        //     'nombre' => 'dependencias.nombre',
-        //     'cveDep' => 'dependencias.cveDep',
-        //     'abreviatura' => 'dependencias.abreviatura',
-        //     'nombre_titular' => 'dd.nombre_titular',
-        //     'telefono' => 'dd.telefono',
-        // ];
-
-        // $sortBy = $request->get('sort_by');
-        // $sortDir = strtolower($request->get('sort_dir', 'asc'));
-        // if (! in_array($sortDir, ['asc', 'desc'], true)) {
-        //     $sortDir = 'asc';
-        // }
-
-        // if ($sortBy && isset($sortMap[$sortBy])) {
-        //     $query->orderBy($sortMap[$sortBy], $sortDir);
-        // } else {
-        //     $query->orderBy('dependencias.id', 'asc');
-        // }
-
-        // $perPage = $request->integer('per_page', 10);
-        // $Dependencias = $query->paginate($perPage)->withQueryString();
-        return Inertia::render('Catalogos/Dependencias', compact('Titulares', 'Dependencias', 'Estados'));
+        return Inertia::render('Catalogos/Dependencias', compact('Titulares', 'Dependencias', 'Estados', 'DependenciasPadre'));
     }
 
     public function store(Request $request) {
@@ -92,9 +30,12 @@ class DependenciasController extends Controller {
             'cveDep' => ['nullable', 'string', 'max:5'],
             'cveURes' => ['nullable', 'string', 'max:4'],
             'abreviatura' => ['nullable', 'string', 'max:100'],
+            'tipo' => ['nullable', 'integer'],
+            'centralizada' => ['nullable', 'boolean'],
             'usado_en' => ['nullable', 'string', 'max:20'],
+            'dependencia_padre_id' => ['nullable', 'integer', 'exists:dependencias,id'],
 
-            'titular_id' => ['nullable'],
+            'titular_id' => ['nullable', 'integer', 'exists:titulares,id'],
             'telefono' => ['required', 'string', 'max:20'],
             'extension' => ['nullable', 'string', 'max:10'],
 
@@ -113,7 +54,10 @@ class DependenciasController extends Controller {
                 'cveDep' => $validated['cveDep'] ?? null,
                 'cveURes' => $validated['cveURes'] ?? null,
                 'abreviatura' => $validated['abreviatura'] ?? null,
+                'tipo' => $validated['tipo'] ?? 0,
+                'centralizada' => $validated['centralizada'] ?? true,
                 'usado_en' => $validated['usado_en'] ?? 'SIAM',
+                'dependencia_padre_id' => $validated['dependencia_padre_id'] ?? null,
             ]);
 
             DependenciaDato::create([
@@ -144,9 +88,12 @@ class DependenciasController extends Controller {
             'cveDep' => ['nullable', 'string', 'max:5'],
             'cveURes' => ['nullable', 'string', 'max:4'],
             'abreviatura' => ['nullable', 'string', 'max:100'],
+            'tipo' => ['nullable', 'integer'],
+            'centralizada' => ['nullable', 'boolean'],
             'usado_en' => ['nullable', 'string', 'max:20'],
+            'dependencia_padre_id' => ['nullable', 'integer', 'exists:dependencias,id'],
 
-            'titular_id' => ['nullable'],
+            'titular_id' => ['nullable', 'integer', 'exists:titulares,id'],
             'telefono' => ['required', 'string', 'max:20'],
             'extension' => ['nullable', 'string', 'max:10'],
 
@@ -165,7 +112,10 @@ class DependenciasController extends Controller {
                 'cveDep' => $validated['cveDep'] ?? null,
                 'cveURes' => $validated['cveURes'] ?? null,
                 'abreviatura' => $validated['abreviatura'] ?? null,
+                'tipo' => $validated['tipo'] ?? 0,
+                'centralizada' => $validated['centralizada'] ?? true,
                 'usado_en' => $validated['usado_en'] ?? 'SIAM',
+                'dependencia_padre_id' => $validated['dependencia_padre_id'] ?? null,
             ]);
 
             $dependencia->Datos()->updateOrCreate(

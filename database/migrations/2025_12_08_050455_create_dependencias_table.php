@@ -19,7 +19,7 @@ return new class extends Migration
             $table->string('cveURes', 4)->nullable();
             $table->string('abreviatura', 100)->nullable();
             $table->tinyInteger('tipo')->default(0);
-            $table->tinyInteger('centralizada')->default(true);
+            $table->boolean('centralizada')->default(true);
 
             $table->string('usado_en', 20)->default('SIAM')->nullable();
 

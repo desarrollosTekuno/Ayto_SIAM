@@ -29,10 +29,10 @@ class RolesSeeder extends Seeder {
             'usuarios',
             'cargos',
             'titulares',
-            'areas',
             'secretarias',
-            'direcciones',
             'dependencias',
+            'unidades_administrativas',
+            'areas',
             'lineamientos',
         ];
 

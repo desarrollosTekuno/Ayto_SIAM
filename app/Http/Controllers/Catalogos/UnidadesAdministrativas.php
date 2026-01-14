@@ -3,37 +3,48 @@
 namespace App\Http\Controllers\Catalogos;
 
 use App\Http\Controllers\Controller;
+use App\Models\Catalogos\Dependencia;
 use App\Models\Catalogos\Estado;
-use App\Models\Catalogos\Secretaria;
-use App\Models\Catalogos\SecretariaDato;
-use App\Models\Catalogos\SecretariaDireccion;
 use App\Models\Catalogos\Titular;
+use App\Models\Catalogos\UnidadAdministrativa;
+use App\Models\Catalogos\UnidadAdministrativaDato;
+use App\Models\Catalogos\UnidadAdministrativaDireccion;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Inertia\Inertia;
 
-
-class SecretariasController extends Controller {
+class UnidadesAdministrativas extends Controller {
 
     public function index(Request $request) {
-        $Secretarias = Secretaria::with('Dato.Titular', 'Direccion.Estado', 'Direccion.Municipio')->forDataTable($request, defaultPerPage: 10);
+        $UnidadesAdministrativas = UnidadAdministrativa::with('Dato.Titular', 'Direccion.Estado', 'Direccion.Municipio')->forDataTable($request, defaultPerPage: 10);
 
-        $DependenciasPadre = Secretaria::CatalogoPadre();
+        $UnidadesPadre = UnidadAdministrativa::CatalogoPadre();
+        $Dependencias = Dependencia::select('id', 'nombre', 'cveDep')
+            ->orderBy('nombre')
+            ->get()
+            ->map(function ($dependencia) {
+                return [
+                    'id' => $dependencia->id,
+                    'nombre' => $dependencia->cveDep
+                        ? "{$dependencia->cveDep} - {$dependencia->nombre}"
+                        : $dependencia->nombre,
+                ];
+            });
         $Titulares = Titular::Catalogo();
         $Estados = Estado::select('id', 'nombre')->orderBy('nombre')->get();
 
-        return Inertia::render('Catalogos/Secretarias', compact('Secretarias', 'DependenciasPadre', 'Titulares', 'Estados'));
+        return Inertia::render('Catalogos/UnidadesAdministrativas', compact('UnidadesAdministrativas', 'UnidadesPadre', 'Dependencias', 'Titulares', 'Estados'));
     }
 
     public function store(Request $request) {
         $validated = $request->validate([
             'nombre' => ['required', 'string', 'min:3', 'max:150'],
-            'cveDep' => ['nullable', 'string', 'max:5'],
-            'cveURes' => ['nullable', 'string', 'max:4'],
+            'siglas' => ['nullable', 'string', 'max:50'],
             'abreviatura' => ['nullable', 'string', 'max:100'],
+            'alias' => ['nullable', 'string', 'max:100'],
             'tipo' => ['nullable', 'integer'],
-            'usado_en' => ['nullable', 'string', 'max:20'],
-            'secretaria_padre_id' => ['nullable', 'integer', 'exists:secretarias,id'],
+            'unidad_padre_id' => ['nullable', 'integer', 'exists:unidades_administrativas,id'],
+            'dependencia_id' => ['required', 'integer', 'exists:dependencias,id'],
 
             'titular_id' => ['nullable', 'integer', 'exists:titulares,id'],
             'telefono' => ['required', 'string', 'max:20'],
@@ -49,25 +60,25 @@ class SecretariasController extends Controller {
         ]);
 
         DB::transaction(function () use ($validated) {
-            $secretaria = Secretaria::create([
+            $unidadAdministrativa = UnidadAdministrativa::create([
                 'nombre' => $validated['nombre'],
-                'cveDep' => $validated['cveDep'] ?? null,
-                'cveURes' => $validated['cveURes'] ?? null,
+                'siglas' => $validated['siglas'] ?? null,
                 'abreviatura' => $validated['abreviatura'] ?? null,
+                'alias' => $validated['alias'] ?? null,
                 'tipo' => $validated['tipo'] ?? 0,
-                'usado_en' => $validated['usado_en'] ?? 'SIAM',
-                'secretaria_padre_id' => $validated['secretaria_padre_id'] ?? null,
+                'unidad_padre_id' => $validated['unidad_padre_id'] ?? null,
+                'dependencia_id' => $validated['dependencia_id'],
             ]);
 
-            SecretariaDato::create([
-                'secretaria_id' => $secretaria->id,
+            UnidadAdministrativaDato::create([
+                'unidad_administrativa_id' => $unidadAdministrativa->id,
                 'titular_id' => $validated['titular_id'] ?? null,
                 'telefono' => $validated['telefono'],
                 'extension' => $validated['extension'] ?? null,
             ]);
 
-            SecretariaDireccion::create([
-                'secretaria_id' => $secretaria->id,
+            UnidadAdministrativaDireccion::create([
+                'unidad_administrativa_id' => $unidadAdministrativa->id,
                 'calle' => $validated['calle'],
                 'numero_exterior' => $validated['numero_exterior'],
                 'numero_interior' => $validated['numero_interior'] ?? null,
@@ -78,18 +89,18 @@ class SecretariasController extends Controller {
             ]);
         });
 
-        return redirect()->route('secretarias.index')->with('success', 'Secretaria registrada correctamente');
+        return redirect()->route('unidades_administrativas.index')->with('success', 'Unidad administrativa registrada correctamente');
     }
 
-    public function update(Request $request, Secretaria $secretaria) {
+    public function update(Request $request, UnidadAdministrativa $unidades_administrativa) {
         $validated = $request->validate([
             'nombre' => ['required', 'string', 'min:3', 'max:150'],
-            'cveDep' => ['nullable', 'string', 'max:5'],
-            'cveURes' => ['nullable', 'string', 'max:4'],
+            'siglas' => ['nullable', 'string', 'max:50'],
             'abreviatura' => ['nullable', 'string', 'max:100'],
+            'alias' => ['nullable', 'string', 'max:100'],
             'tipo' => ['nullable', 'integer'],
-            'usado_en' => ['nullable', 'string', 'max:20'],
-            'secretaria_padre_id' => ['nullable', 'integer', 'exists:secretarias,id'],
+            'unidad_padre_id' => ['nullable', 'integer', 'exists:unidades_administrativas,id'],
+            'dependencia_id' => ['required', 'integer', 'exists:dependencias,id'],
 
             'titular_id' => ['nullable', 'integer', 'exists:titulares,id'],
             'telefono' => ['required', 'string', 'max:20'],
@@ -104,19 +115,19 @@ class SecretariasController extends Controller {
             'municipio_id' => ['nullable', 'integer', 'exists:municipios,id'],
         ]);
 
-        DB::transaction(function () use ($validated, $secretaria) {
-            $secretaria->update([
+        DB::transaction(function () use ($validated, $unidades_administrativa) {
+            $unidades_administrativa->update([
                 'nombre' => $validated['nombre'],
-                'cveDep' => $validated['cveDep'] ?? null,
-                'cveURes' => $validated['cveURes'] ?? null,
+                'siglas' => $validated['siglas'] ?? null,
                 'abreviatura' => $validated['abreviatura'] ?? null,
+                'alias' => $validated['alias'] ?? null,
                 'tipo' => $validated['tipo'] ?? 0,
-                'usado_en' => $validated['usado_en'] ?? 'SIAM',
-                'secretaria_padre_id' => $validated['secretaria_padre_id'] ?? null,
+                'unidad_padre_id' => $validated['unidad_padre_id'] ?? null,
+                'dependencia_id' => $validated['dependencia_id'],
             ]);
 
-            $secretaria->Dato()->updateOrCreate(
-                ['secretaria_id' => $secretaria->id],
+            $unidades_administrativa->Dato()->updateOrCreate(
+                ['unidad_administrativa_id' => $unidades_administrativa->id],
                 [
                     'titular_id' => $validated['titular_id'] ?? null,
                     'telefono' => $validated['telefono'],
@@ -124,8 +135,8 @@ class SecretariasController extends Controller {
                 ]
             );
 
-            $secretaria->Direccion()->updateOrCreate(
-                ['secretaria_id' => $secretaria->id],
+            $unidades_administrativa->Direccion()->updateOrCreate(
+                ['unidad_administrativa_id' => $unidades_administrativa->id],
                 [
                     'calle' => $validated['calle'],
                     'numero_exterior' => $validated['numero_exterior'],
@@ -138,16 +149,16 @@ class SecretariasController extends Controller {
             );
         });
 
-        return redirect()->route('secretarias.index')->with('success', 'Secretaria actualizada correctamente');
+        return redirect()->route('unidades_administrativas.index')->with('success', 'Unidad administrativa actualizada correctamente');
     }
 
-    public function destroy(Secretaria $secretaria) {
-        DB::transaction(function () use ($secretaria) {
-            $secretaria->Dato()->delete();
-            $secretaria->Direccion()->delete();
-            $secretaria->delete();
+    public function destroy(UnidadAdministrativa $unidades_administrativa) {
+        DB::transaction(function () use ($unidades_administrativa) {
+            $unidades_administrativa->Dato()->delete();
+            $unidades_administrativa->Direccion()->delete();
+            $unidades_administrativa->delete();
         });
 
-        return redirect()->route('secretarias.index')->with('success', 'Secretaria eliminada correctamente');
+        return redirect()->route('unidades_administrativas.index')->with('success', 'Unidad administrativa eliminada correctamente');
     }
 }

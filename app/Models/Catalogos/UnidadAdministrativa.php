@@ -22,6 +22,10 @@ class UnidadAdministrativa extends Model {
         return $this->hasOne(UnidadAdministrativaDato::class, 'unidad_administrativa_id');
     }
 
+    public function Dato() {
+        return $this->hasOne(UnidadAdministrativaDato::class, 'unidad_administrativa_id');
+    }
+
     public function Direccion() {
         return $this->hasOne(UnidadAdministrativaDireccion::class, 'unidad_administrativa_id');
     }
@@ -32,5 +36,24 @@ class UnidadAdministrativa extends Model {
 
     public function UnidadesHijas() {
         return $this->hasMany(self::class, 'unidad_padre_id');
+    }
+
+    //  =========================================== CATALOGOS ============================================
+    public static function CatalogoPadre() {
+        return self::select(
+                'id',
+                'nombre',
+                'siglas'
+            )
+            ->orderBy('nombre')
+            ->get()
+            ->map(function ($data) {
+                return [
+                    'id' => $data->id,
+                    'nombre' => trim(
+                        "{$data->siglas} - {$data->nombre}"
+                    ),
+                ];
+            });
     }
 }

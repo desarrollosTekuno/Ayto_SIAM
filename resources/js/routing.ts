@@ -118,6 +118,13 @@ const routes: Routing[] = [
             },
 
             {
+                name: 'unidades_administrativas.index',
+                title: 'Unidades Administrativas',
+                icon: 'mdi-office-building-cog-outline',
+                value: 'catalog-unidades-administrativas',
+            },
+
+            {
                 name: 'lineamientos.index',
                 title: 'Formatos Lineamientos',
                 icon: 'mdi-file-document-outline',
