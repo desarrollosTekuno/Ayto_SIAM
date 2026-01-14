@@ -18,6 +18,9 @@ return new class extends Migration
             $table->string('abreviatura', 100)->nullable();
             $table->string('alias', 100)->nullable();
 
+            $table->unsignedBigInteger('secretaria_id')->nullable();
+            $table->foreign('secretaria_id')->references("id")->on("secretarias");
+
             $table->timestamps();
             $table->softDeletes();
         });

@@ -21,10 +21,6 @@ return new class extends Migration
             $table->tinyInteger('tipo')->default(0);
             $table->string('usado_en', 20)->default('SIAM')->nullable();
 
-            $table->foreignId('titular_id')->nullable()
-                ->constrained('titulares')
-                ->nullOnDelete();
-
             $table->foreignId('secretaria_padre_id')
                 ->nullable()
                 ->constrained('secretarias')

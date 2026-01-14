@@ -164,22 +164,14 @@ onMounted(() => {})
         </section>
 
         <!-- MODAL -->
-        <VDialog
-            v-model="showModal"
-            :title="editMode ? 'Editar área' : 'Nueva área'"
-            header-icon="mdi-domain-outline"
-            max-width="600"
-        >
+        <VDialog v-model="showModal" :title="editMode ? 'Editar área' : 'Nueva área'" header-icon="mdi-domain-outline" max-width="550">
             <template #content>
-                <FormValidate
-                    ref="formValidateRef"
-                    @submit="GuardarModificar"
-                    @invalid="onInvalidForm"
-                >
+                <FormValidate ref="formValidateRef" @submit="GuardarModificar" @invalid="onInvalidForm">
                     <div class="grid grid-cols-1 gap-4">
                         <MdTextInput
                             v-model="form.nombre"
                             label="Nombre"
+                            icon="mdi-domain"
                             :required="true"
                             :minLength="3"
                             :maxLength="100"
@@ -189,6 +181,7 @@ onMounted(() => {})
                         <MdTextInput
                             v-model="form.abreviatura"
                             label="Abreviatura"
+                            icon="mdi-text-short"
                             :maxLength="100"
                             counter
                         />
@@ -196,10 +189,12 @@ onMounted(() => {})
                         <MdTextInput
                             v-model="form.alias"
                             label="Alias"
+                            icon="mdi-tag-outline"
                             :maxLength="100"
                             counter
                         />
                     </div>
+
                 </FormValidate>
             </template>
 
