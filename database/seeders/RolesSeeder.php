@@ -25,6 +25,7 @@ class RolesSeeder extends Seeder {
 
         // ================= MODULOS =================
         $modulos = [
+            'RolesPermisos',
             'cargos',
             'titulares',
             'areas',

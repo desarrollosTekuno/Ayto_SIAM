@@ -37,6 +37,12 @@ const routes: Routing[] = [
         group: 'Administración',
         groupItems: [
             {
+                name: 'RolesPermisos.index',
+                title: 'Roles y Permisos',
+                icon: 'mdi mdi-card-bulleted-settings',
+                value: 'admin-users',
+            },
+            {
                 name: 'usuarios.index',
                 title: 'Usuarios',
                 icon: 'mdi-account-multiple-outline',
