@@ -26,18 +26,23 @@ class RolesSeeder extends Seeder {
         // ================= MODULOS =================
         $modulos = [
             'RolesPermisos',
+            'usuarios',
             'cargos',
             'titulares',
             'areas',
+            'secretarias',
+            'direcciones',
             'dependencias',
             'lineamientos',
         ];
 
         $acciones = [
-            'index',
-            'store',
-            'update',
-            'destroy',
+            'index', //inicio
+            'show', //ver
+            'store', //guardar
+            'update', //actualizar
+            'destroy', //eliminar
+            'other' //otros
         ];
 
         // ================= PERMISOS =================

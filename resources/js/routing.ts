@@ -104,6 +104,13 @@ const routes: Routing[] = [
             },
 
             {
+                name: 'secretarias.index',
+                title: 'Secretarias',
+                icon: 'mdi-account-tie-outline',
+                value: 'catalog-scretarias',
+            },
+
+            {
                 name: 'dependencias.index',
                 title: 'Dependencias',
                 icon: 'mdi-office-building-outline',

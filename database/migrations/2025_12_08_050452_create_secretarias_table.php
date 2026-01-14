@@ -14,23 +14,26 @@ return new class extends Migration
         Schema::create('secretarias', function (Blueprint $table) {
             $table->id();
 
-            $table->string('nombre_titular', 150)->nullable();
-            $table->string('cargo_titular', 150)->nullable();
+            $table->string('nombre', 150);
+            $table->string('cveDep', 5)->nullable();
+            $table->string('cveURes', 4)->nullable();
+            $table->string('abreviatura', 100)->nullable();
+            $table->tinyInteger('tipo')->default(0);
+            $table->string('usado_en', 20)->default('SIAM')->nullable();
 
-            $table->string('telefono', 20);
-            $table->string('extension', 10)->nullable();
+            $table->foreignId('titular_id')->nullable()
+                ->constrained('titulares')
+                ->nullOnDelete();
 
-            $table->unsignedBigInteger('titular_id')->nullable();
-            $table->foreign('titular_id')->references('id')->on('titulares');
-
-            $table->foreignId('secretaria_id')
+            $table->foreignId('secretaria_padre_id')
+                ->nullable()
                 ->constrained('secretarias')
-                ->cascadeOnUpdate()
-                ->cascadeOnDelete();
+                ->nullOnDelete();
 
             $table->timestamps();
             $table->softDeletes();
         });
+
     }
 
     /**

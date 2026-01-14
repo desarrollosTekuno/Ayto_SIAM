@@ -19,10 +19,8 @@ return new class extends Migration
             $table->string('abreviatura', 100)->nullable();
             $table->string('usado_en', 20)->default('SIAM')->nullable();
 
-            $table->foreignId('secretaria_id')
-            ->constrained('secretarias')
-            ->cascadeOnUpdate()
-            ->cascadeOnDelete();
+            $table->unsignedBigInteger('secretaria_id')->nullable();
+            $table->foreign('secretaria_id')->references("id")->on("secretarias");
 
             $table->timestamps();
             $table->softDeletes();

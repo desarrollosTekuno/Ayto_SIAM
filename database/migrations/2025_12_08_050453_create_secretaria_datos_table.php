@@ -13,11 +13,15 @@ return new class extends Migration
     {
         Schema::create('secretaria_datos', function (Blueprint $table) {
             $table->id();
-            $table->string('nombre', 150);
-            $table->string('cveSec', 5)->nullable();
-            $table->string('cveURes', 4)->nullable();
-            $table->string('abreviatura', 100)->nullable();
-            $table->string('usado_en', 20)->default('SIAM')->nullable();
+
+            $table->string('telefono', 20);
+            $table->string('extension', 10)->nullable();
+
+            $table->unsignedBigInteger('titular_id')->nullable();
+            $table->foreign('titular_id')->references("id")->on("titulares");
+
+            $table->unsignedBigInteger('secretaria_id')->nullable();
+            $table->foreign('secretaria_id')->references("id")->on("secretarias");
 
             $table->timestamps();
             $table->softDeletes();
