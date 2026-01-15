@@ -11,15 +11,13 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('configuraciones_sistema', function (Blueprint $table) {
+        Schema::create('configuraciones_sistemas', function (Blueprint $table) {
             $table->id();
 
-            $table->string('clave', 80)->unique();
-            $table->text('valor')->nullable();
-
-            $table->string('tipo', 20)->nullable();
+            $table->string('clave', 80)->unique(); // SESION_MINUTOS_TIMEOUT
+            $table->string('tipo', 20)->nullable();            // string|int|decimal|bool|date|time|datetime|list
             $table->string('descripcion', 255)->nullable();
-            $table->string('grupo', 50)->nullable();
+            $table->string('grupo', 50)->nullable(); // sesion, captura, archivos,
 
             $table->boolean('editable')->default(true);
             $table->boolean('activo')->default(true);
@@ -34,6 +32,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('configuraciones_sistema');
+        Schema::dropIfExists('configuraciones_sistemas');
     }
 };
