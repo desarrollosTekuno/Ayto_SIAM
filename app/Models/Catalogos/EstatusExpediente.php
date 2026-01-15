@@ -7,13 +7,18 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
-class UnidadAdministrativaDato extends Model {
+class EstatusExpediente extends Model {
     use HasFactory, SoftDeletes, HasDataTable;
 
+    protected $table = 'estatus_expedientes';
     protected $guarded = ['id', 'created_at', 'updated_at'];
     protected $dates = ['deleted_at'];
 
-    public function UnidadAdministrativa() {
-        return $this->belongsTo(UnidadAdministrativa::class, 'unidad_administrativa_id');
-    }
+    // public function Expedientes() {
+    //     return $this->hasMany(Expediente::class, 'estatus_id');
+    // }
+
+    // public function ExpedienteHistorial() {
+    //     return $this->hasMany(ExpedienteHistorial::class, 'estatus_id');
+    // }
 }

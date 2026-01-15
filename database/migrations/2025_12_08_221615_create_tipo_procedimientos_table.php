@@ -11,13 +11,16 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('municipios', function (Blueprint $table) {
+        Schema::create('tipos_procedimientos', function (Blueprint $table) {
             $table->id();
 
+            $table->string('clave', 20)->unique();
             $table->string('nombre', 150);
-            $table->string('clave', 15)->nullable();
 
-            $table->foreignId('estado_id')->nullable()->constrained('estados')->nullOnDelete();
+            $table->string('ambito', 20)->nullable();
+            $table->string('descripcion', 255)->nullable();
+
+            $table->boolean('activo')->default(true);
 
             $table->timestamps();
             $table->softDeletes();
@@ -29,6 +32,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('municipios');
+        Schema::dropIfExists('tipos_procedimientos');
     }
 };

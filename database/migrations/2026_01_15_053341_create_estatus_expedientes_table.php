@@ -9,23 +9,24 @@ return new class extends Migration
     /**
      * Run the migrations.
      */
-    public function up(): void
-    {
-        Schema::create('configuraciones_sistemas', function (Blueprint $table) {
+    public function up(): void {
+        Schema::create('estatus_expedientes', function (Blueprint $table) {
             $table->id();
 
-            $table->string('clave', 80)->unique();
-            $table->text('valor')->nullable();
+            $table->string('clave', 40)->unique(); // CAPTURADO, EN_REVISION, OBSERVADO
+            $table->string('nombre', 120);
 
-            $table->string('tipo', 20)->nullable();
             $table->string('descripcion', 255)->nullable();
-            $table->string('grupo', 50)->nullable();
 
-            $table->boolean('editable')->default(true);
+            $table->string('color_estatus', 25)->nullable();
+            $table->unsignedSmallInteger('orden')->default(0);
+
             $table->boolean('activo')->default(true);
 
             $table->timestamps();
             $table->softDeletes();
+
+            $table->index(['activo', 'orden', 'deleted_at']);
         });
     }
 
@@ -34,6 +35,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('configuraciones_sistemas');
+        Schema::dropIfExists('estatus_expedientes');
     }
 };

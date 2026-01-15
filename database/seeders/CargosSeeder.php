@@ -10,6 +10,9 @@ class CargosSeeder extends Seeder {
     public function run(): void {
         $cargos = [
             'ADMINISTRADOR',
+            'ANALISTA',
+            'JEFE DE DEPARTAMENTO',
+            'DIRECTOR',
         ];
 
         $rows = collect($cargos)->map(fn ($nombre) => [

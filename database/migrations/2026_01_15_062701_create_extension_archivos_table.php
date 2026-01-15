@@ -11,16 +11,19 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('municipios', function (Blueprint $table) {
+        Schema::create('extensiones_archivos', function (Blueprint $table) {
             $table->id();
 
-            $table->string('nombre', 150);
-            $table->string('clave', 15)->nullable();
+            $table->string('extension', 15)->unique();
+            $table->string('mime', 120)->nullable();
+            $table->string('descripcion', 150)->nullable();
 
-            $table->foreignId('estado_id')->nullable()->constrained('estados')->nullOnDelete();
+            $table->boolean('activo')->default(true);
 
             $table->timestamps();
             $table->softDeletes();
+
+            $table->index(['activo', 'deleted_at']);
         });
     }
 
@@ -29,6 +32,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('municipios');
+        Schema::dropIfExists('extensiones_archivos');
     }
 };
