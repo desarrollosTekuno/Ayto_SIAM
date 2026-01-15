@@ -48,6 +48,34 @@ const routes: Routing[] = [
                 icon: 'mdi-account-multiple-outline',
                 value: 'admin-users',
             },
+
+            {
+                name: 'configuraciones_sistema.index',
+                title: 'Configuración',
+                icon: 'mdi-cog-outline',
+                value: 'admin-configuraciones_sistema',
+            },
+
+            {
+                name: 'tipos_procesos.index',
+                title: 'Tipos de Procesos',
+                icon:   'mdi mdi-card-bulleted-settings',
+                value: 'admin-tipos_procesos',
+            },
+
+            {
+                name: 'rangos_procedimientos.index',
+                title: 'Rangos de Procedimientos',
+                icon: 'mdi mdi-card-bulleted-settings',
+                value: 'admin-rangos_procedimientos',
+            },
+
+            {
+                name: 'archivos_permitidos.index',
+                title: 'Archivos Permitidos',
+                icon: 'mdi mdi-card-bulleted-settings',
+                value: 'admin-archivos_permitidos',
+            }
         ],
     },
 

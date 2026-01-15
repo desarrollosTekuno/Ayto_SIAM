@@ -34,6 +34,10 @@ class RolesSeeder extends Seeder {
             'unidades_administrativas',
             'areas',
             'lineamientos',
+            'configuraciones_sistema',
+            'tipos_procesos',
+            'rangos_procedimientos',
+            'archivos_permitidos_proceso',
         ];
 
         $acciones = [
