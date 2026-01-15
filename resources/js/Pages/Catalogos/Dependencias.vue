@@ -1,3 +1,4 @@
+<!-- resources/js/Pages/Catalogos/Dependencias.vue -->
 <script setup>
 import { ref, computed, watch } from 'vue'
 import { useForm, usePage } from '@inertiajs/vue3'
@@ -30,6 +31,7 @@ const props = defineProps({
     DependenciasPadre: Array,
 })
 
+// =============================== STATE ===============================
 const showModal = ref(false)
 const formValidateRef = ref(null)
 const DTableRef = ref(null)
@@ -41,6 +43,7 @@ const loadingMunicipios = ref(false)
 const form = useForm({
     id: null,
 
+    // dependencia
     nombre: '',
     cveDep: '',
     cveURes: '',
@@ -49,11 +52,13 @@ const form = useForm({
     centralizada: 1,
     usado_en: 'SIAM',
     dependencia_padre_id: null,
-
     titular_id: null,
+
+    // dependencia_datos
     telefono: '',
     extension: '',
 
+    // direccion
     calle: '',
     numero_exterior: '',
     numero_interior: '',
@@ -69,12 +74,12 @@ const headers = [
     { title: 'Nombre', key: 'nombre', sortable: true },
     { title: 'Clave', key: 'cveDep', sortable: true },
     { title: 'Abrev.', key: 'abreviatura', sortable: true },
-    { title: 'Titular', key: 'titular', sortable: true },
-    { title: 'Teléfono', key: 'datos.telefono', sortable: true },
+    { title: 'Titular', key: 'titular', sortable: false },
+    { title: 'Teléfono', key: 'dato.telefono', sortable: false },
     { title: 'Acciones', key: 'actions', sortable: false },
 ]
 
-
+// =============================== METHODS ===============================
 const ReloadTable = () => {
     DTableRef.value?.reload?.()
 }
@@ -106,11 +111,13 @@ const ChangeModal = async (item = null) => {
         form.cveURes = item.cveURes ?? ''
         form.abreviatura = item.abreviatura ?? ''
         form.dependencia_padre_id = item.dependencia_padre_id ?? null
+        form.titular_id = item.titular_id ?? null
 
-        form.titular_id = item.datos?.titular_id ?? null
-        form.telefono = item.datos?.telefono ?? ''
-        form.extension = item.datos?.extension ?? ''
+        // dependencia_datos
+        form.telefono = item.dato?.telefono ?? ''
+        form.extension = item.dato?.extension ?? ''
 
+        // direccion
         form.calle = item.direccion?.calle ?? ''
         form.numero_exterior = item.direccion?.numero_exterior ?? ''
         form.numero_interior = item.direccion?.numero_interior ?? ''
@@ -134,15 +141,15 @@ const GuardarModificar = () => {
     const options = {
         preserveScroll: true,
         onSuccess: () => {
-        customToastSwal({
-            title: form.id
-            ? 'Dependencia actualizada correctamente'
-            : 'Dependencia registrada correctamente',
-            icon: 'success',
-        })
-        showModal.value = false
-        ResetForm()
-        ReloadTable()
+            customToastSwal({
+                title: form.id
+                    ? 'Dependencia actualizada correctamente'
+                    : 'Dependencia registrada correctamente',
+                icon: 'success',
+            })
+            showModal.value = false
+            ResetForm()
+            ReloadTable()
         },
         onError: () => errorToast('Ocurrió un error'),
     }
@@ -162,9 +169,9 @@ const Eliminar = (id) => {
     form.delete(route('dependencias.destroy', id), {
         preserveScroll: true,
         onSuccess: () => {
-        customToastSwal({ title: 'Dependencia eliminada', icon: 'success' })
-        ReloadTable()
-    },
+            customToastSwal({ title: 'Dependencia eliminada', icon: 'success' })
+            ReloadTable()
+        },
         onError: () => errorToast('No se pudo eliminar'),
     })
 }
@@ -184,51 +191,28 @@ const ConsultaMunicipios = async (estadoId, opts = { keepSelected: false }) => {
 
         if (!opts.keepSelected) {
             form.municipio_id = null
-        } else {
-            const exists = Municipios.value.some((m) => m.id === form.municipio_id)
-        if (!exists) form.municipio_id = null
         }
-    } catch (e) {
+    } catch {
         Municipios.value = []
         form.municipio_id = null
-        console.info('No se pudieron obtener los municipios', e)
     } finally {
         loadingMunicipios.value = false
     }
 }
 
-const ConsultaPersonaTitular = async (id) => {
-    try {
-        const response = await axios.get(route('titulares.show', id))
-        if (response.data) {
-        form.telefono = response.data?.telefono ?? ''
-        form.extension = response.data?.extension ?? ''
-        }
-    } catch (error) {
-        console.error('Error al obtener la informacion:', error)
+// =============================== WATCHERS ===============================
+watch(() => form.estado_id, async (newValue) => {
+    if (newValue) {
+        await ConsultaMunicipios(newValue)
+    } else {
+        Municipios.value = []
+        form.municipio_id = null
     }
-}
+})
 
 const onInvalidForm = () => {
     warningToast('Revisa los campos marcados')
 }
-
-// =============================== WATCHERS ===============================
-watch( () => form.titular_id, (newValue) => {
-        if (newValue) ConsultaPersonaTitular(newValue)
-    }
-)
-
-watch( () => form.estado_id, async (newValue, oldValue) => {
-    if (newValue && newValue !== oldValue) {
-        await ConsultaMunicipios(newValue, { keepSelected: false })
-    }
-    if (!newValue) {
-        Municipios.value = []
-        form.municipio_id = null
-    }
-}
-)
 </script>
 
 <template>
@@ -252,12 +236,13 @@ watch( () => form.estado_id, async (newValue, oldValue) => {
                 :headers="headers"
                 :items-per-page="10"
             >
-
                 <template v-slot:[`item.titular`]="{ item }">
-                    <span class="text-slate-400" v-if="!item?.datos?.titular">—</span>
-                    <span v-else>
-                        {{ item?.datos?.titular?.nombre }} {{ item?.datos?.titular?.apellido_paterno }} {{ item?.datos?.titular?.apellido_materno }}
+                    <span v-if="item?.titular">
+                        {{ item.titular.nombre }}
+                        {{ item.titular.apellido_paterno }}
+                        {{ item.titular.apellido_materno }}
                     </span>
+                    <span v-else class="text-slate-400">—</span>
                 </template>
 
                 <template v-slot:[`item.actions`]="{ item }">
@@ -285,149 +270,68 @@ watch( () => form.estado_id, async (newValue, oldValue) => {
         </section>
 
         <!-- MODAL -->
-        <VDialog v-model="showModal" :title="form.id ? 'Editar dependencia' : 'Nueva dependencia'" header-icon="mdi-office-building-outline" max-width="900">
+        <VDialog
+            v-model="showModal"
+            :title="form.id ? 'Editar dependencia' : 'Nueva dependencia'"
+            header-icon="mdi-office-building-outline"
+            max-width="900"
+        >
             <template #content>
                 <FormValidate ref="formValidateRef" @submit="GuardarModificar" @invalid="onInvalidForm">
                     <div class="grid grid-cols-1 gap-4 md:grid-cols-2">
-                        <div class="pt-2 md:col-span-2">
-                            <div class="px-2 text-sm font-semibold text-slate-700">
-                                Datos generales
-                            </div>
+                        <!-- DATOS GENERALES -->
+                        <div class="font-semibold md:col-span-2 text-slate-700">
+                            Datos generales
                         </div>
 
-                        <MdTextInput
-                            v-model="form.nombre"
-                            label="Nombre"
-                            icon="mdi-domain"
-                            :required="true"
-                            :minLength="3"
-                            :maxLength="150"
-                            counter
-                        />
-
-                        <MdTextInput
-                            v-model="form.abreviatura"
-                            label="Abreviatura"
-                            icon="mdi-text-short"
-                            :maxLength="100"
-                            counter
-                        />
-
-                        <MdTextInput
-                            v-model="form.cveDep"
-                            label="Clave Dependencia (cveDep)"
-                            icon="mdi-identifier"
-                            :maxLength="5"
-                            counter
-                        />
-
-                        <MdTextInput
-                            v-model="form.cveURes"
-                            label="Clave URes (cveURes)"
-                            icon="mdi-identifier"
-                            :maxLength="4"
-                            counter
-                        />
+                        <MdTextInput v-model="form.nombre" label="Nombre" icon="mdi-domain" required />
+                        <MdTextInput v-model="form.abreviatura" label="Abreviatura" icon="mdi-text-short" />
+                        <MdTextInput v-model="form.cveDep" label="Clave Dependencia" icon="mdi-identifier" />
+                        <MdTextInput v-model="form.cveURes" label="Clave URes" icon="mdi-identifier" />
 
                         <MdSelect
                             v-model="form.dependencia_padre_id"
                             label="Dependencia padre"
                             :items="DependenciasPadre"
-                            item-value="id"
                             item-title="nombre"
+                            item-value="id"
                             clearable
                         />
-
-                        <!-- DATOS TITULAR -->
-                        <div class="pt-2 border-t md:col-span-2 border-slate-200">
-                            <div class="px-2 text-sm font-semibold text-slate-700">
-                                Datos del titular
-                            </div>
-                        </div>
 
                         <MdSelect
                             v-model="form.titular_id"
-                            label="Persona titular"
+                            label="Titular"
                             :items="Titulares"
-                            item-value="id"
                             item-title="nombre"
+                            item-value="id"
                             clearable
                         />
 
-                        <MdTextInput
-                            v-model="form.telefono"
-                            label="Teléfono"
-                            icon="mdi-phone"
-                            :required="true"
-                            :maxLength="20"
-                            counter
-                        />
-
-                        <MdTextInput
-                            v-model="form.extension"
-                            label="Extensión"
-                            icon="mdi-phone-in-talk-outline"
-                            :maxLength="10"
-                            counter
-                        />
-
-                        <!-- DIRECCIÓN -->
-                        <div class="pt-2 border-t md:col-span-2 border-slate-200">
-                            <div class="px-2 text-sm font-semibold text-slate-700">
-                                Dirección
-                            </div>
+                        <!-- CONTACTO -->
+                        <div class="pt-2 font-semibold border-t md:col-span-2 text-slate-700">
+                            Datos de contacto de la dependencia
                         </div>
 
-                        <MdTextInput
-                            v-model="form.calle"
-                            label="Calle"
-                            icon="mdi-road-variant"
-                            :required="true"
-                            :maxLength="150"
-                            counter
-                        />
+                        <MdTextInput v-model="form.telefono" label="Teléfono" icon="mdi-phone" />
+                        <MdTextInput v-model="form.extension" label="Extensión" icon="mdi-phone-in-talk-outline" />
 
-                        <MdTextInput
-                            v-model="form.numero_exterior"
-                            label="Número exterior"
-                            icon="mdi-home-outline"
-                            :required="true"
-                            :maxLength="20"
-                            counter
-                        />
+                        <!-- DIRECCIÓN -->
+                        <div class="pt-2 font-semibold border-t md:col-span-2 text-slate-700">
+                            Dirección
+                        </div>
 
-                        <MdTextInput
-                            v-model="form.numero_interior"
-                            label="Número interior"
-                            icon="mdi-door"
-                            :maxLength="20"
-                            counter
-                        />
-
-                        <MdTextInput
-                            v-model="form.colonia"
-                            label="Colonia"
-                            icon="mdi-map-marker-outline"
-                            :required="true"
-                            :maxLength="120"
-                            counter
-                        />
-
-                        <MdTextInput
-                            v-model="form.codigo_postal"
-                            label="Código postal"
-                            icon="mdi-mailbox-outline"
-                            :required="true"
-                            :maxLength="10"
-                            counter
-                        />
+                        <MdTextInput v-model="form.calle" label="Calle" icon="mdi-road-variant" required />
+                        <MdTextInput v-model="form.numero_exterior" label="Número exterior" icon="mdi-home-outline" required />
+                        <MdTextInput v-model="form.numero_interior" label="Número interior" icon="mdi-door" />
+                        <MdTextInput v-model="form.colonia" label="Colonia" icon="mdi-map-marker-outline" required />
+                        <MdTextInput v-model="form.codigo_postal" label="Código postal" icon="mdi-mailbox-outline" required />
 
                         <MdSelect
                             v-model="form.estado_id"
                             label="Estado"
                             :items="Estados"
-                            item-value="id"
                             item-title="nombre"
+                            item-value="id"
                             clearable
                         />
 
@@ -435,8 +339,8 @@ watch( () => form.estado_id, async (newValue, oldValue) => {
                             v-model="form.municipio_id"
                             label="Municipio"
                             :items="Municipios"
-                            item-value="id"
                             item-title="nombre"
+                            item-value="id"
                             clearable
                             :disabled="!form.estado_id || loadingMunicipios"
                         />
@@ -445,11 +349,12 @@ watch( () => form.estado_id, async (newValue, oldValue) => {
             </template>
 
             <template #footer="{ close }">
-                <VBtnCancel prepend-icon="mdi-close" @click="close">
-                    Cancelar
-                </VBtnCancel>
-
-                <VBtnSend v-if="(form.id && canUpdate) || (!form.id && canCreate)" prepend-icon="mdi-content-save-outline" @click="formValidateRef?.submit()" >
+                <VBtnCancel prepend-icon="mdi-close" @click="close">Cancelar</VBtnCancel>
+                <VBtnSend
+                    v-if="(form.id && canUpdate) || (!form.id && canCreate)"
+                    prepend-icon="mdi-content-save-outline"
+                    @click="formValidateRef?.submit()"
+                >
                     {{ form.id ? 'Actualizar' : 'Guardar' }}
                 </VBtnSend>
             </template>

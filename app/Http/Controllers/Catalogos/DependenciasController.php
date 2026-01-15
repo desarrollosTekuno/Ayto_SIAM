@@ -18,7 +18,7 @@ class DependenciasController extends Controller {
     public function index(Request $request) {
         $Titulares = Titular::Catalogo();
         $Estados = Estado::select('id', 'nombre')->orderBy('nombre')->get();
-        $Dependencias = Dependencia::with('Direccion', 'Datos.Titular')->forDataTable($request, defaultPerPage: 10);
+        $Dependencias = Dependencia::with('Direccion', 'Dato', 'Titular')->forDataTable($request, defaultPerPage: 10);
         $DependenciasPadre = Dependencia::CatalogoPadre();
 
         return Inertia::render('Catalogos/Dependencias', compact('Titulares', 'Dependencias', 'Estados', 'DependenciasPadre'));
@@ -58,11 +58,11 @@ class DependenciasController extends Controller {
                 'centralizada' => $validated['centralizada'] ?? true,
                 'usado_en' => $validated['usado_en'] ?? 'SIAM',
                 'dependencia_padre_id' => $validated['dependencia_padre_id'] ?? null,
+                'titular_id' => $validated['titular_id'] ?? null,
             ]);
 
             DependenciaDato::create([
                 'dependencia_id' => $dependencia->id,
-                'titular_id' => $validated['titular_id'] ?? null,
                 'telefono' => $validated['telefono'],
                 'extension' => $validated['extension'] ?? null,
             ]);
@@ -116,12 +116,12 @@ class DependenciasController extends Controller {
                 'centralizada' => $validated['centralizada'] ?? true,
                 'usado_en' => $validated['usado_en'] ?? 'SIAM',
                 'dependencia_padre_id' => $validated['dependencia_padre_id'] ?? null,
+                'titular_id' => $validated['titular_id'] ?? null,
             ]);
 
-            $dependencia->Datos()->updateOrCreate(
+            $dependencia->Dato()->updateOrCreate(
                 ['dependencia_id' => $dependencia->id],
                 [
-                    'titular_id' => $validated['titular_id'] ?? null,
                     'telefono' => $validated['telefono'],
                     'extension' => $validated['extension'] ?? null,
                 ]
@@ -146,7 +146,7 @@ class DependenciasController extends Controller {
 
     public function destroy(Dependencia $dependencia) {
         DB::transaction(function () use ($dependencia) {
-            $dependencia->Datos()->delete();
+            $dependencia->Dato()->delete();
             $dependencia->Direccion()->delete();
             $dependencia->delete();
         });
