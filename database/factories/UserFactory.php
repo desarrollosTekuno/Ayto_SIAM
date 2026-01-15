@@ -32,7 +32,7 @@ class UserFactory extends Factory {
             ),
 
             'username' => null,
-            'email' => $this->faker->optional()->unique()->safeEmail(),
+            'email' => $this->faker->optional()->safeEmail(),
             'email_verified_at' => now(),
             'password' => null,
 
@@ -44,14 +44,14 @@ class UserFactory extends Factory {
         return $this->afterCreating(function (User $user) {
 
             $prefix = now()->format('Y');
-            $folio  = str_pad((string) $user->id, 4, '0', STR_PAD_LEFT);
+            $folio  = str_pad((string) $user->id, 2, '0', STR_PAD_LEFT);
 
             $user->username = "{$prefix}{$folio}";
             $user->password = Hash::make($user->username);
             $user->save();
 
             UserDato::create([
-                'cargo' => $this->faker->jobTitle(),
+                'cargo_id' => 1,
                 'telefono' => $this->faker->optional()->phoneNumber(),
                 'extension' => $this->faker->optional()->numerify('###'),
                 'activo' => true,

@@ -14,11 +14,12 @@ return new class extends Migration
         Schema::create('user_datos', function (Blueprint $table) {
             $table->id();
 
-            $table->string('cargo', 150)->nullable(); // o cargo_id FK a cargos
             $table->string('telefono', 20)->nullable();
             $table->string('extension', 10)->nullable();
 
             $table->boolean('activo')->default(true);
+
+            $table->foreignId('cargo_id')->nullable()->constrained('cargos')->nullOnDelete();
 
             $table->foreignId('unidad_administrativa_id')
                 ->nullable()

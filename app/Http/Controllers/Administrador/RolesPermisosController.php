@@ -110,4 +110,12 @@ class RolesPermisosController extends Controller {
 
         return response()->json(['success' => true, 'message' => 'Permiso actualizado correctamente']);
     }
+
+    public function ConsultarRolesPermisos() {
+        $roles = Role::with('permissions:id,name')
+            ->orderBy('name')
+            ->get();
+
+        return $roles;
+    }
 }

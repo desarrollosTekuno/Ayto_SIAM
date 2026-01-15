@@ -1,6 +1,8 @@
 <script setup>
 import { ref, computed } from 'vue'
 import { useForm, usePage } from '@inertiajs/vue3'
+import axios from 'axios'
+
 import AppLayout from '@/Layouts/AppLayout.vue'
 import VButton from '@/Components/Vuetify/VButton.vue'
 import DataTableServer from '@/Components/DataTableServer.vue'
@@ -10,7 +12,8 @@ import MdTextInput from '@/Components/MaterialDesign/MdTextInput.vue'
 import MdSelect from '@/Components/MaterialDesign/MdSelect.vue'
 import VBtnCancel from '@/Components/Vuetify/VBtnCancel.vue'
 import VBtnSend from '@/Components/Vuetify/VBtnSend.vue'
-import { customToastSwal, warningToast, errorToast } from '@/utils/swal'
+import { customConfirmSwal, customToastSwal, warningToast, errorToast } from '@/utils/swal'
+import MdCheckbox from '@/Components/MaterialDesign/MdCheckbox.vue'
 
 // =============================== PERMISOS ===============================
 const can = computed(() => usePage().props.auth?.permissions ?? [])
@@ -21,7 +24,8 @@ const canDelete = computed(() => can.value.includes('usuarios.destroy'))
 // =============================== PROPS ===============================
 const props = defineProps({
     Usuarios: Object,
-    UnidadesAdministrativas: Array, // [{id, nombre}]
+    UnidadesAdministrativas: Array,
+    Cargos: Array,
 })
 
 // =============================== STATE ===============================
@@ -29,21 +33,33 @@ const showModal = ref(false)
 const formValidateRef = ref(null)
 const DTableRef = ref(null)
 
+// Roles modal
+const showRolesModal = ref(false)
+const CargandoRoles = ref(false)
+const rolesCatalogo = ref([])
+const rolesSeleccionados = ref([])
+const rolFiltro = ref('')
+
+const usuarioRolesTarget = ref(null)
+
 // =============================== FORM ===============================
 const form = useForm({
     id: null,
+
     name: '',
+    nombre: '',
+    apellido_paterno: '',
+    apellido_materno: '',
     username: '',
     email: '',
     password: '',
     password_confirmation: '',
 
-    // user_datos
-    cargo: '',
     telefono: '',
     extension: '',
     activo: true,
     unidad_administrativa_id: null,
+    cargo_id: null,
 })
 
 // =============================== TABLE ===============================
@@ -63,16 +79,20 @@ const unidadNombreById = (id) => {
     return u ? u.nombre : 'Sin unidad'
 }
 
-// =============================== METHODS ===============================
-const ReloadTable = () => {
-    DTableRef.value?.reload?.()
+const cargoNombreById = (id) => {
+    const c = (props.Cargos ?? []).find((x) => x.id === id)
+    return c ? c.nombre : '—'
 }
+
+// =============================== FUNCIONES  ===============================
+const ReloadTable = () => DTableRef.value?.reload?.()
 
 const ResetForm = () => {
     form.reset()
     form.id = null
     form.activo = true
     form.unidad_administrativa_id = null
+    form.cargo_id = null
 }
 
 const ChangeModal = (item = null) => {
@@ -81,20 +101,21 @@ const ChangeModal = (item = null) => {
 
         form.id = item.id
         form.name = item.name ?? ''
+        form.nombre = item.nombre ?? ''
+        form.apellido_paterno = item.apellido_paterno ?? ''
+        form.apellido_materno = item.apellido_materno ?? ''
         form.username = item.username ?? ''
         form.email = item.email ?? ''
 
-        // No precargamos password
         form.password = ''
         form.password_confirmation = ''
 
-        // user_datos (vienen por with('Dato'))
         const d = item.Dato ?? item.dato ?? null
-        form.cargo = d?.cargo ?? ''
         form.telefono = d?.telefono ?? ''
         form.extension = d?.extension ?? ''
         form.activo = (d?.activo ?? true) ? true : false
         form.unidad_administrativa_id = d?.unidad_administrativa_id ?? null
+        form.cargo_id = d?.cargo_id ?? null
     } else {
         if (!canCreate.value) return
         ResetForm()
@@ -130,18 +151,108 @@ const GuardarModificar = () => {
 const Eliminar = (id) => {
     if (!canDelete.value) return
 
-    form.delete(route('usuarios.destroy', id), {
-        preserveScroll: true,
-        onSuccess: () => {
-            customToastSwal({ title: 'Usuario eliminado', icon: 'success' })
-            ReloadTable()
-        },
-        onError: () => errorToast('Ocurrió un error'),
+    customConfirmSwal({
+        title: '¿Está segur@ que desea eliminar este usuario?',
+        text: 'Esta acción no se puede deshacer.',
+        icon: 'warning',
+    }).then((result) => {
+        if (!result.isConfirmed) return
+
+        form.delete(route('usuarios.destroy', id), {
+            preserveScroll: true,
+            onSuccess: () => {
+                customToastSwal({ title: 'Usuario eliminado', icon: 'success' })
+                ReloadTable()
+            },
+            onError: () => errorToast('Ocurrió un error'),
+        })
     })
 }
 
-const onInvalidForm = () => {
-    warningToast('Revisa los campos marcados')
+const onInvalidForm = () => warningToast('Revisa los campos marcados')
+
+const ReiniciarPassword = (userId) => {
+    if (!canUpdate.value) return
+
+    customConfirmSwal({
+        title: '¿Reiniciar contraseña?',
+        text: 'La contraseña será igual al username del usuario.',
+        icon: 'warning',
+        confirmButtonText: 'Sí, reiniciar',
+        cancelButtonText: 'Cancelar',
+    }).then(async (result) => {
+        if (!result.isConfirmed) return
+
+        try {
+            await axios.post(route('usuarios.ReiniciarPassword'), { id: userId })
+            customToastSwal({ title: 'Contraseña reiniciada', icon: 'success' })
+        } catch (e) {
+            errorToast('Ocurrió un error al reiniciar la contraseña')
+        }
+    })
+}
+
+const AbrirModalRoles = async (item) => {
+    if (!canUpdate.value) return
+
+    usuarioRolesTarget.value = item
+    rolesSeleccionados.value = []
+
+    // Si el backend ya manda roles, intenta precargar (acepta varias formas)
+    const roles =
+        item?.roles ??
+        item?.Roles ??
+        item?.role_names ??
+        item?.roleNames ??
+        item?.roles_names ??
+        null
+
+    if (Array.isArray(roles)) rolesSeleccionados.value = roles.map(String)
+
+    showRolesModal.value = true
+
+    if (rolesCatalogo.value.length) return // ya cargado
+
+    CargandoRoles.value = true
+    try {
+        const { data } = await axios.post(route('RolesPermisos.ConsultarRolesPermisos'))
+        rolesCatalogo.value = Array.isArray(data) ? data : []
+    } catch (e) {
+        errorToast('No se pudieron cargar roles/permisos')
+        rolesCatalogo.value = []
+    } finally {
+        CargandoRoles.value = false
+    }
+}
+
+const RolesFiltrados = computed(() => {
+    const q = (rolFiltro.value ?? '').trim().toLowerCase()
+    if (!q) return rolesCatalogo.value
+    return rolesCatalogo.value.filter((r) => (r?.name ?? '').toLowerCase().includes(q))
+})
+
+const ToggleRol = (roleName) => {
+    const i = rolesSeleccionados.value.indexOf(roleName)
+    if (i >= 0) rolesSeleccionados.value.splice(i, 1)
+    else rolesSeleccionados.value.push(roleName)
+}
+
+const GuardarRoles = async () => {
+    if (!canUpdate.value) return
+    if (!usuarioRolesTarget.value?.id) return
+
+    try {
+        await axios.post(route('usuarios.AsignarRoles'), {
+            user_id: usuarioRolesTarget.value.id,
+            roles: rolesSeleccionados.value, // syncRoles: asigna y quita
+        })
+
+        customToastSwal({ title: 'Roles actualizados', icon: 'success' })
+        showRolesModal.value = false
+        ReloadTable()
+    } catch (e) {
+        errorToast('Ocurrió un error al asignar roles')
+    }
 }
 </script>
 
@@ -171,7 +282,7 @@ const onInvalidForm = () => {
                 :items-per-page="10"
             >
                 <template v-slot:[`item.dato_cargo`]="{ item }">
-                    {{ (item.Dato ?? item.dato)?.cargo ?? '—' }}
+                    {{ cargoNombreById((item.Dato ?? item.dato)?.cargo_id) }}
                 </template>
 
                 <template v-slot:[`item.dato_unidad`]="{ item }">
@@ -188,17 +299,40 @@ const onInvalidForm = () => {
                 </template>
 
                 <template v-slot:[`item.actions`]="{ item }">
-                    <div class="flex" v-if="canUpdate || canDelete">
+                    <div class="flex gap-2" v-if="canUpdate || canDelete">
+                        <!-- Editar -->
                         <VButton
                             v-if="canUpdate"
                             size="x-small"
                             variant="flat"
                             color="teal-darken-1"
                             icon="mdi-pencil-outline"
-                            class="mr-2"
                             @click="ChangeModal(item)"
                         />
 
+                        <!-- Asignar Roles -->
+                        <VButton
+                            v-if="canUpdate"
+                            size="x-small"
+                            variant="flat"
+                            color="indigo-darken-1"
+                            icon="mdi-shield-account-outline"
+                            title="Asignar roles"
+                            @click="AbrirModalRoles(item)"
+                        />
+
+                        <!-- Reset Password -->
+                        <VButton
+                            v-if="canUpdate"
+                            size="x-small"
+                            variant="flat"
+                            color="orange-darken-2"
+                            icon="mdi-lock-reset"
+                            title="Reiniciar contraseña"
+                            @click="ReiniciarPassword(item.id)"
+                        />
+
+                        <!-- Eliminar -->
                         <VButton
                             v-if="canDelete"
                             size="x-small"
@@ -212,20 +346,21 @@ const onInvalidForm = () => {
             </DataTableServer>
         </section>
 
-        <!-- MODAL -->
+        <!-- ================================================ MODALES ================================================ -->
         <VDialog
             v-model="showModal"
             :title="form.id ? 'Editar usuario' : 'Nuevo usuario'"
             header-icon="mdi-account-cog-outline"
-            max-width="700"
+            max-width="800"
         >
             <template #content>
                 <FormValidate ref="formValidateRef" @submit="GuardarModificar" @invalid="onInvalidForm">
                     <div class="grid grid-cols-1 gap-2 md:grid-cols-2">
+                        <!-- users: name + nombres -->
                         <div class="md:col-span-2">
                             <MdTextInput
                                 v-model="form.name"
-                                label="Nombre"
+                                label="Nombre (display)"
                                 icon="mdi-account-outline"
                                 :required="true"
                                 :minLength="3"
@@ -233,6 +368,30 @@ const onInvalidForm = () => {
                                 counter
                             />
                         </div>
+
+                        <MdTextInput
+                            v-model="form.nombre"
+                            label="Nombre"
+                            icon="mdi-account-badge-outline"
+                            :maxLength="100"
+                            counter
+                        />
+
+                        <MdTextInput
+                            v-model="form.apellido_paterno"
+                            label="Apellido paterno"
+                            icon="mdi-account-badge-outline"
+                            :maxLength="100"
+                            counter
+                        />
+
+                        <MdTextInput
+                            v-model="form.apellido_materno"
+                            label="Apellido materno"
+                            icon="mdi-account-badge-outline"
+                            :maxLength="100"
+                            counter
+                        />
 
                         <MdTextInput
                             v-model="form.username"
@@ -280,20 +439,24 @@ const onInvalidForm = () => {
                                 v-model="form.unidad_administrativa_id"
                                 label="Unidad administrativa"
                                 icon="mdi-office-building-outline"
-                                :items="UnidadesAdministrativas"
+                                :items="Cargos ? UnidadesAdministrativas : UnidadesAdministrativas"
                                 item-value="id"
                                 item-title="nombre"
                                 clearable
                             />
                         </div>
 
-                        <MdTextInput
-                            v-model="form.cargo"
-                            label="Cargo (texto)"
-                            icon="mdi-briefcase-outline"
-                            :maxLength="150"
-                            counter
-                        />
+                        <div class="md:col-span-2">
+                            <MdSelect
+                                v-model="form.cargo_id"
+                                label="Cargo"
+                                icon="mdi-briefcase-outline"
+                                :items="Cargos"
+                                item-value="id"
+                                item-title="nombre"
+                                clearable
+                            />
+                        </div>
 
                         <MdTextInput
                             v-model="form.telefono"
@@ -339,6 +502,94 @@ const onInvalidForm = () => {
                     @click="formValidateRef?.submit()"
                 >
                     {{ form.id ? 'Actualizar' : 'Guardar' }}
+                </VBtnSend>
+            </template>
+        </VDialog>
+
+        <!-- MODAL ROLES -->
+        <VDialog
+            v-model="showRolesModal"
+            title="Asignar roles"
+            header-icon="mdi-shield-account-outline"
+            max-width="900"
+        >
+            <template #content>
+                <div class="space-y-3">
+                    <div class="text-sm text-gray-600">
+                        Usuario: <b>{{ usuarioRolesTarget?.name }}</b>
+                        <span v-if="usuarioRolesTarget?.username"> ({{ usuarioRolesTarget?.username }})</span>
+                    </div>
+
+                    <MdTextInput
+                        v-model="rolFiltro"
+                        label="Filtrar roles"
+                        icon="mdi-magnify"
+                        :maxLength="60"
+                    />
+
+                    <div v-if="CargandoRoles" class="text-sm text-gray-500">
+                        Cargando roles y permisos...
+                    </div>
+
+                    <div v-else class="overflow-auto border rounded">
+                        <div
+                            v-for="r in RolesFiltrados"
+                            :key="r.id"
+                            class="pb-2 mb-2 transition border rounded"
+                            :class="rolesSeleccionados.includes(r.name)
+                                ? 'border-green-400 bg-green-50'
+                                : 'border-gray-200 bg-white'"
+                        >
+                            <div class="flex items-center justify-between mx-2">
+                                <label class="flex items-center cursor-pointer">
+                                    <MdCheckbox
+                                        color="customPrimary"
+                                        :model-value="rolesSeleccionados.includes(r.name)"
+                                        :label="r.name"
+                                        :name="`role_${r.id}`"
+                                        :show-success-state="false"
+                                        @update:modelValue="(v) => {
+                                            const has = rolesSeleccionados.includes(r.name)
+                                            if (v && !has) rolesSeleccionados.push(r.name)
+                                            if (!v && has) rolesSeleccionados.splice(rolesSeleccionados.indexOf(r.name), 1)
+                                        }"
+                                    />
+                                </label>
+
+                                <span class="text-xs text-gray-500">
+                                    {{ (r.permissions ?? []).length }} permisos
+                                </span>
+                            </div>
+
+                            <div class="grid grid-cols-1 gap-1 mx-2 mt-2 md:grid-cols-2">
+                                <span
+                                    v-for="p in (r.permissions ?? [])"
+                                    :key="p.id"
+                                    class="px-2 py-1 text-xs border rounded"
+                                    :class="rolesSeleccionados.includes(r.name)
+                                        ? 'bg-green-100 border-green-300 text-green-800'
+                                        : 'bg-gray-50 border-gray-200'"
+                                >
+                                    {{ p.name }}
+                                </span>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+            </template>
+
+            <template #footer="{ close }">
+                <VBtnCancel prepend-icon="mdi-close" @click="close">
+                    Cerrar
+                </VBtnCancel>
+
+                <VBtnSend
+                    prepend-icon="mdi-content-save-outline"
+                    :disabled="CargandoRoles"
+                    @click="GuardarRoles"
+                >
+                    Asignar roles
                 </VBtnSend>
             </template>
         </VDialog>
