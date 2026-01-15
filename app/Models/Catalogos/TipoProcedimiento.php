@@ -1,0 +1,36 @@
+<?php
+
+namespace App\Models\Catalogos;
+
+use App\Models\Traits\HasDataTable;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\SoftDeletes;
+
+class TipoProcedimiento extends Model {
+    use HasFactory, SoftDeletes, HasDataTable;
+
+    protected $table = 'tipos_procedimientos';
+    protected $guarded = ['id', 'created_at', 'updated_at'];
+    protected $dates = ['deleted_at'];
+
+    // public function Expedientes() {
+    //     return $this->hasMany(Expedientes::class, 'tipo_procedimiento_id');
+    // }
+
+    // public function ProcedimientoEtapas() {
+    //     return $this->hasMany(ProcedimientoEtapa::class, 'tipo_procedimiento_id');
+    // }
+
+    // public function ProcedimientoEtapaResponsables() {
+    //     return $this->hasMany(ProcedimientoEtapaResponsable::class, 'tipo_procedimiento_id');
+    // }
+
+    // public function DocumentosRequeridos() {
+    //     return $this->hasMany(DocumentosRequerido::class, 'tipo_procedimiento_id');
+    // }
+
+    // public function UmbralesModalidad() {
+    //     return $this->hasMany(UmbralModalidad::class, 'tipo_procedimiento_id');
+    // }
+}

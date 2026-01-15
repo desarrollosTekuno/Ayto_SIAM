@@ -31,6 +31,7 @@ class DatabaseSeeder extends Seeder {
             RangosProcedimientoSeeder::class,
             UsersSeeder::class,
             LineamientoGeneralArchivoSeeder::class,
+            TipoProcedimientoSeeder::class,
         ]);
     }
 }
