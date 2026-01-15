@@ -3,7 +3,7 @@
 namespace App\Http\Controllers\Configuracion;
 
 use App\Http\Controllers\Controller;
-use App\Models\Configuracion\ArchivosPermitidosProceso;
+use App\Models\Configuracion\ArchivoPermitido;
 use App\Models\Configuracion\TiposProceso;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
@@ -13,14 +13,14 @@ use Inertia\Inertia;
 class ArchivosPermitidosController extends Controller {
 
     public function index(Request $request) {
-        $ArchivosPermitidos = ArchivosPermitidosProceso::forDataTable($request, defaultPerPage: 10);
+        $ArchivosPermitidos = ArchivoPermitido::forDataTable($request, defaultPerPage: 10);
 
         $TiposProcesos = TiposProceso::query()
             ->select('id', 'nombre')
             ->orderBy('nombre')
             ->get();
 
-        return Inertia::render('Configuracion/ArchivosPermitidosProceso', compact('ArchivosPermitidos', 'TiposProcesos'));
+        return Inertia::render('Configuracion/ArchivosPermitidos', compact('ArchivosPermitidos', 'TiposProcesos'));
     }
 
     public function store(Request $request) {
@@ -41,13 +41,13 @@ class ArchivosPermitidosController extends Controller {
             ->values()
             ->implode(',');
 
-        ArchivosPermitidosProceso::create($validated);
+        ArchivoPermitido::create($validated);
 
         return redirect()->back();
     }
 
     public function update(Request $request, string $id) {
-        $item = ArchivosPermitidosProceso::findOrFail($id);
+        $item = ArchivoPermitido::findOrFail($id);
 
         $validated = $request->validate([
             'tipo_proceso_id' => ['required', 'exists:tipos_procesos,id'],
@@ -71,7 +71,7 @@ class ArchivosPermitidosController extends Controller {
     }
 
     public function destroy(string $id) {
-        $item = ArchivosPermitidosProceso::findOrFail($id);
+        $item = ArchivoPermitido::findOrFail($id);
         $item->delete();
 
         return redirect()->back();
