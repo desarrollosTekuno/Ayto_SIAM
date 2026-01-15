@@ -7,42 +7,48 @@ use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
 
 class TipoProcedimientoSeeder extends Seeder {
-    public function run(): void
-    {
+    public function run(): void {
         $items = [
             [
                 'clave' => 'AD',
-                'nombre' => 'Adjudicación directa',
+                'nombre' => 'ADJUDICACION DIRECTA',
                 'ambito' => null,
-                'descripcion' => 'Procedimiento por adjudicación directa conforme a normativa aplicable.',
+                'descripcion' => 'PROCEDIMIENTO POR ADJUDICACION DIRECTA CONFORME A NORMATIVA APLICABLE.',
                 'activo' => true,
             ],
             [
                 'clave' => 'I3P',
-                'nombre' => 'Invitación a cuando menos tres personas',
+                'nombre' => 'INVITACION A CUANDO MENOS TRES PERSONAS',
                 'ambito' => null,
-                'descripcion' => 'Procedimiento por invitación a cuando menos tres personas.',
+                'descripcion' => 'PROCEDIMIENTO POR INVITACION A CUANDO MENOS TRES PERSONAS.',
+                'activo' => true,
+            ],
+            [
+                'clave' => 'CPI',
+                'nombre' => 'CONCURSO POR INVITACION',
+                'ambito' => null,
+                'descripcion' => 'PROCEDIMIENTO DE CONCURSO POR INVITACION.',
                 'activo' => true,
             ],
             [
                 'clave' => 'LPF',
-                'nombre' => 'Licitación pública federal',
+                'nombre' => 'LICITACION PUBLICA FEDERAL',
                 'ambito' => 'FEDERAL',
-                'descripcion' => 'Procedimiento de licitación pública en ámbito federal.',
+                'descripcion' => 'PROCEDIMIENTO DE LICITACION PUBLICA EN AMBITO FEDERAL.',
                 'activo' => true,
             ],
             [
                 'clave' => 'LPE',
-                'nombre' => 'Licitación pública estatal',
+                'nombre' => 'LICITACION PUBLICA ESTATAL',
                 'ambito' => 'ESTATAL',
-                'descripcion' => 'Procedimiento de licitación pública en ámbito estatal.',
+                'descripcion' => 'PROCEDIMIENTO DE LICITACION PUBLICA EN AMBITO ESTATAL.',
                 'activo' => true,
             ],
             [
                 'clave' => 'LPM',
-                'nombre' => 'Licitación pública municipal',
+                'nombre' => 'LICITACION PUBLICA MUNICIPAL',
                 'ambito' => 'MUNICIPAL',
-                'descripcion' => 'Procedimiento de licitación pública en ámbito municipal.',
+                'descripcion' => 'PROCEDIMIENTO DE LICITACION PUBLICA EN AMBITO MUNICIPAL.',
                 'activo' => true,
             ],
         ];
