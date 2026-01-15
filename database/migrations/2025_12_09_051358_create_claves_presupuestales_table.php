@@ -11,12 +11,13 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('objeto_gastos', function (Blueprint $table) {
+        Schema::create('claves_presupuestales', function (Blueprint $table) {
             $table->id();
 
-            $table->string('objGasto', 50)->unique();
+            $table->string('clave', 100)->unique();
             $table->string('nombre', 150);
             $table->string('descripcion', 255)->nullable();
+            $table->boolean('activo')->default(true);
 
             $table->timestamps();
             $table->softDeletes();
@@ -28,6 +29,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('objeto_gastos');
+        Schema::dropIfExists('claves_presupuestales');
     }
 };

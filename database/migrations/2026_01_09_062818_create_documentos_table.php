@@ -14,19 +14,12 @@ return new class extends Migration
         Schema::create('documentos', function (Blueprint $table) {
             $table->id();
 
-            $table->string('nombre_original', 255);
-            $table->string('nombre_guardado', 255);
-            $table->string('extension', 15);
-            $table->string('mime_type', 100)->nullable();
-            $table->unsignedBigInteger('tamano_bytes')->default(0);
-            $table->string('ruta', 500);
-            $table->string('hash_sha256', 64)->nullable();
-
-            $table->foreignId('subido_por_id')->nullable();
-            $table->foreign('subido_por_id')
-                ->references('id')->on('users')
-                ->cascadeOnUpdate()
-                ->nullOnDelete();
+            $table->string('clave', 50)->unique();
+            $table->string('nombre', 150);
+            $table->string('descripcion', 255)->nullable();
+            $table->boolean('obligatorio')->default(false);
+            $table->boolean('activo')->default(true);
+            $table->smallInteger('orden')->default(0);
 
             $table->timestamps();
             $table->softDeletes();
