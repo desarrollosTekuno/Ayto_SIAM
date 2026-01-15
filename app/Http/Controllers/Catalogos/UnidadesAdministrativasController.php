@@ -17,7 +17,7 @@ use Inertia\Inertia;
 class UnidadesAdministrativasController extends Controller {
 
     public function index(Request $request) {
-        $UnidadesAdministrativas = UnidadAdministrativa::with('Dato.Titular', 'Direccion.Estado', 'Direccion.Municipio')->forDataTable($request, defaultPerPage: 10);
+        $UnidadesAdministrativas = UnidadAdministrativa::with('Dato', 'Direccion.Estado', 'Direccion.Municipio', 'Titular')->forDataTable($request, defaultPerPage: 10);
 
         $UnidadesPadre = UnidadAdministrativa::CatalogoPadre();
         $Dependencias = Dependencia::select('id', 'nombre', 'cveDep')
@@ -48,14 +48,14 @@ class UnidadesAdministrativasController extends Controller {
             'dependencia_id' => ['required', 'integer', 'exists:dependencias,id'],
 
             'titular_id' => ['nullable', 'integer', 'exists:titulares,id'],
-            'telefono' => ['required', 'string', 'max:20'],
+            'telefono' => ['nullable', 'string', 'max:20'],
             'extension' => ['nullable', 'string', 'max:10'],
 
-            'calle' => ['required', 'string', 'max:150'],
-            'numero_exterior' => ['required', 'string', 'max:20'],
+            'calle' => ['nullable', 'string', 'max:150'],
+            'numero_exterior' => ['nullable', 'string', 'max:20'],
             'numero_interior' => ['nullable', 'string', 'max:20'],
-            'colonia' => ['required', 'string', 'max:120'],
-            'codigo_postal' => ['required', 'string', 'max:10'],
+            'colonia' => ['nullable', 'string', 'max:120'],
+            'codigo_postal' => ['nullable', 'string', 'max:10'],
             'estado_id' => ['nullable', 'integer', 'exists:estados,id'],
             'municipio_id' => ['nullable', 'integer', 'exists:municipios,id'],
         ]);
@@ -69,22 +69,22 @@ class UnidadesAdministrativasController extends Controller {
                 'tipo' => $validated['tipo'] ?? 0,
                 'unidad_padre_id' => $validated['unidad_padre_id'] ?? null,
                 'dependencia_id' => $validated['dependencia_id'],
+                'titular_id' => $validated['titular_id'] ?? null,
             ]);
 
             UnidadAdministrativaDato::create([
                 'unidad_administrativa_id' => $unidadAdministrativa->id,
-                'titular_id' => $validated['titular_id'] ?? null,
-                'telefono' => $validated['telefono'],
+                'telefono' => $validated['telefono'] ?? null,
                 'extension' => $validated['extension'] ?? null,
             ]);
 
             UnidadAdministrativaDireccion::create([
                 'unidad_administrativa_id' => $unidadAdministrativa->id,
-                'calle' => $validated['calle'],
-                'numero_exterior' => $validated['numero_exterior'],
+                'calle' => $validated['calle'] ?? null,
+                'numero_exterior' => $validated['numero_exterior'] ?? null,
                 'numero_interior' => $validated['numero_interior'] ?? null,
-                'colonia' => $validated['colonia'],
-                'codigo_postal' => $validated['codigo_postal'],
+                'colonia' => $validated['colonia'] ?? null,
+                'codigo_postal' => $validated['codigo_postal'] ?? null,
                 'estado_id' => $validated['estado_id'] ?? null,
                 'municipio_id' => $validated['municipio_id'] ?? null,
             ]);
@@ -104,14 +104,14 @@ class UnidadesAdministrativasController extends Controller {
             'dependencia_id' => ['required', 'integer', 'exists:dependencias,id'],
 
             'titular_id' => ['nullable', 'integer', 'exists:titulares,id'],
-            'telefono' => ['required', 'string', 'max:20'],
+            'telefono' => ['nullable', 'string', 'max:20'],
             'extension' => ['nullable', 'string', 'max:10'],
 
-            'calle' => ['required', 'string', 'max:150'],
-            'numero_exterior' => ['required', 'string', 'max:20'],
+            'calle' => ['nullable', 'string', 'max:150'],
+            'numero_exterior' => ['nullable', 'string', 'max:20'],
             'numero_interior' => ['nullable', 'string', 'max:20'],
-            'colonia' => ['required', 'string', 'max:120'],
-            'codigo_postal' => ['required', 'string', 'max:10'],
+            'colonia' => ['nullable', 'string', 'max:120'],
+            'codigo_postal' => ['nullable', 'string', 'max:10'],
             'estado_id' => ['nullable', 'integer', 'exists:estados,id'],
             'municipio_id' => ['nullable', 'integer', 'exists:municipios,id'],
         ]);
@@ -125,13 +125,13 @@ class UnidadesAdministrativasController extends Controller {
                 'tipo' => $validated['tipo'] ?? 0,
                 'unidad_padre_id' => $validated['unidad_padre_id'] ?? null,
                 'dependencia_id' => $validated['dependencia_id'],
+                'titular_id' => $validated['titular_id'] ?? null,
             ]);
 
             $unidades_administrativa->Dato()->updateOrCreate(
                 ['unidad_administrativa_id' => $unidades_administrativa->id],
                 [
-                    'titular_id' => $validated['titular_id'] ?? null,
-                    'telefono' => $validated['telefono'],
+                    'telefono' => $validated['telefono'] ?? null,
                     'extension' => $validated['extension'] ?? null,
                 ]
             );
@@ -139,11 +139,11 @@ class UnidadesAdministrativasController extends Controller {
             $unidades_administrativa->Direccion()->updateOrCreate(
                 ['unidad_administrativa_id' => $unidades_administrativa->id],
                 [
-                    'calle' => $validated['calle'],
-                    'numero_exterior' => $validated['numero_exterior'],
+                    'calle' => $validated['calle'] ?? null,
+                    'numero_exterior' => $validated['numero_exterior'] ?? null,
                     'numero_interior' => $validated['numero_interior'] ?? null,
-                    'colonia' => $validated['colonia'],
-                    'codigo_postal' => $validated['codigo_postal'],
+                    'colonia' => $validated['colonia'] ?? null,
+                    'codigo_postal' => $validated['codigo_postal'] ?? null,
                     'estado_id' => $validated['estado_id'] ?? null,
                     'municipio_id' => $validated['municipio_id'] ?? null,
                 ]
