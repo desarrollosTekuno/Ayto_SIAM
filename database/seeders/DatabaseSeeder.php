@@ -21,6 +21,7 @@ class DatabaseSeeder extends Seeder {
             UnidadMedidaSeeder::class,
             EstadosSeeder::class,
             MunicipiosSeeder::class,
+            CodigoPostalSeeder::class,
             CargosSeeder::class,
             TitularSeeder::class,
             DependenciasSeeder::class,

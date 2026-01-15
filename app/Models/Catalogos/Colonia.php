@@ -6,18 +6,19 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
-class Municipio extends Model {
+class Colonia extends Model {
     use HasFactory, SoftDeletes;
+
+    protected $table = 'colonias';
 
     protected $guarded = ['id', 'created_at', 'updated_at'];
     protected $dates = ['deleted_at'];
 
-    public function Estado() {
-        return $this->belongsTo(Estado::class, 'estado_id');
+    public function Municipio() {
+        return $this->belongsTo(Municipio::class, 'municipio_id');
     }
 
-    public function Colonias() {
-        return $this->hasMany(Colonia::class, 'municipio_id');
+    public function CodigosPostales() {
+        return $this->hasMany(CodigoPostal::class, 'colonia_id');
     }
-
 }
