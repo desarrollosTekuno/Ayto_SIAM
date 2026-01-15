@@ -10,7 +10,7 @@ return new class extends Migration
      * Run the migrations.
      */
     public function up(): void {
-        Schema::create('archivos_permitidos_proceso', function (Blueprint $table) {
+        Schema::create('archivos_permitidos_procesos', function (Blueprint $table) {
             $table->id();
 
             $table->string('extension', 15);
@@ -31,6 +31,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('archivos_permitidos_proceso');
+        Schema::dropIfExists('archivos_permitidos_procesos');
     }
 };

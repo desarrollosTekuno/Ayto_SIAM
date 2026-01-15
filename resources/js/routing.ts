@@ -57,10 +57,10 @@ const routes: Routing[] = [
             },
 
             {
-                name: 'tipos_procesos.index',
-                title: 'Tipos de Procesos',
+                name: 'tipos_procedimientos.index',
+                title: 'Tipos de Procedimientos',
                 icon:   'mdi mdi-card-bulleted-settings',
-                value: 'admin-tipos_procesos',
+                value: 'admin-tipos_procedimientos',
             },
 
             {
