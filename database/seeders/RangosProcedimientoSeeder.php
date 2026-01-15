@@ -2,54 +2,50 @@
 
 namespace Database\Seeders;
 
-use App\Models\Configuracion\RangosProcedimiento;
-use App\Models\Configuracion\TiposProceso;
-use Illuminate\Database\Console\Seeds\WithoutModelEvents;
+use App\Models\Catalogos\TipoProcedimiento;
 use Illuminate\Database\Seeder;
+use Illuminate\Support\Facades\DB;
 
-class RangosProcedimientoSeeder extends Seeder {
+class RangoProcedimientoSeeder extends Seeder {
 
     public function run(): void {
-        $tipoReq = TiposProceso::where('clave', 'REQ')->first();
+        $anio = DB::table('años_fiscales')->where('activo', true)->first();
+        if (!$anio) {
+            return;
+        }
 
-        $rangos = [
-            [
-                'nombre' => 'INVITACION_3_SECATI',
-                'limite_inferior' => 40000.00,
-                'limite_superior' => 250000.00,
-                'orden' => 1,
-            ],
-            [
-                'nombre' => 'INVITACION_3_CMA',
-                'limite_inferior' => 260000.00,
-                'limite_superior' => 1178573.87,
-                'orden' => 2,
-            ],
-            [
-                'nombre' => 'CONCURSO_INVITACION',
-                'limite_inferior' => 1178573.88,
-                'limite_superior' => 2678577.00,
-                'orden' => 3,
-            ],
-            [
-                'nombre' => 'LICITACION_PUBLICA',
-                'limite_inferior' => 2678577.01,
-                'limite_superior' => 999999999.99,
-                'orden' => 4,
-            ],
+        // Tipos esperados
+        $tipos = TipoProcedimiento::whereIn('clave', [
+            'AD',   // AdDirecta
+            'I3P',  // inv a cuando menos tres
+            'LPF',  // lic publica Federal
+            'LPE',  // lic pub estatal
+            'LPM',  // Licitacion publica municipal
+        ])->get()->keyBy('clave');
+
+        $items = [
+            ['clave' => 'AD',  'orden' => 10],
+            ['clave' => 'I3P', 'orden' => 20],
+            ['clave' => 'LPF', 'orden' => 30],
+            ['clave' => 'LPE', 'orden' => 40],
+            ['clave' => 'LPM', 'orden' => 50],
         ];
 
-        foreach ($rangos as $rango) {
-            RangosProcedimiento::updateOrCreate(
+        foreach ($items as $it) {
+            if (!isset($tipos[$it['clave']])) continue;
+
+            DB::table('rangos_procedimientos')->updateOrInsert(
                 [
-                    'tipo_proceso_id' => $tipoReq->id,
-                    'nombre' => $rango['nombre'],
+                    'anio_fiscal_id' => $anio->id,
+                    'tipo_procedimiento_id' => $tipos[$it['clave']]->id,
                 ],
                 [
-                    'limite_inferior' => $rango['limite_inferior'],
-                    'limite_superior' => $rango['limite_superior'],
-                    'orden' => $rango['orden'],
+                    'limite_inferior' => 0,
+                    'limite_superior' => 0,
+                    'orden' => $it['orden'],
                     'activo' => true,
+                    'updated_at' => now(),
+                    'created_at' => now(),
                 ]
             );
         }

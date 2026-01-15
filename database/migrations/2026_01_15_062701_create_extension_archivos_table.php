@@ -11,21 +11,19 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('configuraciones_sistemas', function (Blueprint $table) {
+        Schema::create('extensiones_archivos', function (Blueprint $table) {
             $table->id();
 
-            $table->string('clave', 80)->unique();
-            $table->text('valor')->nullable();
+            $table->string('extension', 15)->unique();
+            $table->string('mime', 120)->nullable();
+            $table->string('descripcion', 150)->nullable();
 
-            $table->string('tipo', 20)->nullable();
-            $table->string('descripcion', 255)->nullable();
-            $table->string('grupo', 50)->nullable();
-
-            $table->boolean('editable')->default(true);
             $table->boolean('activo')->default(true);
 
             $table->timestamps();
             $table->softDeletes();
+
+            $table->index(['activo', 'deleted_at']);
         });
     }
 
@@ -34,6 +32,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('configuraciones_sistemas');
+        Schema::dropIfExists('extensiones_archivos');
     }
 };

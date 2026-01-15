@@ -10,15 +10,14 @@ return new class extends Migration {
         Schema::create('rangos_procedimientos', function (Blueprint $table) {
             $table->id();
 
-            $table->string('nombre', 120);
-
             $table->decimal('limite_inferior', 14, 2)->default(0);
             $table->decimal('limite_superior', 14, 2)->default(0);
 
-            $table->smallInteger('orden')->default(0);
+            $table->unsignedSmallInteger('orden')->default(0);
             $table->boolean('activo')->default(true);
 
-            $table->foreignId('tipo_proceso_id')->constrained('tipos_procesos')->cascadeOnUpdate();
+            $table->foreignId('anio_fiscal_id')->constrained('años_fiscales')->cascadeOnUpdate()->restrictOnDelete();
+            $table->foreignId('tipo_procedimiento_id')->constrained('tipos_procedimientos')->cascadeOnUpdate()->restrictOnDelete(); //  (AD, I3P, LPF, LPE, LPM)
 
             $table->timestamps();
             $table->softDeletes();
