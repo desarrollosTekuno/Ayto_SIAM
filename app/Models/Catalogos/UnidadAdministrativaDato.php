@@ -16,8 +16,4 @@ class UnidadAdministrativaDato extends Model {
     public function UnidadAdministrativa() {
         return $this->belongsTo(UnidadAdministrativa::class, 'unidad_administrativa_id');
     }
-
-    public function Titular() {
-        return $this->belongsTo(Titular::class, 'titular_id');
-    }
 }

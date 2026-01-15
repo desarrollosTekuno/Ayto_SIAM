@@ -17,8 +17,7 @@ return new class extends Migration
             $table->string('nombre', 150);
             $table->string('clave', 15)->nullable();
 
-            $table->unsignedBigInteger('estado_id')->nullable();
-            $table->foreign('estado_id')->references("id")->on("estados");
+            $table->foreignId('estado_id')->nullable()->constrained('estados')->nullOnDelete();
 
             $table->timestamps();
             $table->softDeletes();
