@@ -2,6 +2,7 @@
 
 namespace App\Models\Catalogos;
 
+use App\Models\Configuracion\DocumentoRequerido;
 use App\Models\Configuracion\ProcedimientoEtapa;
 use App\Models\Configuracion\ProcedimientoEtapaResponsable;
 use App\Models\Traits\HasDataTable;
@@ -24,9 +25,9 @@ class Etapa extends Model {
         return $this->hasMany(ProcedimientoEtapaResponsable::class, 'etapa_id');
     }
 
-    // public function DocumentosRequeridos() {
-    //     return $this->hasMany(DocumentoRequerido::class, 'etapa_id');
-    // }
+    public function DocumentosRequeridos() {
+        return $this->hasMany(DocumentoRequerido::class, 'etapa_id');
+    }
 
     // public function ExpedientesPorEtapaActual() {
     //     return $this->hasMany(Expediente::class, 'etapa_actual_id');
