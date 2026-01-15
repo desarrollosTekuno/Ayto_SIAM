@@ -11,6 +11,7 @@ class ConfiguracionSistemaSeeder extends Seeder {
     public function run(): void {
 
         $vars = [
+
             [
                 'clave' => 'REQ_FECHA_INICIO_CAPTURA',
                 'valor' => '2026-01-01',
@@ -78,7 +79,7 @@ class ConfiguracionSistemaSeeder extends Seeder {
             ],
 
             // =========================
-            // PAAAS (ANTES PASS)
+            // PAAAS
             // =========================
             [
                 'clave' => 'PAAAS_FECHA_INICIO_CAPTURA',
@@ -227,6 +228,7 @@ class ConfiguracionSistemaSeeder extends Seeder {
                 'activo' => true,
             ],
 
+            // ========================= SEGURIDAD =========================
             [
                 'clave' => 'SEG_PASSWORD_MIN_LENGTH',
                 'valor' => '8',
@@ -265,21 +267,28 @@ class ConfiguracionSistemaSeeder extends Seeder {
                 'editable' => true,
                 'activo' => true,
             ],
-            [
-                'clave' => 'EJERCICIO_FISCAL_ACTIVO',
-                'valor' => '2026',
-                'tipo' => 'int',
-                'grupo' => 'SISTEMA',
-                'descripcion' => 'EJERCICIO FISCAL ACTIVO',
-                'editable' => true,
-                'activo' => true,
-            ],
+            // [
+            //     'clave' => 'EJERCICIO_FISCAL_ACTIVO',
+            //     'valor' => '2026',
+            //     'tipo' => 'int',
+            //     'grupo' => 'SISTEMA',
+            //     'descripcion' => 'EJERCICIO FISCAL ACTIVO',
+            //     'editable' => true,
+            //     'activo' => true,
+            // ],
         ];
 
         foreach ($vars as $v) {
             ConfiguracionSistema::updateOrCreate(
                 ['clave' => $v['clave']],
-                $v
+                [
+                    'valor' => $v['valor'],
+                    'tipo' => $v['tipo'],
+                    'grupo' => $v['grupo'],
+                    'descripcion' => $v['descripcion'],
+                    'editable' => $v['editable'],
+                    'activo' => $v['activo'],
+                ]
             );
         }
     }
