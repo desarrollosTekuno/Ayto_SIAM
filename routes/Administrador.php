@@ -6,6 +6,7 @@ use App\Http\Controllers\Administrador\UsuariosController;
 use App\Http\Controllers\Configuracion\ArchivosPermitidosController;
 use App\Http\Controllers\Configuracion\ConfiguracionSistemaController;
 use App\Http\Controllers\Configuracion\RangosProcedimientosController;
+use App\Http\Controllers\Configuracion\TiposProcedimientosController;
 use App\Http\Controllers\Configuracion\TiposProcesosController;
 use Illuminate\Support\Facades\Route;
 
@@ -23,5 +24,6 @@ Route::post('/RolesPermisos/ConsultarRolesPermisos', [RolesPermisosController::c
 
 Route::resource('/configuraciones_sistema', ConfiguracionSistemaController::class)->names('configuraciones_sistema');
 Route::resource('/tipos_procesos', TiposProcesosController::class)->names('tipos_procesos');
+Route::resource('/tipos_procedimientos', TiposProcedimientosController::class)->names('tipos_procedimientos');
 Route::resource('/rangos_procedimientos', RangosProcedimientosController::class)->names('rangos_procedimientos');
 Route::resource('/archivos_permitidos', ArchivosPermitidosController::class)->names('archivos_permitidos');

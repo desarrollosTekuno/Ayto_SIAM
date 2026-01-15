@@ -44,6 +44,7 @@ const form = useForm({
 const headers = [
     { title: 'ID', key: 'id', sortable: true },
     { title: 'Clave', key: 'clave', sortable: true },
+    { title: 'Descripción', key: 'descripcion', sortable: true },
     { title: 'Valor', key: 'valor', sortable: false },
     { title: 'Tipo', key: 'tipo', sortable: false },
     { title: 'Activo', key: 'activo', sortable: false },

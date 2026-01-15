@@ -23,6 +23,10 @@ class DatabaseSeeder extends Seeder {
             UnidadMedidaSeeder::class,
             ObjetoGastoSeeder::class,
 
+            UnidadMedidaSeeder::class,
+            ObjetoGastoSeeder::class,
+
+            CodigoPostalSeeder::class,
             CargosSeeder::class,
             TitularSeeder::class,
             DependenciasSeeder::class,

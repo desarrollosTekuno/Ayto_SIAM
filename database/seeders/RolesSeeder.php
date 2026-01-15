@@ -35,7 +35,8 @@ class RolesSeeder extends Seeder {
             'areas',
             'lineamientos',
             'configuraciones_sistema',
-            'tipos_procesos',
+            // 'tipos_procesos',
+            'tipos_procedimientos',
             'rangos_procedimientos',
             'archivos_permitidos_proceso',
         ];

@@ -19,6 +19,10 @@ class Dependencia extends Model {
         return $this->hasMany(Requisicion::class, 'dependencia_id');
     }
 
+    public function Titular() {
+        return $this->belongsTo(Titular::class, 'titular_id');
+    }
+
     public function Dato() {
         return $this->hasOne(DependenciaDato::class, 'dependencia_id');
     }
@@ -39,9 +43,7 @@ class Dependencia extends Model {
         return $this->hasMany(UnidadAdministrativa::class, 'dependencia_id');
     }
 
-    public function Titular() {
-        return $this->belongsTo(Titular::class, 'titular_id');
-    }
+
 
     //  =========================================== CATALOGOS ============================================
     public static function CatalogoPadre() {

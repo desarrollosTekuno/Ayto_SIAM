@@ -1,5 +1,5 @@
 <script setup>
-import { ref, computed } from 'vue'
+import { ref, computed, onMounted } from 'vue'
 import { useForm, usePage } from '@inertiajs/vue3'
 
 import AppLayout from '@/Layouts/AppLayout.vue'
@@ -39,6 +39,10 @@ const form = useForm({
     activo: true,
 })
 
+onMounted(() => {
+    console.log(props.TiposProcesos)
+})
+
 // =============================== TABLE ===============================
 const headers = [
     { title: 'ID', key: 'id', sortable: true },
@@ -49,7 +53,7 @@ const headers = [
     { title: 'Acciones', key: 'actions', sortable: false },
 ]
 
-// =============================== METHODS ===============================
+// =============================== FUNCIONES ===============================
 const ReloadTable = () => {
     DTableRef.value?.reload?.()
 }
@@ -139,7 +143,7 @@ const onInvalidForm = () => {
                 searchable
                 search-label="Buscar tipo"
                 search-placeholder="Clave o nombre..."
-                :server-route="route('tipos_procesos.index')"
+                server-route="tipos_procesos.index"
                 server-prop="TiposProcesos"
                 :headers="headers"
                 :items-per-page="10"

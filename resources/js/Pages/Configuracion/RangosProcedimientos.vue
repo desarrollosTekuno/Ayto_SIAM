@@ -23,7 +23,7 @@ const canDelete = computed(() => can.value.includes('rangos_procedimientos.destr
 // =============================== PROPS ===============================
 const props = defineProps({
     RangosProcedimientos: Object,
-    TiposProcesos: Array, // [{id,nombre}]
+    TiposProcesos: Array,
 })
 
 // =============================== STATE ===============================
@@ -45,24 +45,23 @@ const form = useForm({
 // =============================== TABLE ===============================
 const headers = [
     { title: 'ID', key: 'id', sortable: true },
-    { title: 'Tipo proceso', key: 'dato_tipo_proceso', sortable: false },
-    { title: 'Clave', key: 'clave', sortable: true },
-    { title: 'Nombre', key: 'nombre', sortable: true },
-    { title: 'Monto min', key: 'monto_min', sortable: true },
-    { title: 'Monto max', key: 'monto_max', sortable: true },
+    { title: 'Procedimiento', key: 'tipo_procedimiento', sortable: false },
+    { title: 'Límite inferior', key: 'limite_inferior', sortable: true },
+    { title: 'Límite superior', key: 'limite_superior', sortable: true },
     { title: 'Activo', key: 'activo', sortable: false },
     { title: 'Acciones', key: 'actions', sortable: false },
 ]
+
 
 const tipoNombreById = (id) => {
     const t = (props.TiposProcesos ?? []).find((x) => x.id === id)
     return t ? t.nombre : '—'
 }
 
-const fmtMoney = (v) => {
-    if (v === null || v === undefined || v === '') return '—'
-    const n = Number(v)
-    if (Number.isNaN(n)) return '—'
+const FormatoMoneda = (val) => {
+    if (val === null || val === undefined || val === '') return ''
+    const n = Number(val)
+    if (Number.isNaN(n)) return val
     return n.toLocaleString('es-MX', { style: 'currency', currency: 'MXN' })
 }
 
@@ -159,31 +158,32 @@ const onInvalidForm = () => {
                 searchable
                 search-label="Buscar rango"
                 search-placeholder="Clave o nombre..."
-                :server-route="route('rangos_procedimientos.index')"
+                server-route="rangos_procedimientos.index"
                 server-prop="RangosProcedimientos"
                 :headers="headers"
                 :items-per-page="10"
             >
-                <template v-slot:[`item.dato_tipo_proceso`]="{ item }">
-                    {{ tipoNombreById(item.tipo_proceso_id) }}
+                <template v-slot:[`item.tipo_procedimiento`]="{ item }">
+                    {{ item?.tipo_procedimiento?.clave }} - {{ item?.tipo_procedimiento?.nombre }}
                 </template>
 
-                <template v-slot:[`item.monto_min`]="{ item }">
-                    {{ fmtMoney(item.monto_min) }}
+                <template v-slot:[`item.limite_inferior`]="{ item }">
+                    {{ FormatoMoneda(item.limite_inferior) }}
                 </template>
 
-                <template v-slot:[`item.monto_max`]="{ item }">
-                    {{ item.monto_max === null ? 'Sin tope' : fmtMoney(item.monto_max) }}
+                <template v-slot:[`item.limite_superior`]="{ item }">
+                    {{ FormatoMoneda(item.limite_superior) }}
                 </template>
 
                 <template v-slot:[`item.activo`]="{ item }">
-                    <span
-                        class="px-2 py-1 text-xs rounded"
-                        :class="(item.activo ?? true) ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'"
-                    >
-                        {{ (item.activo ?? true) ? 'Sí' : 'No' }}
-                    </span>
+                <span
+                    class="px-2 py-1 text-xs rounded"
+                    :class="(item.activo ?? true) ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'"
+                >
+                    {{ (item.activo ?? true) ? 'Sí' : 'No' }}
+                </span>
                 </template>
+
 
                 <template v-slot:[`item.actions`]="{ item }">
                     <div class="flex" v-if="canUpdate || canDelete">
@@ -211,12 +211,7 @@ const onInvalidForm = () => {
         </section>
 
         <!-- MODAL -->
-        <VDialog
-            v-model="showModal"
-            :title="form.id ? 'Editar rango' : 'Nuevo rango'"
-            header-icon="mdi-table"
-            max-width="750"
-        >
+        <VDialog v-model="showModal" :title="form.id ? 'Editar rango' : 'Nuevo rango'" header-icon="mdi-table" max-width="750">
             <template #content>
                 <FormValidate ref="formValidateRef" @submit="GuardarModificar" @invalid="onInvalidForm">
                     <div class="grid grid-cols-1 gap-2 md:grid-cols-2">

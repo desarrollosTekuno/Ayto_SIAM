@@ -11,8 +11,6 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 class RangosProcedimiento extends Model {
     use HasFactory, SoftDeletes, HasDataTable;
 
-    protected $table = 'rangos_modalidad';
-
     protected $guarded = ['id', 'created_at', 'updated_at'];
     protected $dates = ['deleted_at'];
 

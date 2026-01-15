@@ -23,6 +23,7 @@ return new class extends Migration
 
             $table->string('usado_en', 20)->default('SIAM')->nullable();
 
+            $table->foreignId('titular_id')->nullable()->constrained('titulares')->nullOnDelete();
             $table->foreignId('dependencia_padre_id')->nullable()->constrained('dependencias')->nullOnDelete();
 
             $table->timestamps();
