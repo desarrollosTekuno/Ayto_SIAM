@@ -3,24 +3,24 @@
 namespace Database\Seeders;
 
 use App\Models\Catalogos\TipoProcedimiento;
+use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\DB;
 
 class RangoProcedimientoSeeder extends Seeder {
-
-    public function run(): void {
+    public function run(): void
+    {
         $anio = DB::table('años_fiscales')->where('activo', true)->first();
         if (!$anio) {
             return;
         }
 
-        // Tipos esperados
         $tipos = TipoProcedimiento::whereIn('clave', [
-            'AD',   // AdDirecta
-            'I3P',  // inv a cuando menos tres
-            'LPF',  // lic publica Federal
-            'LPE',  // lic pub estatal
-            'LPM',  // Licitacion publica municipal
+            'AD',
+            'I3P',
+            'LPF',
+            'LPE',
+            'LPM',
         ])->get()->keyBy('clave');
 
         $items = [
@@ -32,12 +32,15 @@ class RangoProcedimientoSeeder extends Seeder {
         ];
 
         foreach ($items as $it) {
-            if (!isset($tipos[$it['clave']])) continue;
+            $tipo = $tipos->get($it['clave']);
+            if (!$tipo) {
+                continue;
+            }
 
             DB::table('rangos_procedimientos')->updateOrInsert(
                 [
                     'anio_fiscal_id' => $anio->id,
-                    'tipo_procedimiento_id' => $tipos[$it['clave']]->id,
+                    'tipo_procedimiento_id' => $tipo->id,
                 ],
                 [
                     'limite_inferior' => 0,

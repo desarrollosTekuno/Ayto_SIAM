@@ -7,7 +7,6 @@ use App\Models\User;
 use Database\Seeders\CargosSeeder;
 use Database\Seeders\EstadosSeeder;
 use Database\Seeders\MunicipiosSeeder;
-// use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\Hash;
 

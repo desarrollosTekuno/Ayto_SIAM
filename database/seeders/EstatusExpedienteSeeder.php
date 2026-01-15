@@ -24,7 +24,7 @@ class EstatusExpedienteSeeder extends Seeder {
                 [
                     'nombre' => $it['nombre'],
                     'descripcion' => $it['descripcion'] ?? null,
-                    'color' => $it['color'] ?? null,
+                    'color_estatus' => $it['color'] ?? null,
                     'orden' => $it['orden'],
                     'activo' => true,
                 ]
