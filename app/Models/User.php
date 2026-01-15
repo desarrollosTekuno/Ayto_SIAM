@@ -2,6 +2,9 @@
 
 namespace App\Models;
 
+use App\Models\Catalogos\Titular;
+use App\Models\Traits\HasDataTable;
+use App\Models\Usuarios\UserDato;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
@@ -17,6 +20,7 @@ class User extends Authenticatable {
     use Notifiable;
     use TwoFactorAuthenticatable;
     use HasRoles;
+    use HasDataTable;
 
     protected $fillable = [
         'name',
@@ -42,6 +46,15 @@ class User extends Authenticatable {
             'email_verified_at' => 'datetime',
             'password' => 'hashed',
         ];
+    }
+
+    // =========================================================== RELACIONES USER===========================================================
+    public function Dato() {
+        return $this->hasOne(UserDato::class, 'user_id');
+    }
+
+    public function Titular() {
+        return $this->hasOne(Titular::class, 'user_id');
     }
 
 

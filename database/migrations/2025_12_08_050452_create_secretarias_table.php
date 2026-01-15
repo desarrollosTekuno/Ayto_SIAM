@@ -19,16 +19,16 @@ return new class extends Migration
             $table->string('cveURes', 4)->nullable();
             $table->string('abreviatura', 100)->nullable();
             $table->tinyInteger('tipo')->default(0);
-            $table->string('usado_en', 20)->default('SIAM')->nullable();
+            $table->boolean('centralizada')->default(true);
 
-            $table->foreignId('secretaria_padre_id')
-                ->nullable()
-                ->constrained('secretarias')
-                ->nullOnDelete();
+            $table->string('usado_en', 20)->default('SIAM')->nullable();
+            $table->foreignId('secretaria_padre_id')->nullable()->constrained('secretarias')->nullOnDelete();
+            $table->foreignId('titular_id')->nullable()->constrained('titulares')->nullOnDelete();
 
             $table->timestamps();
             $table->softDeletes();
         });
+
 
     }
 

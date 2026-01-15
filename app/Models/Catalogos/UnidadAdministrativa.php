@@ -3,6 +3,7 @@
 namespace App\Models\Catalogos;
 
 use App\Models\Traits\HasDataTable;
+use App\Models\Usuarios\UserDato;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
@@ -16,10 +17,6 @@ class UnidadAdministrativa extends Model {
 
     public function Dependencia() {
         return $this->belongsTo(Dependencia::class, 'dependencia_id');
-    }
-
-    public function Datos() {
-        return $this->hasOne(UnidadAdministrativaDato::class, 'unidad_administrativa_id');
     }
 
     public function Dato() {
@@ -36,6 +33,14 @@ class UnidadAdministrativa extends Model {
 
     public function UnidadesHijas() {
         return $this->hasMany(self::class, 'unidad_padre_id');
+    }
+
+    public function Titular() {
+        return $this->belongsTo(Titular::class, 'titular_id');
+    }
+
+    public function UsuariosDatos() {
+        return $this->hasMany(UserDato::class, 'unidad_administrativa_id');
     }
 
     //  =========================================== CATALOGOS ============================================

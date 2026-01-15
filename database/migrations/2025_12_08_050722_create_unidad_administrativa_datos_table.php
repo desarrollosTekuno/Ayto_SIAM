@@ -16,8 +16,9 @@ return new class extends Migration
             $table->string('telefono', 20)->nullable();
             $table->string('extension', 10)->nullable();
 
-            $table->foreignId('titular_id')->nullable()->constrained('titulares')->nullOnDelete();
             $table->foreignId('unidad_administrativa_id')->constrained('unidades_administrativas')->cascadeOnDelete();
+
+            $table->unique('unidad_administrativa_id');
 
             $table->timestamps();
             $table->softDeletes();

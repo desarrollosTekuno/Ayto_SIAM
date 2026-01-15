@@ -13,31 +13,28 @@ return new class extends Migration
     {
         Schema::create('user_datos', function (Blueprint $table) {
             $table->id();
-            $table->string('nombre', 100);
-            $table->string('apellido_paterno', 100);
-            $table->string('apellido_materno', 100)->nullable();
 
-            $table->foreignId('unidad_administrativa_id');
-            $table->foreign('unidad_administrativa_id')
-            ->references('id')->on('unidades_administrativas')
-            ->cascadeOnUpdate()
-            ->cascadeOnDelete();
+            $table->string('cargo', 150)->nullable(); // o cargo_id FK a cargos
+            $table->string('telefono', 20)->nullable();
+            $table->string('extension', 10)->nullable();
 
-            $table->foreignId('dependencia_id');
-            $table->foreign('dependencia_id')
-            ->references('id')->on('dependencias')
-            ->cascadeOnUpdate()
-            ->cascadeOnDelete();
+            $table->boolean('activo')->default(true);
+
+            $table->foreignId('unidad_administrativa_id')
+                ->nullable()
+                ->constrained('unidades_administrativas')
+                ->nullOnDelete();
 
             $table->foreignId('user_id')
-            ->unique()
-            ->constrained('users')
-            ->cascadeOnUpdate()
-            ->cascadeOnDelete();
+                ->unique()
+                ->constrained('users')
+                ->cascadeOnUpdate()
+                ->cascadeOnDelete();
 
             $table->timestamps();
             $table->softDeletes();
         });
+
     }
 
     /**

@@ -1,4 +1,3 @@
-<!-- resources/js/Pages/Catalogos/Dependencias.vue -->
 <script setup>
 import { ref, computed, watch } from 'vue'
 import { useForm, usePage } from '@inertiajs/vue3'
@@ -19,16 +18,17 @@ import { customToastSwal, warningToast, errorToast } from '@/utils/swal'
 
 // =============================== PERMISOS ===============================
 const can = computed(() => usePage().props.auth?.permissions ?? [])
-const canCreate = computed(() => can.value.includes('dependencias.store'))
-const canUpdate = computed(() => can.value.includes('dependencias.update'))
-const canDelete = computed(() => can.value.includes('dependencias.destroy'))
+const canCreate = computed(() => can.value.includes('unidades_administrativas.store'))
+const canUpdate = computed(() => can.value.includes('unidades_administrativas.update'))
+const canDelete = computed(() => can.value.includes('unidades_administrativas.destroy'))
 
 // =============================== PROPS ===============================
 const props = defineProps({
-    Dependencias: Object,
+    UnidadesAdministrativas: Object,
+    UnidadesPadre: Array,
+    Dependencias: Array,
     Estados: Array,
     Titulares: Array,
-    DependenciasPadre: Array,
 })
 
 // =============================== STATE ===============================
@@ -42,13 +42,12 @@ const form = useForm({
     id: null,
 
     nombre: '',
-    cveDep: '',
-    cveURes: '',
+    siglas: '',
     abreviatura: '',
-    tipo: 0,
-    centralizada: true,
-    usado_en: 'SIAM',
-    dependencia_padre_id: null,
+    alias: '',
+    tipo: 0, // 0 DIRECCION, 1 DEPARTAMENTO, 2 JEFATURA
+    unidad_padre_id: null,
+    dependencia_id: null,
 
     titular_id: null,
     telefono: '',
@@ -65,15 +64,14 @@ const form = useForm({
 
 // =============================== TABLE ===============================
 const headers = [
-    { title: 'ID', key: 'id', sortable: true },
     { title: 'Nombre', key: 'nombre', sortable: true },
-    { title: 'Clave', key: 'cveDep', sortable: true },
+    { title: 'Siglas', key: 'siglas', sortable: true },
     { title: 'Abrev.', key: 'abreviatura', sortable: false },
     { title: 'Tipo', key: 'tipo', sortable: true },
-    { title: 'Centralizada', key: 'centralizada', sortable: true },
-    { title: 'Padre', key: 'dependencia_padre_id', sortable: false },
+    { title: 'Dependencia', key: 'dependencia_id', sortable: false },
+    { title: 'Padre', key: 'unidad_padre_id', sortable: false },
     { title: 'Titular', key: 'titular', sortable: false },
-    { title: 'Teléfono', key: 'Dato.telefono', sortable: false },
+    { title: 'Teléfono', key: 'dato.telefono', sortable: false },
     { title: 'Acciones', key: 'actions', sortable: false },
 ]
 
@@ -82,20 +80,19 @@ const ReloadTable = () => DTableRef.value?.reload?.()
 const ResetForm = () => {
     form.reset()
     form.id = null
-    form.usado_en = 'SIAM'
     form.tipo = 0
-    form.centralizada = true
-    form.dependencia_padre_id = null
+    form.unidad_padre_id = null
+    form.dependencia_id = null
     form.estado_id = null
     form.municipio_id = null
     Municipios.value = []
 }
 
-const DependenciasPadreFiltradas = computed(() => {
+const UnidadesPadreFiltradas = computed(() => {
     const id = form.id
-    const arr = props.DependenciasPadre ?? []
+    const arr = props.UnidadesPadre ?? []
     if (!id) return arr
-    return arr.filter((d) => d.id !== id)
+    return arr.filter((u) => u.id !== id)
 })
 
 const ChangeModal = (item = null) => {
@@ -104,13 +101,12 @@ const ChangeModal = (item = null) => {
 
         form.id = item.id
         form.nombre = item.nombre ?? ''
-        form.cveDep = item.cveDep ?? ''
-        form.cveURes = item.cveURes ?? ''
+        form.siglas = item.siglas ?? ''
         form.abreviatura = item.abreviatura ?? ''
+        form.alias = item.alias ?? ''
         form.tipo = item.tipo ?? 0
-        form.centralizada = (item.centralizada ?? true) ? true : false
-        form.usado_en = item.usado_en ?? 'SIAM'
-        form.dependencia_padre_id = item.dependencia_padre_id ?? null
+        form.unidad_padre_id = item.unidad_padre_id ?? null
+        form.dependencia_id = item.dependencia_id ?? null
 
         const dato = item.Dato ?? item.dato ?? null
         form.titular_id = dato?.titular_id ?? null
@@ -140,7 +136,9 @@ const GuardarModificar = () => {
         preserveScroll: true,
         onSuccess: () => {
             customToastSwal({
-                title: form.id ? 'Dependencia actualizada correctamente' : 'Dependencia registrada correctamente',
+                title: form.id
+                    ? 'Unidad administrativa actualizada correctamente'
+                    : 'Unidad administrativa registrada correctamente',
                 icon: 'success',
             })
             showModal.value = false
@@ -152,20 +150,20 @@ const GuardarModificar = () => {
 
     if (form.id) {
         if (!canUpdate.value) return
-        form.put(route('dependencias.update', form.id), options)
+        form.put(route('unidades_administrativas.update', form.id), options)
     } else {
         if (!canCreate.value) return
-        form.post(route('dependencias.store'), options)
+        form.post(route('unidades_administrativas.store'), options)
     }
 }
 
 const Eliminar = (id) => {
     if (!canDelete.value) return
 
-    form.delete(route('dependencias.destroy', id), {
+    form.delete(route('unidades_administrativas.destroy', id), {
         preserveScroll: true,
         onSuccess: () => {
-            customToastSwal({ title: 'Dependencia eliminada', icon: 'success' })
+            customToastSwal({ title: 'Unidad administrativa eliminada', icon: 'success' })
             ReloadTable()
         },
         onError: () => errorToast('No se pudo eliminar'),
@@ -199,7 +197,7 @@ watch(
 </script>
 
 <template>
-    <AppLayout title="Dependencias">
+    <AppLayout title="Unidades Administrativas">
         <template #actions>
             <VButton v-if="canCreate" prepend-icon="mdi-plus" @click="ChangeModal()">
                 Nuevo Registro
@@ -210,33 +208,44 @@ watch(
         <section>
             <DataTableServer
                 ref="DTableRef"
-                title="Catálogo de Dependencias"
+                title="Catálogo de Unidades Administrativas"
                 searchable
-                search-label="Buscar dependencia"
+                search-label="Buscar unidad administrativa"
                 search-placeholder="Escribe el nombre..."
-                server-route="dependencias.index"
-                server-prop="Dependencias"
+                server-route="unidades_administrativas.index"
+                server-prop="UnidadesAdministrativas"
                 :headers="headers"
                 :items-per-page="10"
             >
-                <!-- Padre (nombre) -->
-                <template v-slot:[`item.dependencia_padre_id`]="{ item }">
-                    <span v-if="!item.dependencia_padre_id" class="text-slate-400">—</span>
+                <!-- Dependencia (nombre) -->
+                <template v-slot:[`item.dependencia_id`]="{ item }">
+                    <span v-if="!item.dependencia_id" class="text-slate-400">—</span>
                     <span v-else>
                         {{
-                            (DependenciasPadre.find(d => d.id === item.dependencia_padre_id)?.nombre)
-                            ?? `#${item.dependencia_padre_id}`
+                            (Dependencias.find(d => d.id === item.dependencia_id)?.nombre)
+                            ?? `#${item.dependencia_id}`
+                        }}
+                    </span>
+                </template>
+
+                <!-- Padre (nombre) -->
+                <template v-slot:[`item.unidad_padre_id`]="{ item }">
+                    <span v-if="!item.unidad_padre_id" class="text-slate-400">—</span>
+                    <span v-else>
+                        {{
+                            (UnidadesPadre.find(u => u.id === item.unidad_padre_id)?.nombre)
+                            ?? `#${item.unidad_padre_id}`
                         }}
                     </span>
                 </template>
 
                 <!-- Titular (nombre completo) -->
                 <template v-slot:[`item.titular`]="{ item }">
-                    <span class="text-slate-400" v-if="!(item?.Dato?.titular || item?.dato?.titular)">—</span>
+                    <span class="text-slate-400" v-if="!(item?.Dato?.Titular || item?.dato?.titular || item?.Dato?.titular)">—</span>
                     <span v-else>
                         {{
                             (() => {
-                                const t = item?.Dato?.titular ?? item?.dato?.titular
+                                const t = item?.Dato?.Titular ?? item?.Dato?.titular ?? item?.dato?.titular
                                 return [t?.nombre, t?.apellido_paterno, t?.apellido_materno]
                                     .filter(Boolean)
                                     .join(' ')
@@ -245,24 +254,13 @@ watch(
                     </span>
                 </template>
 
-                <!-- Centralizada -->
-                <template v-slot:[`item.centralizada`]="{ item }">
-                    <span
-                        class="px-2 py-1 text-xs border rounded-full"
-                        :class="(item.centralizada ?? true)
-                            ? 'border-emerald-200 bg-emerald-50 text-emerald-800'
-                            : 'border-slate-200 bg-slate-50 text-slate-700'"
-                    >
-                        {{ (item.centralizada ?? true) ? 'SI' : 'NO' }}
-                    </span>
-                </template>
-
                 <!-- Tipo -->
                 <template v-slot:[`item.tipo`]="{ item }">
                     <span class="text-slate-700">
                         {{
-                            item.tipo === 0 ? 'DEPENDENCIA'
-                            : item.tipo === 1 ? 'DIRECCIÓN'
+                            item.tipo === 0 ? 'DIRECCIÓN'
+                            : item.tipo === 1 ? 'DEPARTAMENTO'
+                            : item.tipo === 2 ? 'JEFATURA'
                             : item.tipo
                         }}
                     </span>
@@ -295,36 +293,74 @@ watch(
         <!-- MODAL -->
         <VDialog
             v-model="showModal"
-            :title="form.id ? 'Editar dependencia' : 'Nueva dependencia'"
-            header-icon="mdi-office-building-outline"
+            :title="form.id ? 'Editar unidad administrativa' : 'Nueva unidad administrativa'"
+            header-icon="mdi-office-building-cog-outline"
             max-width="700"
         >
             <template #content>
                 <FormValidate ref="formValidateRef" @submit="GuardarModificar" @invalid="onInvalidForm">
                     <div class="grid grid-cols-1 gap-4 md:grid-cols-2">
-                        <!-- DEPENDENCIA -->
-                        <MdTextInput v-model="form.nombre" label="Nombre" icon="mdi-office-building-outline" :required="true" :minLength="3" :maxLength="150" counter />
-                        <MdTextInput v-model="form.abreviatura" label="Abreviatura" icon="mdi-text-short" :maxLength="100" counter />
-                        <MdTextInput v-model="form.cveDep" label="Clave (cveDep)" icon="mdi-identifier" :maxLength="5" counter />
-                        <MdTextInput v-model="form.cveURes" label="Clave URes (cveURes)" icon="mdi-identifier" :maxLength="4" counter />
+                        <!-- UNIDAD ADMINISTRATIVA -->
+                        <MdTextInput
+                            v-model="form.nombre"
+                            label="Nombre"
+                            icon="mdi-office-building-cog-outline"
+                            :required="true"
+                            :minLength="3"
+                            :maxLength="150"
+                            counter
+                        />
+
+                        <MdTextInput
+                            v-model="form.siglas"
+                            label="Siglas"
+                            icon="mdi-alphabetical-variant"
+                            :maxLength="50"
+                            counter
+                        />
+
+                        <MdTextInput
+                            v-model="form.abreviatura"
+                            label="Abreviatura"
+                            icon="mdi-text-short"
+                            :maxLength="100"
+                            counter
+                        />
+
+                        <MdTextInput
+                            v-model="form.alias"
+                            label="Alias"
+                            icon="mdi-tag-outline"
+                            :maxLength="100"
+                            counter
+                        />
 
                         <MdSelect
                             v-model="form.tipo"
                             label="Tipo"
                             :items="[
-                                { id: 0, nombre: 'DEPENDENCIA' },
-                                { id: 1, nombre: 'DIRECCIÓN' },
+                                { id: 0, nombre: 'DIRECCIÓN' },
+                                { id: 1, nombre: 'DEPARTAMENTO' },
+                                { id: 2, nombre: 'JEFATURA' },
                             ]"
                             item-value="id"
                             item-title="nombre"
                             clearable
                         />
 
+                        <MdSelect
+                            v-model="form.dependencia_id"
+                            label="Dependencia"
+                            :items="Dependencias"
+                            item-value="id"
+                            item-title="nombre"
+                            clearable
+                        />
 
                         <MdSelect
-                            v-model="form.dependencia_padre_id"
-                            label="Dependencia padre (opcional)"
-                            :items="DependenciasPadreFiltradas"
+                            v-model="form.unidad_padre_id"
+                            label="Unidad padre (opcional)"
+                            :items="UnidadesPadreFiltradas"
                             item-value="id"
                             item-title="nombre"
                             clearable

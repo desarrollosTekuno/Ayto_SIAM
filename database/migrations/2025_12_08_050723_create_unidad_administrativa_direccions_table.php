@@ -23,6 +23,8 @@ return new class extends Migration
             $table->foreignId('municipio_id')->nullable()->constrained('municipios')->nullOnDelete();
             $table->foreignId('unidad_administrativa_id')->constrained('unidades_administrativas')->cascadeOnDelete();
 
+            $table->unique('unidad_administrativa_id');
+
             $table->timestamps();
             $table->softDeletes();
         });

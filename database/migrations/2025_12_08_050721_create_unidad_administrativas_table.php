@@ -18,11 +18,11 @@ return new class extends Migration
             $table->string('siglas', 50)->nullable();
             $table->string('abreviatura', 100)->nullable();
             $table->string('alias', 100)->nullable();
-            $table->tinyInteger('tipo')->default(0); // dIRECCION, DEPARTAMENTO, JEFATURA
+            $table->tinyInteger('tipo')->default(0); // DIRECCION, DEPARTAMENTO, JEFATURA
 
             $table->foreignId('unidad_padre_id')->nullable()->constrained('unidades_administrativas')->nullOnDelete();
-
             $table->foreignId('dependencia_id')->constrained('dependencias')->cascadeOnDelete();
+            $table->foreignId('titular_id')->nullable()->constrained('titulares')->nullOnDelete();
 
             $table->timestamps();
             $table->softDeletes();

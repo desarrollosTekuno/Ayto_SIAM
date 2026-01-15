@@ -11,43 +11,63 @@ use Spatie\Permission\Models\Role;
 
 use Illuminate\Support\Carbon;
 
-class UserFactory extends Factory
-{
+class UserFactory extends Factory {
     protected $model = User::class;
 
-    public function definition(): array
-    {
+    public function definition(): array {
+
+        $nombre = $this->faker->firstName();
+        $apellidoPaterno = $this->faker->lastName();
+        $apellidoMaterno = $this->faker->optional()->lastName();
+
         return [
-            'name' => $this->faker->name(),
+            'nombre' => $nombre,
+            'apellido_paterno' => $apellidoPaterno,
+            'apellido_materno' => $apellidoMaterno,
+
+            'name' => trim(
+                $nombre . ' ' .
+                $apellidoPaterno . ' ' .
+                ($apellidoMaterno ?? '')
+            ),
+
             'username' => null,
-            'email' => $this->faker->unique()->safeEmail(),
+            'email' => $this->faker->optional()->unique()->safeEmail(),
             'email_verified_at' => now(),
             'password' => null,
+
             'remember_token' => Str::random(10),
         ];
     }
 
     public function configure() {
         return $this->afterCreating(function (User $user) {
-            $prefix = Carbon::now()->format('Y');
-            $user->username = $prefix . str_pad((string)$user->id, 2, '0', STR_PAD_LEFT);
+
+            $prefix = now()->format('Y');
+            $folio  = str_pad((string) $user->id, 4, '0', STR_PAD_LEFT);
+
+            $user->username = "{$prefix}{$folio}";
             $user->password = Hash::make($user->username);
             $user->save();
 
             UserDato::create([
-                'nombre' => $this->faker->firstName(),
-                'apellido_paterno' => $this->faker->lastName(),
-                'apellido_materno' => $this->faker->optional()->lastName(),
+                'cargo' => $this->faker->jobTitle(),
+                'telefono' => $this->faker->optional()->phoneNumber(),
+                'extension' => $this->faker->optional()->numerify('###'),
+                'activo' => true,
                 'unidad_administrativa_id' => 1,
-                'dependencia_id' => 1,
+
                 'user_id' => $user->id,
             ]);
 
             $role = Role::firstOrCreate(
-                ['name' => 'SUPERADMINISTRADOR', 'guard_name' => 'web']
+                ['name' => 'SUPERADMINISTRADOR'],
+                ['guard_name' => 'web']
             );
 
-            $user->assignRole($role);
+            if (!$user->hasRole($role->name)) {
+                $user->assignRole($role);
+            }
         });
     }
 }

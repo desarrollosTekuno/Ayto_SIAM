@@ -14,50 +14,53 @@ import { customToastSwal, warningToast, errorToast } from '@/utils/swal'
 
 // =============================== PERMISOS ===============================
 const can = computed(() => usePage().props.auth?.permissions ?? [])
-const canCreate = computed(() => can.value.includes('titulares.store'))
-const canUpdate = computed(() => can.value.includes('titulares.update'))
-const canDelete = computed(() => can.value.includes('titulares.destroy'))
+const canCreate = computed(() => can.value.includes('usuarios.store'))
+const canUpdate = computed(() => can.value.includes('usuarios.update'))
+const canDelete = computed(() => can.value.includes('usuarios.destroy'))
 
 // =============================== PROPS ===============================
 const props = defineProps({
-    Titular: Object,
-    Cargos: Array,
+    Usuarios: Object,
+    UnidadesAdministrativas: Array, // [{id, nombre}]
 })
 
 // =============================== STATE ===============================
 const showModal = ref(false)
-const editMode = ref(false)
 const formValidateRef = ref(null)
 const DTableRef = ref(null)
 
 // =============================== FORM ===============================
 const form = useForm({
     id: null,
-    nombre: '',
-    apellido_paterno: '',
-    apellido_materno: '',
-    correo: '',
+    name: '',
+    username: '',
+    email: '',
+    password: '',
+    password_confirmation: '',
+
+    // user_datos
+    cargo: '',
     telefono: '',
     extension: '',
-    cargo_id: null,
+    activo: true,
+    unidad_administrativa_id: null,
 })
 
 // =============================== TABLE ===============================
 const headers = [
     { title: 'ID', key: 'id', sortable: true },
-    { title: 'Nombre', key: 'nombre', sortable: true },
-    { title: 'Apellido Paterno', key: 'apellido_paterno', sortable: true },
-    { title: 'Apellido Materno', key: 'apellido_materno', sortable: true },
-    { title: 'Correo', key: 'correo', sortable: true },
-    { title: 'Teléfono', key: 'telefono', sortable: true },
-    { title: 'Extensión', key: 'extension', sortable: true },
-    { title: 'Cargo', key: 'cargo_nombre', sortable: false },
+    { title: 'Nombre', key: 'name', sortable: true },
+    { title: 'Usuario', key: 'username', sortable: true },
+    { title: 'Correo', key: 'email', sortable: true },
+    { title: 'Cargo', key: 'dato_cargo', sortable: false },
+    { title: 'Unidad', key: 'dato_unidad', sortable: false },
+    { title: 'Activo', key: 'dato_activo', sortable: false },
     { title: 'Acciones', key: 'actions', sortable: false },
 ]
 
-const cargoNombreById = (id) => {
-    const c = (props.Cargos ?? []).find((x) => x.id === id)
-    return c ? c.nombre : 'Sin cargo'
+const unidadNombreById = (id) => {
+    const u = (props.UnidadesAdministrativas ?? []).find((x) => x.id === id)
+    return u ? u.nombre : 'Sin unidad'
 }
 
 // =============================== METHODS ===============================
@@ -65,24 +68,36 @@ const ReloadTable = () => {
     DTableRef.value?.reload?.()
 }
 
+const ResetForm = () => {
+    form.reset()
+    form.id = null
+    form.activo = true
+    form.unidad_administrativa_id = null
+}
+
 const ChangeModal = (item = null) => {
     if (item) {
         if (!canUpdate.value) return
-        editMode.value = true
 
         form.id = item.id
-        form.nombre = item.nombre ?? ''
-        form.apellido_paterno = item.apellido_paterno ?? ''
-        form.apellido_materno = item.apellido_materno ?? ''
-        form.correo = item.correo ?? ''
-        form.telefono = item.telefono ?? ''
-        form.extension = item.extension ?? ''
-        form.cargo_id = item.cargo_id ?? null
+        form.name = item.name ?? ''
+        form.username = item.username ?? ''
+        form.email = item.email ?? ''
+
+        // No precargamos password
+        form.password = ''
+        form.password_confirmation = ''
+
+        // user_datos (vienen por with('Dato'))
+        const d = item.Dato ?? item.dato ?? null
+        form.cargo = d?.cargo ?? ''
+        form.telefono = d?.telefono ?? ''
+        form.extension = d?.extension ?? ''
+        form.activo = (d?.activo ?? true) ? true : false
+        form.unidad_administrativa_id = d?.unidad_administrativa_id ?? null
     } else {
         if (!canCreate.value) return
-        editMode.value = false
-        form.reset()
-        form.cargo_id = null
+        ResetForm()
     }
 
     showModal.value = true
@@ -93,14 +108,11 @@ const GuardarModificar = () => {
         preserveScroll: true,
         onSuccess: () => {
             customToastSwal({
-                title: form.id
-                    ? 'Titular actualizado correctamente'
-                    : 'Titular registrado correctamente',
+                title: form.id ? 'Usuario actualizado correctamente' : 'Usuario registrado correctamente',
                 icon: 'success',
             })
             showModal.value = false
-            form.reset()
-            form.cargo_id = null
+            ResetForm()
             ReloadTable()
         },
         onError: () => errorToast('Ocurrió un error'),
@@ -108,22 +120,23 @@ const GuardarModificar = () => {
 
     if (form.id) {
         if (!canUpdate.value) return
-        form.put(route('titulares.update', form.id), options)
+        form.put(route('usuarios.update', form.id), options)
     } else {
         if (!canCreate.value) return
-        form.post(route('titulares.store'), options)
+        form.post(route('usuarios.store'), options)
     }
 }
 
 const Eliminar = (id) => {
     if (!canDelete.value) return
 
-    form.delete(route('titulares.destroy', id), {
+    form.delete(route('usuarios.destroy', id), {
         preserveScroll: true,
         onSuccess: () => {
-            customToastSwal({ title: 'Titular eliminado', icon: 'success' })
+            customToastSwal({ title: 'Usuario eliminado', icon: 'success' })
             ReloadTable()
         },
+        onError: () => errorToast('Ocurrió un error'),
     })
 }
 
@@ -133,14 +146,14 @@ const onInvalidForm = () => {
 </script>
 
 <template>
-    <AppLayout title="Titulares">
+    <AppLayout title="Usuarios">
         <template #actions>
             <VButton
                 v-if="canCreate"
-                prepend-icon="mdi-plus"
+                prepend-icon="mdi-account-plus-outline"
                 @click="ChangeModal()"
             >
-                Nuevo Registro
+                Nuevo Usuario
             </VButton>
         </template>
 
@@ -148,17 +161,30 @@ const onInvalidForm = () => {
         <section>
             <DataTableServer
                 ref="DTableRef"
-                title="Catálogo de Titulares"
+                title="Catálogo de Usuarios"
                 searchable
-                search-label="Buscar titular"
-                search-placeholder="Escribe el nombre..."
-                server-route="titulares.index"
-                server-prop="Titular"
+                search-label="Buscar usuario"
+                search-placeholder="Escribe el nombre o usuario..."
+                server-route="usuarios.index"
+                server-prop="Usuarios"
                 :headers="headers"
                 :items-per-page="10"
             >
-                <template v-slot:[`item.cargo_nombre`]="{ item }">
-                    {{ cargoNombreById(item.cargo_id) }}
+                <template v-slot:[`item.dato_cargo`]="{ item }">
+                    {{ (item.Dato ?? item.dato)?.cargo ?? '—' }}
+                </template>
+
+                <template v-slot:[`item.dato_unidad`]="{ item }">
+                    {{ unidadNombreById((item.Dato ?? item.dato)?.unidad_administrativa_id) }}
+                </template>
+
+                <template v-slot:[`item.dato_activo`]="{ item }">
+                    <span
+                        class="px-2 py-1 text-xs rounded"
+                        :class="((item.Dato ?? item.dato)?.activo ?? true) ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'"
+                    >
+                        {{ ((item.Dato ?? item.dato)?.activo ?? true) ? 'Sí' : 'No' }}
+                    </span>
                 </template>
 
                 <template v-slot:[`item.actions`]="{ item }">
@@ -189,16 +215,16 @@ const onInvalidForm = () => {
         <!-- MODAL -->
         <VDialog
             v-model="showModal"
-            :title="form.id ? 'Editar titular' : 'Nuevo titular'"
-            header-icon="mdi-account-tie-outline"
-            max-width="600"
+            :title="form.id ? 'Editar usuario' : 'Nuevo usuario'"
+            header-icon="mdi-account-cog-outline"
+            max-width="700"
         >
             <template #content>
                 <FormValidate ref="formValidateRef" @submit="GuardarModificar" @invalid="onInvalidForm">
                     <div class="grid grid-cols-1 gap-2 md:grid-cols-2">
                         <div class="md:col-span-2">
                             <MdTextInput
-                                v-model="form.nombre"
+                                v-model="form.name"
                                 label="Nombre"
                                 icon="mdi-account-outline"
                                 :required="true"
@@ -209,39 +235,71 @@ const onInvalidForm = () => {
                         </div>
 
                         <MdTextInput
-                            v-model="form.apellido_paterno"
-                            label="Apellido paterno"
-                            icon="mdi-account-details-outline"
-                            :maxLength="150"
+                            v-model="form.username"
+                            label="Usuario"
+                            icon="mdi-at"
+                            :required="true"
+                            :minLength="3"
+                            :maxLength="75"
                             counter
                         />
 
                         <MdTextInput
-                            v-model="form.apellido_materno"
-                            label="Apellido materno"
-                            icon="mdi-account-details-outline"
-                            :maxLength="150"
+                            v-model="form.email"
+                            label="Correo"
+                            icon="mdi-email-outline"
+                            type="email"
+                            :maxLength="100"
                             counter
+                            :allowed="'any'"
+                            :pattern="/^$|^[^\s@]+@[^\s@]+\.[^\s@]+$/"
+                        />
+
+                        <MdTextInput
+                            v-model="form.password"
+                            :label="form.id ? 'Contraseña (dejar vacío para no cambiar)' : 'Contraseña'"
+                            icon="mdi-lock-outline"
+                            type="password"
+                            :required="!form.id"
+                            :minLength="form.id ? 0 : 8"
+                            :maxLength="100"
+                        />
+
+                        <MdTextInput
+                            v-model="form.password_confirmation"
+                            :label="form.id ? 'Confirmar contraseña (si cambiaste)' : 'Confirmar contraseña'"
+                            icon="mdi-lock-check-outline"
+                            type="password"
+                            :required="!form.id"
+                            :minLength="form.id ? 0 : 8"
+                            :maxLength="100"
                         />
 
                         <div class="md:col-span-2">
-                            <MdTextInput
-                                v-model="form.correo"
-                                label="Correo"
-                                icon="mdi-email-outline"
-                                type="email"
-                                :maxLength="95"
-                                counter
-                                :allowed="'any'"
-                                :pattern="/^[^\s@]+@[^\s@]+\.[^\s@]+$/"
+                            <MdSelect
+                                v-model="form.unidad_administrativa_id"
+                                label="Unidad administrativa"
+                                icon="mdi-office-building-outline"
+                                :items="UnidadesAdministrativas"
+                                item-value="id"
+                                item-title="nombre"
+                                clearable
                             />
                         </div>
+
+                        <MdTextInput
+                            v-model="form.cargo"
+                            label="Cargo (texto)"
+                            icon="mdi-briefcase-outline"
+                            :maxLength="150"
+                            counter
+                        />
 
                         <MdTextInput
                             v-model="form.telefono"
                             label="Teléfono"
                             icon="mdi-phone-outline"
-                            :maxLength="10"
+                            :maxLength="20"
                             counter
                         />
 
@@ -249,19 +307,21 @@ const onInvalidForm = () => {
                             v-model="form.extension"
                             label="Extensión"
                             icon="mdi-phone-in-talk-outline"
-                            :maxLength="5"
+                            :maxLength="10"
                             counter
                         />
 
                         <div class="md:col-span-2">
                             <MdSelect
-                                v-model="form.cargo_id"
-                                label="Cargo"
-                                icon="mdi-briefcase-outline"
-                                :items="Cargos"
+                                v-model="form.activo"
+                                label="Activo"
+                                icon="mdi-check-circle-outline"
+                                :items="[
+                                    { id: true, nombre: 'Sí' },
+                                    { id: false, nombre: 'No' },
+                                ]"
                                 item-value="id"
                                 item-title="nombre"
-                                clearable
                             />
                         </div>
                     </div>

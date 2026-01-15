@@ -64,6 +64,11 @@ const routes: Routing[] = [
             'dependencias.edit',
             'dependencias.show',
 
+            'unidades_administrativas.index',
+            'unidades_administrativas.create',
+            'unidades_administrativas.edit',
+            'unidades_administrativas.show',
+
             'areas.index',
             'areas.create',
             'areas.edit',
@@ -121,7 +126,7 @@ const routes: Routing[] = [
                 name: 'unidades_administrativas.index',
                 title: 'Unidades Administrativas',
                 icon: 'mdi-office-building-cog-outline',
-                value: 'catalog-unidades-administrativas',
+                value: 'catalog-unidades_administrativas',
             },
 
             {

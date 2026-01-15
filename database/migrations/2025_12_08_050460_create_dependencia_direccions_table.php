@@ -26,6 +26,8 @@ return new class extends Migration
 
             $table->foreignId('dependencia_id')->constrained('dependencias')->cascadeOnDelete();
 
+            $table->unique('dependencia_id');
+
             $table->timestamps();
             $table->softDeletes();
         });

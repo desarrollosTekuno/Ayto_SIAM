@@ -26,7 +26,6 @@ class UnidadAdministrativaSeeder extends Seeder {
         UnidadAdministrativaDato::create([
             'telefono' => '2221234567',
             'extension' => '301',
-            'titular_id' => null,
             'unidad_administrativa_id' => $unidadPadre->id,
         ]);
 
