@@ -14,7 +14,7 @@ use Inertia\Inertia;
 class ArchivosPermitidosController extends Controller {
 
     public function index(Request $request) {
-        $ArchivosPermitidos = ArchivoPermitido::with('TipoProcedimiento')->forDataTable($request, defaultPerPage: 10);
+        $ArchivosPermitidos = ArchivoPermitido::with('TipoProcedimiento')->where('tipo_procedimiento_id', 1)->forDataTable($request, defaultPerPage: 10);
 
         $TiposProcedimientos = TipoProcedimiento::query()
             ->select('id', 'nombre')
