@@ -13,6 +13,7 @@ import MdTextInput from '@/Components/MaterialDesign/MdTextInput.vue'
 import MdSelect from '@/Components/MaterialDesign/MdSelect.vue'
 
 import { customToastSwal, warningToast, errorToast } from '@/utils/swal'
+import { customConfirmSwal } from '@/utils/swal'
 
 // =============================== PERMISOS ===============================
 const can = computed(() => usePage().props.auth?.permissions ?? [])
@@ -110,14 +111,31 @@ const GuardarModificar = () => {
 const Eliminar = (id) => {
     if (!canDelete.value) return
 
-    form.delete(route('configuraciones_sistema.destroy', id), {
-        preserveScroll: true,
-        onSuccess: () => {
-            customToastSwal({ title: 'Configuración eliminada', icon: 'success' })
-            ReloadTable()
-        },
-        onError: () => errorToast('Ocurrió un error'),
-    })
+    customConfirmSwal({
+        title: "¿Está segur@ que desea eliminar este registro?",
+    }).then((result) => {
+        if (result.isConfirmed) {
+            form.delete(route('configuraciones_sistema.destroy', id), {
+                preserveScroll: true,
+                onSuccess: () => {
+                    customToastSwal({
+                        title: 'Configuración eliminada',
+                        icon: 'success'
+                    })
+                    ReloadTable()
+                },
+                onError: (err) => {
+                    console.error(err);
+                    customToastSwal({
+                        title: "Error al eliminar el registro",
+                        icon: "error",
+                    });
+                },
+            })
+        }
+    });
+
+
 }
 
 const onInvalidForm = () => {
