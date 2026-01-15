@@ -2,10 +2,8 @@
 
 namespace App\Models\Configuracion;
 
-use App\Models\Catalogos\TipoProcedimiento;
-=========
 use App\Models\Traits\HasDataTable;
->>>>>>>>> Temporary merge branch 2
+use App\Models\Catalogos\TipoProcedimiento;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
