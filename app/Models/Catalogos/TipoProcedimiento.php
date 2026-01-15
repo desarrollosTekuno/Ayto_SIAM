@@ -2,6 +2,7 @@
 
 namespace App\Models\Catalogos;
 
+use App\Models\Configuracion\ProcedimientoEtapaResponsable;
 use App\Models\Traits\HasDataTable;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -22,9 +23,9 @@ class TipoProcedimiento extends Model {
     //     return $this->hasMany(ProcedimientoEtapa::class, 'tipo_procedimiento_id');
     // }
 
-    // public function ProcedimientoEtapaResponsables() {
-    //     return $this->hasMany(ProcedimientoEtapaResponsable::class, 'tipo_procedimiento_id');
-    // }
+    public function ProcedimientoEtapaResponsables() {
+        return $this->hasMany(ProcedimientoEtapaResponsable::class, 'tipo_procedimiento_id');
+    }
 
     // public function DocumentosRequeridos() {
     //     return $this->hasMany(DocumentosRequerido::class, 'tipo_procedimiento_id');
