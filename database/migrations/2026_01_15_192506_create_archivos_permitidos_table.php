@@ -9,17 +9,16 @@ return new class extends Migration
     /**
      * Run the migrations.
      */
-    public function up(): void {
-        Schema::create('archivos_permitidos_procesos', function (Blueprint $table) {
+    public function up(): void
+    {
+        Schema::create('archivos_permitidos', function (Blueprint $table) {
             $table->id();
-
-            $table->string('extension', 15);
-            $table->unsignedInteger('peso_max_mb')->default(8);
+            $table->string('extension', 10);
 
             $table->boolean('obligatorio')->default(false);
             $table->boolean('activo')->default(true);
 
-            // $table->foreignId('tipo_procedimiento_id')->constrained('tipo_procedimiento')->cascadeOnUpdate();
+            $table->foreignId('tipo_procedimiento_id')->nullable()->constrained('tipos_procedimientos')->cascadeOnUpdate();
 
             $table->timestamps();
             $table->softDeletes();
@@ -31,6 +30,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('archivos_permitidos_procesos');
+        Schema::dropIfExists('archivos_permitidos');
     }
 };

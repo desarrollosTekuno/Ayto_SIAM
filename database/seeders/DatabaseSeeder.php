@@ -48,6 +48,7 @@ class DatabaseSeeder extends Seeder {
             DocumentoRequeridoSeeder::class,
 
             RangoProcedimientoSeeder::class,
+            ArchivosPermitidosSeeder::class,
 
             UsersSeeder::class,
             LineamientoGeneralArchivoSeeder::class,
