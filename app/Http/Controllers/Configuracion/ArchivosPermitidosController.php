@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Configuracion;
 
 use App\Http\Controllers\Controller;
+use App\Models\Catalogos\TipoProcedimiento;
 use App\Models\Configuracion\ArchivoPermitido;
 use App\Models\Configuracion\TiposProceso;
 use Illuminate\Http\Request;
@@ -13,14 +14,14 @@ use Inertia\Inertia;
 class ArchivosPermitidosController extends Controller {
 
     public function index(Request $request) {
-        $ArchivosPermitidos = ArchivoPermitido::forDataTable($request, defaultPerPage: 10);
+        $ArchivosPermitidos = ArchivoPermitido::with('TipoProcedimiento')->forDataTable($request, defaultPerPage: 10);
 
-        $TiposProcesos = TiposProceso::query()
+        $TiposProcedimientos = TipoProcedimiento::query()
             ->select('id', 'nombre')
             ->orderBy('nombre')
             ->get();
 
-        return Inertia::render('Configuracion/ArchivosPermitidos', compact('ArchivosPermitidos', 'TiposProcesos'));
+        return Inertia::render('Configuracion/ArchivosPermitidos', compact('ArchivosPermitidos', 'TiposProcedimientos'));
     }
 
     public function store(Request $request) {
@@ -43,6 +44,12 @@ class ArchivosPermitidosController extends Controller {
 
         ArchivoPermitido::create($validated);
 
+        return redirect()->back();
+    }
+
+    public function ModificarEstatus(Request $request) {
+        $item = ArchivoPermitido::findOrFail($request->id);
+        $item->update(['activo' => !$item->activo]);
         return redirect()->back();
     }
 

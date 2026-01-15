@@ -37,7 +37,7 @@ const customConfirmSwal = (options) => {
         confirmButtonColor: "#6a1f3c",
         cancelButtonColor: "#41504d",
         // confirmButtonText: "Si, eliminar",
-        confirmButtonText: "Si, eliminar",
+        confirmButtonText: "Si, Confirmar",
         cancelButtonText: "No, cancelar",
         denyButtonText: "Denegar",
         reverseButtons: true,

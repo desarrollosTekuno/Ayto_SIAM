@@ -26,4 +26,7 @@ Route::resource('/configuraciones_sistema', ConfiguracionSistemaController::clas
 Route::resource('/tipos_procesos', TiposProcesosController::class)->names('tipos_procesos');
 Route::resource('/tipos_procedimientos', TiposProcedimientosController::class)->names('tipos_procedimientos');
 Route::resource('/rangos_procedimientos', RangosProcedimientosController::class)->names('rangos_procedimientos');
+
 Route::resource('/archivos_permitidos', ArchivosPermitidosController::class)->names('archivos_permitidos');
+Route::post('/archivos_permitidos/cambiar_estatus', [ArchivosPermitidosController::class, 'ModificarEstatus'])->name('archivos_permitidos.cambiar_estatus');
+

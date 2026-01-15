@@ -1,6 +1,7 @@
 <script setup>
 import { ref, computed } from "vue";
 import { useForm, usePage } from "@inertiajs/vue3";
+import axios from "axios";
 
 import AppLayout from "@/Layouts/AppLayout.vue";
 import DataTableServer from "@/Components/DataTableServer.vue";
@@ -43,10 +44,8 @@ const form = useForm({
 
 // =============================== TABLE ===============================
 const headers = [
-    { title: "ID", key: "id", sortable: true },
-    { title: "Extensión", key: "extension", sortable: true },
     { title: "Tipo procedimiento", key: "tipo_procedimiento", sortable: false },
-    { title: "Obligatorio", key: "obligatorio", sortable: false },
+    { title: "Extensión", key: "extension", sortable: true },
     { title: "Activo", key: "activo", sortable: false },
     { title: "Acciones", key: "actions", sortable: false },
 ];
@@ -63,7 +62,6 @@ const ResetForm = () => {
     form.tipo_procedimiento_id = null;
 };
 
-/** Normaliza extensión: sin espacios, sin punto inicial, en minúsculas */
 const normalizeExtension = (value) => {
     if (value == null) return "";
     return String(value).trim().replace(/^\./, "").toLowerCase();
@@ -145,6 +143,39 @@ const destroy = (item) => {
         }
     });
 };
+
+const CambiarEstatus = (item) => {
+
+    var data = {
+        id: item.id,
+    }
+    customConfirmSwal({
+        title: item.activo
+            ? "¿Desea desactivar este registro?"
+            : "¿Desea activar este registro?",
+    }).then((result) => {
+        if (!result.isConfirmed) return;
+
+        axios.post(route("archivos_permitidos.cambiar_estatus"), data)
+        .then(() => {
+            customToastSwal({
+                title: item.activo
+                    ? "Registro desactivado"
+                    : "Registro activado",
+                icon: "success",
+            });
+            ReloadTable();
+        })
+        .catch(() => {
+            customToastSwal({
+                title: "No se pudo actualizar el estatus",
+                icon: "error",
+            });
+        });
+    });
+};
+
+
 </script>
 
 <template>
@@ -223,6 +254,16 @@ const destroy = (item) => {
                             color="red-darken-1"
                             icon="mdi-trash-can-outline"
                             @click="destroy(item)"
+                        />
+
+                        <VButton
+                            size="x-small"
+                            variant="flat"
+                            :color="item.activo ? 'amber-darken-2' : 'green-darken-2'"
+                            :icon="item.activo ? 'mdi-toggle-switch-off-outline' : 'mdi-toggle-switch-outline'"
+                            :title="item.activo ? 'Desactivar' : 'Activar'"
+                            class="ml-2"
+                            @click="CambiarEstatus(item)"
                         />
                     </div>
                 </template>

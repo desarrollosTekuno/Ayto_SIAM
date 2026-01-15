@@ -38,7 +38,7 @@ class RolesSeeder extends Seeder {
             // 'tipos_procesos',
             'tipos_procedimientos',
             'rangos_procedimientos',
-            'archivos_permitidos_proceso',
+            'archivos_permitidos',
         ];
 
         $acciones = [
