@@ -12,7 +12,7 @@ use Inertia\Inertia;
 
 class RangosProcedimientosController extends Controller {
     public function index(Request $request) {
-        $RangosProcedimientos = RangosProcedimiento::forDataTable($request, defaultPerPage: 10);
+        $RangosProcedimientos = RangosProcedimiento::with('TipoProcedimiento')->forDataTable($request, defaultPerPage: 10);
 
         $TiposProcesos = TiposProceso::query()
             ->select('id', 'nombre')

@@ -9,8 +9,8 @@ use Illuminate\Support\Facades\Validator;
 use Inertia\Inertia;
 
 
-class TiposProcesosController extends Controller
-{
+class TiposProcesosController extends Controller {
+
     public function index(Request $request) {
         $TiposProcesos = TiposProceso::forDataTable($request, defaultPerPage: 10);
 
