@@ -9,10 +9,8 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 class ControlProceso extends Model {
     use HasFactory, SoftDeletes;
 
+    protected $table = 'control_procesos';
     protected $guarded = ['id', 'created_at', 'updated_at'];
     protected $dates = ['deleted_at'];
 
-    public function TiposProceso() {
-        return $this->belongsTo(TiposProceso::class, 'tipo_proceso_id');
-    }
 }

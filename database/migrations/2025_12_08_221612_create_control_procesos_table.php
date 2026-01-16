@@ -4,13 +4,9 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-return new class extends Migration
-{
-    /**
-     * Run the migrations.
-     */
-    public function up(): void
-    {
+return new class extends Migration {
+
+    public function up(): void {
         Schema::create('control_procesos', function (Blueprint $table) {
             $table->id();
 
@@ -24,10 +20,6 @@ return new class extends Migration
             $table->date('fecha_fin')->nullable();
 
             $table->boolean('activo')->default(true);
-
-            $table->foreignId('tipo_proceso_id')
-                ->constrained('tipos_procesos')
-                ->cascadeOnUpdate();
 
             $table->timestamps();
             $table->softDeletes();
