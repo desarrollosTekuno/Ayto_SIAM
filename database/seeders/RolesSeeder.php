@@ -14,6 +14,7 @@ class RolesSeeder extends Seeder {
             'SUPERADMINISTRADOR',
             'ANALISTA',
             'OPERADOR',
+            'ENLACES',
         ];
 
         foreach ($roles as $role) {

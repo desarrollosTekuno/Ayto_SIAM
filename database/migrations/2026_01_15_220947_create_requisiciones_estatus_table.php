@@ -11,12 +11,15 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('claves_presupuestales', function (Blueprint $table) {
+        Schema::create('requisiciones_estatus', function (Blueprint $table) {
             $table->id();
-
-            $table->string('nombre', 150);
+            $table->string('clave', 30)->unique();     // CAPTURADA, ENVIADA, OBSERVADA, AUTORIZADA, RECHAZADA, TURNADA
+            $table->string('nombre', 100);
             $table->string('descripcion', 255)->nullable();
+
+            $table->boolean('es_final')->default(false);
             $table->boolean('activo')->default(true);
+            $table->smallInteger('orden')->default(0);
 
             $table->timestamps();
             $table->softDeletes();
@@ -28,6 +31,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('claves_presupuestales');
+        Schema::dropIfExists('requisicion_estatuses');
     }
 };

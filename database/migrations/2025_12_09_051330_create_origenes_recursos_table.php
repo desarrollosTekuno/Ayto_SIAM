@@ -11,19 +11,17 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('documentos', function (Blueprint $table) {
+        Schema::create('origenes_recursos', function (Blueprint $table) {
             $table->id();
 
-            $table->string('clave', 50)->unique();
-            $table->string('nombre', 150);
+            $table->string('clave', 30)->unique();
+            $table->string('nombre', 100);
             $table->string('descripcion', 255)->nullable();
-            $table->boolean('obligatorio')->default(false);
             $table->boolean('activo')->default(true);
             $table->smallInteger('orden')->default(0);
 
             $table->timestamps();
             $table->softDeletes();
-
         });
     }
 
@@ -32,6 +30,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('documentos');
+        Schema::dropIfExists('origenes_recursos');
     }
 };
