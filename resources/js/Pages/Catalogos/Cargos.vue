@@ -10,7 +10,7 @@ import MdTextInput from '@/Components/MaterialDesign/MdTextInput.vue'
 import VBtnCancel from '@/Components/Vuetify/VBtnCancel.vue'
 import VBtnSend from '@/Components/Vuetify/VBtnSend.vue'
 import { customToastSwal, warningToast, errorToast } from '@/utils/swal'
-
+import { customConfirmSwal } from '@/utils/swal'
 // =============================== PERMISOS ===============================
 const can = computed(() => usePage().props.auth?.permissions ?? [])
 const canCreate = computed(() => can.value.includes('cargos.store'))
@@ -86,13 +86,29 @@ const GuardarModificar = () => {
 }
 
 const Eliminar = (id) => {
-    form.delete(route('cargos.destroy', id), {
-        preserveScroll: true,
-        onSuccess: () => {
-            customToastSwal({ title: 'Cargo eliminado', icon: 'success' })
-            ReloadTable()
-        },
-    })
+    customConfirmSwal({
+        title: "¿Está segur@ que desea eliminar este registro?",
+    }).then((result) => {
+        if (result.isConfirmed) {
+            form.delete(route('cargos.destroy', id), {
+                preserveScroll: true,
+                onSuccess: () => {
+                    customToastSwal({
+                        title: 'Cargo eliminado',
+                        icon: 'success'
+                    })
+                    ReloadTable()
+                },
+                onError: (err) => {
+                    console.error(err);
+                    customToastSwal({
+                        title: "Error al eliminar el registro",
+                        icon: "error",
+                    });
+                },
+            })
+        }
+    });
 }
 
 const onInvalidForm = () => {

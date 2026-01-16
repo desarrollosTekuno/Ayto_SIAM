@@ -16,6 +16,7 @@ import MdTextInput from '@/Components/MaterialDesign/MdTextInput.vue'
 import MdSelect from '@/Components/MaterialDesign/MdSelect.vue'
 
 import { customToastSwal, warningToast, errorToast } from '@/utils/swal'
+import { customConfirmSwal } from '@/utils/swal'
 
 // =============================== PERMISOS ===============================
 const can = computed(() => usePage().props.auth?.permissions ?? [])
@@ -166,14 +167,29 @@ const GuardarModificar = () => {
 const Eliminar = (id) => {
     if (!canDelete.value) return
 
-    form.delete(route('dependencias.destroy', id), {
-        preserveScroll: true,
-        onSuccess: () => {
-            customToastSwal({ title: 'Dependencia eliminada', icon: 'success' })
-            ReloadTable()
-        },
-        onError: () => errorToast('No se pudo eliminar'),
-    })
+    customConfirmSwal({
+        title: "¿Está segur@ que desea eliminar este registro?",
+    }).then((result) => {
+        if (result.isConfirmed) {
+            form.delete(route('dependencias.destroy', id), {
+                preserveScroll: true,
+                onSuccess: () => {
+                        customToastSwal({
+                        title: 'Dependencia eliminada',
+                        icon: 'success'
+                    })
+                        ReloadTable()
+                    },
+                onError: (err) => {
+                    console.error(err);
+                    customToastSwal({
+                        title: "Error al eliminar el registro",
+                        icon: "error",
+                    });
+                },
+            })
+        }
+    });
 }
 
 const ConsultaMunicipios = async (estadoId, opts = { keepSelected: false }) => {
